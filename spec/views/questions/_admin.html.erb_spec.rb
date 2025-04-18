@@ -5,9 +5,9 @@ describe "questions/_admin.html.erb", type: :view, question: true do
 
   subject { rendered }
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:chapter) { FactoryGirl.create(:chapter, online: true) }
-  let(:question) { FactoryGirl.create(:question, chapter: chapter, position: 2) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:chapter) { FactoryBot.create(:chapter, online: true) }
+  let(:question) { FactoryBot.create(:question, chapter: chapter, position: 2) }
   
   before do
     sign_in_view(admin)
@@ -29,7 +29,7 @@ describe "questions/_admin.html.erb", type: :view, question: true do
   end
   
   context "if the question is a qcm and online" do
-    let!(:question_before) { FactoryGirl.create(:question, chapter: chapter, position: 1, online: true) }
+    let!(:question_before) { FactoryBot.create(:question, chapter: chapter, position: 1, online: true) }
     before { question.update(:online => true, :is_qcm => true) }
       
     it "renders the correct options" do
@@ -45,7 +45,7 @@ describe "questions/_admin.html.erb", type: :view, question: true do
     end
     
     context "and also has a question after" do
-      let!(:question_after) { FactoryGirl.create(:question, chapter: chapter, position: 4, online: false) }
+      let!(:question_after) { FactoryBot.create(:question, chapter: chapter, position: 4, online: false) }
       
       it "renders the link 'bas' too" do
         render partial: "questions/admin", locals: {question: question}

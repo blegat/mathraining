@@ -5,21 +5,21 @@ describe "Solvedquestion pages", solvedquestion: true do
 
   subject { page }
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:user) { FactoryGirl.create(:user) }
-  let!(:section) { FactoryGirl.create(:section) }
-  let!(:chapter) { FactoryGirl.create(:chapter, section: section, online: true) }
-  let!(:chapter2) { FactoryGirl.create(:chapter, section: section, online: true) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:user) { FactoryBot.create(:user) }
+  let!(:section) { FactoryBot.create(:section) }
+  let!(:chapter) { FactoryBot.create(:chapter, section: section, online: true) }
+  let!(:chapter2) { FactoryBot.create(:chapter, section: section, online: true) }
   let!(:exercise_answer) { 6321567 }
-  let!(:exercise) { FactoryGirl.create(:exercise, chapter: chapter, online: true, position: 1, level: 1, answer: exercise_answer) }
+  let!(:exercise) { FactoryBot.create(:exercise, chapter: chapter, online: true, position: 1, level: 1, answer: exercise_answer) }
   let!(:exercise_decimal_answer) { -15.4 }
-  let!(:exercise_decimal) { FactoryGirl.create(:exercise_decimal, chapter: chapter, online: true, position: 2, level: 2, answer: exercise_decimal_answer) }
-  let!(:qcm) { FactoryGirl.create(:qcm, chapter: chapter, online: true, position: 3, level: 3) }
-  let!(:item_correct) { FactoryGirl.create(:item_correct, question: qcm, position: 1) }
-  let!(:item_incorrect) { FactoryGirl.create(:item, question: qcm, position: 2) }
-  let!(:qcm_multiple) { FactoryGirl.create(:qcm_multiple, chapter: chapter2, online: true, position: 4, level: 4) } # Only question of chapter2
-  let!(:item_multiple_correct) { FactoryGirl.create(:item_correct, question: qcm_multiple, position: 1) }
-  let!(:item_multiple_incorrect) { FactoryGirl.create(:item, question: qcm_multiple, position: 2) }
+  let!(:exercise_decimal) { FactoryBot.create(:exercise_decimal, chapter: chapter, online: true, position: 2, level: 2, answer: exercise_decimal_answer) }
+  let!(:qcm) { FactoryBot.create(:qcm, chapter: chapter, online: true, position: 3, level: 3) }
+  let!(:item_correct) { FactoryBot.create(:item_correct, question: qcm, position: 1) }
+  let!(:item_incorrect) { FactoryBot.create(:item, question: qcm, position: 2) }
+  let!(:qcm_multiple) { FactoryBot.create(:qcm_multiple, chapter: chapter2, online: true, position: 4, level: 4) } # Only question of chapter2
+  let!(:item_multiple_correct) { FactoryBot.create(:item_correct, question: qcm_multiple, position: 1) }
+  let!(:item_multiple_incorrect) { FactoryBot.create(:item, question: qcm_multiple, position: 2) }
   
   describe "user", :js => true do
     let!(:rating_before) { user.rating }
@@ -27,7 +27,7 @@ describe "Solvedquestion pages", solvedquestion: true do
     before { sign_in user }
     
     describe "tries to see the answer to a question he solved" do
-      let!(:solvedquestion) { FactoryGirl.create(:solvedquestion, user: user, question: exercise) }
+      let!(:solvedquestion) { FactoryBot.create(:solvedquestion, user: user, question: exercise) }
       before do
         visit chapter_question_path(chapter, exercise)
         click_button "Voir la réponse"
@@ -41,7 +41,7 @@ describe "Solvedquestion pages", solvedquestion: true do
     end
     
     describe "tries to see the answer to a question he did NOT solve (hack)" do
-      let!(:solvedquestion) { FactoryGirl.create(:solvedquestion, user: user, question: exercise) } # To have the button 'Voir la réponse'
+      let!(:solvedquestion) { FactoryBot.create(:solvedquestion, user: user, question: exercise) } # To have the button 'Voir la réponse'
       before do
         visit chapter_question_path(chapter, exercise)
         solvedquestion.destroy
@@ -153,7 +153,7 @@ describe "Solvedquestion pages", solvedquestion: true do
     end
     
     describe "visits a question after 3 errors but 2 minutes", :js => false do
-      let!(:unsolvedquestion) { FactoryGirl.create(:unsolvedquestion, user: user, question: exercise, nb_guess: 3, last_guess_time: DateTime.now - 2.minutes, guess: exercise_answer + 3) }
+      let!(:unsolvedquestion) { FactoryBot.create(:unsolvedquestion, user: user, question: exercise, nb_guess: 3, last_guess_time: DateTime.now - 2.minutes, guess: exercise_answer + 3) }
       before { visit chapter_question_path(chapter, exercise) }
       it do
         should have_button("Soumettre", disabled: true)
@@ -162,7 +162,7 @@ describe "Solvedquestion pages", solvedquestion: true do
     end
     
     describe "visits a question after 3 errors but 4 minutes", :js => false do
-      let!(:unsolvedquestion) { FactoryGirl.create(:unsolvedquestion, user: user, question: exercise, nb_guess: 3, last_guess_time: DateTime.now - 4.minutes, guess: exercise_answer + 3) }
+      let!(:unsolvedquestion) { FactoryBot.create(:unsolvedquestion, user: user, question: exercise, nb_guess: 3, last_guess_time: DateTime.now - 4.minutes, guess: exercise_answer + 3) }
       before { visit chapter_question_path(chapter, exercise) }
       it do
         should have_button("Soumettre", disabled: false)
@@ -186,7 +186,7 @@ describe "Solvedquestion pages", solvedquestion: true do
     describe "visits a question and tries to send an answer too early" do
       before do
         visit chapter_question_path(chapter, exercise)
-        FactoryGirl.create(:unsolvedquestion, user: user, question: exercise, nb_guess: 3, last_guess_time: DateTime.now - 2.minutes, guess: exercise_answer + 3)
+        FactoryBot.create(:unsolvedquestion, user: user, question: exercise, nb_guess: 3, last_guess_time: DateTime.now - 2.minutes, guess: exercise_answer + 3)
         fill_in "ans", with: exercise_answer
         click_button "Soumettre"
       end

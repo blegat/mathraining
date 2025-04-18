@@ -5,14 +5,14 @@ describe "contests/index.html.erb", type: :view, contest: true do
 
   subject { rendered }
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:user_bad) { FactoryGirl.create(:user) }
-  let(:user) { FactoryGirl.create(:advanced_user) }
-  let(:user2) { FactoryGirl.create(:advanced_user) }
-  let(:user_organizer) { FactoryGirl.create(:user) }
-  let!(:contest) { FactoryGirl.create(:contest, num_problems: 2) }
-  let!(:contestproblem1) { FactoryGirl.create(:contestproblem, contest: contest) }
-  let!(:contestproblem2) { FactoryGirl.create(:contestproblem, contest: contest) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:user_bad) { FactoryBot.create(:user) }
+  let(:user) { FactoryBot.create(:advanced_user) }
+  let(:user2) { FactoryBot.create(:advanced_user) }
+  let(:user_organizer) { FactoryBot.create(:user) }
+  let!(:contest) { FactoryBot.create(:contest, num_problems: 2) }
+  let!(:contestproblem1) { FactoryBot.create(:contestproblem, contest: contest) }
+  let!(:contestproblem2) { FactoryBot.create(:contestproblem, contest: contest) }
   
   before do
     contest.organizers << user_organizer
@@ -116,10 +116,10 @@ describe "contests/index.html.erb", type: :view, contest: true do
   end
   
   context "if the contest is finished" do
-    let!(:contestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem1, user: user, score: 5, corrected: true) }
-    let!(:contestsolution2) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem1, user: user2, score: 3, corrected: true) }
-    let!(:contestscore) { FactoryGirl.create(:contestscore, contest: contest, user: user, rank: 1, score: 5) }
-    let!(:contestscore2) { FactoryGirl.create(:contestscore, contest: contest, user: user2, rank: 2, score: 3) }
+    let!(:contestsolution) { FactoryBot.create(:contestsolution, contestproblem: contestproblem1, user: user, score: 5, corrected: true) }
+    let!(:contestsolution2) { FactoryBot.create(:contestsolution, contestproblem: contestproblem1, user: user2, score: 3, corrected: true) }
+    let!(:contestscore) { FactoryBot.create(:contestscore, contest: contest, user: user, rank: 1, score: 5) }
+    let!(:contestscore2) { FactoryBot.create(:contestscore, contest: contest, user: user2, rank: 2, score: 3) }
     before do
       contest.completed!
       contest.update_attribute(:num_participants, 2)

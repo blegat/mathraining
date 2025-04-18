@@ -10,7 +10,7 @@
 require "spec_helper"
 
 describe Country, country: true do
-  let!(:country) { FactoryGirl.build(:country, name: "Pépé", code: "pp") }
+  let!(:country) { FactoryBot.build(:country, name: "Pépé", code: "pp") }
 
   subject { country }
   
@@ -23,7 +23,7 @@ describe Country, country: true do
   end
   
   describe "when name is already taken" do
-    before { FactoryGirl.create(:country, name: "Pépé", code: "qq") }
+    before { FactoryBot.create(:country, name: "Pépé", code: "qq") }
     it { should_not be_valid }
   end
   

@@ -5,20 +5,20 @@ describe "Message pages", message: true do
 
   subject { page }
 
-  let(:root) { FactoryGirl.create(:root) }
-  let(:other_root) { FactoryGirl.create(:root) }
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:other_admin) { FactoryGirl.create(:admin) }
-  let(:user) { FactoryGirl.create(:user) }
+  let(:root) { FactoryBot.create(:root) }
+  let(:other_root) { FactoryBot.create(:root) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:other_admin) { FactoryBot.create(:admin) }
+  let(:user) { FactoryBot.create(:user) }
 
-  let!(:sub) { FactoryGirl.create(:subject) }
-  let!(:sub2) { FactoryGirl.create(:subject) }
+  let!(:sub) { FactoryBot.create(:subject) }
+  let!(:sub2) { FactoryBot.create(:subject) }
 
-  let!(:mes) { FactoryGirl.create(:message, subject: sub) }
-  let!(:mes_user) { FactoryGirl.create(:message, user: user, subject: sub) }
-  let!(:mes_admin) { FactoryGirl.create(:message, user: admin, subject: sub) }
-  let!(:mes_other_admin) { FactoryGirl.create(:message, user: other_admin, subject: sub) }
-  let!(:mes_other_root) { FactoryGirl.create(:message, user: other_root, subject: sub2) }
+  let!(:mes) { FactoryBot.create(:message, subject: sub) }
+  let!(:mes_user) { FactoryBot.create(:message, user: user, subject: sub) }
+  let!(:mes_admin) { FactoryBot.create(:message, user: admin, subject: sub) }
+  let!(:mes_other_admin) { FactoryBot.create(:message, user: other_admin, subject: sub) }
+  let!(:mes_other_root) { FactoryBot.create(:message, user: other_root, subject: sub2) }
   
   let(:content) { "Ma belle réponse" }
   let(:content2) { "Ma nouvelle réponse" }
@@ -92,7 +92,7 @@ describe "Message pages", message: true do
       
       describe "and writes a new message while somebody else wrote a message" do
         before do
-          FactoryGirl.create(:message, user: admin, subject: sub)
+          FactoryBot.create(:message, user: admin, subject: sub)
           fill_in "MathInputNewMessage", with: content2
           click_button "Poster"
         end
@@ -160,7 +160,7 @@ describe "Message pages", message: true do
       end
       
       describe "and soft deletes the message of a student" do
-        let!(:messagemyfile) { FactoryGirl.create(:messagemyfile, myfiletable: mes) }
+        let!(:messagemyfile) { FactoryBot.create(:messagemyfile, myfiletable: mes) }
         before do
           click_link "LinkSoftDeleteMessage#{mes.id}"
           mes.reload
@@ -246,7 +246,7 @@ describe "Message pages", message: true do
     end
     
     describe "adds a file to a message with a file" do
-      let!(:messagemyfile) { FactoryGirl.create(:messagemyfile, myfiletable: mes_user) }
+      let!(:messagemyfile) { FactoryBot.create(:messagemyfile, myfiletable: mes_user) }
       before do
         visit subject_path(sub)
         wait_for_js_imports
@@ -268,7 +268,7 @@ describe "Message pages", message: true do
     end
     
     describe "modifies a message with a fake file" do
-      let!(:messagemyfile) { FactoryGirl.create(:messagemyfile, myfiletable: mes_user) }
+      let!(:messagemyfile) { FactoryBot.create(:messagemyfile, myfiletable: mes_user) }
       before do
         messagemyfile.fake_del
         visit subject_path(sub)

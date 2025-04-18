@@ -5,13 +5,13 @@ describe ContestsHelper, type: :helper, contest: true do
   include ContestsHelper
 
   describe "forum messages" do
-    let!(:user1) { FactoryGirl.create(:user, last_name: "Albert") } # NB: We order organizers by last names in messages
-    let!(:user2) { FactoryGirl.create(:user, last_name: "Boulanger") }
-    let!(:user3) { FactoryGirl.create(:user, last_name: "Collard") }
-    let!(:contest) { FactoryGirl.create(:contest) }
-    let!(:contestproblem1) { FactoryGirl.create(:contestproblem, number: 1) }
-    let!(:contestproblem2) { FactoryGirl.create(:contestproblem, number: 2) }
-    let!(:contestproblem3) { FactoryGirl.create(:contestproblem, number: 3) }
+    let!(:user1) { FactoryBot.create(:user, last_name: "Albert") } # NB: We order organizers by last names in messages
+    let!(:user2) { FactoryBot.create(:user, last_name: "Boulanger") }
+    let!(:user3) { FactoryBot.create(:user, last_name: "Collard") }
+    let!(:contest) { FactoryBot.create(:contest) }
+    let!(:contestproblem1) { FactoryBot.create(:contestproblem, number: 1) }
+    let!(:contestproblem2) { FactoryBot.create(:contestproblem, number: 2) }
+    let!(:contestproblem3) { FactoryBot.create(:contestproblem, number: 3) }
     
     describe "new contest message" do
       describe "with one organizer and one problem" do

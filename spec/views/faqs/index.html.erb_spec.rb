@@ -5,10 +5,10 @@ describe "faqs/index.html.erb", type: :view, faq: true do
 
   subject { rendered }
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:user) { FactoryGirl.create(:user) }
-  let!(:faq) { FactoryGirl.create(:faq, position: 1) }
-  let!(:faq2) { FactoryGirl.create(:faq, position: 3) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:user) { FactoryBot.create(:user) }
+  let!(:faq) { FactoryBot.create(:faq, position: 1) }
+  let!(:faq2) { FactoryBot.create(:faq, position: 3) }
   
   before { assign(:faqs, Faq.all) }
   

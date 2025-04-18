@@ -5,26 +5,26 @@ describe "Submission pages" do
 
   subject { page }
 
-  let(:root) { FactoryGirl.create(:root) }
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:user) { FactoryGirl.create(:advanced_user) }
-  let(:other_user) { FactoryGirl.create(:advanced_user) }
-  let(:other_user2) { FactoryGirl.create(:advanced_user) }
-  let(:good_corrector) { FactoryGirl.create(:corrector) }
-  let(:bad_corrector) { FactoryGirl.create(:corrector) }
+  let(:root) { FactoryBot.create(:root) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:user) { FactoryBot.create(:advanced_user) }
+  let(:other_user) { FactoryBot.create(:advanced_user) }
+  let(:other_user2) { FactoryBot.create(:advanced_user) }
+  let(:good_corrector) { FactoryBot.create(:corrector) }
+  let(:bad_corrector) { FactoryBot.create(:corrector) }
   
-  let!(:section) { FactoryGirl.create(:section) }
+  let!(:section) { FactoryBot.create(:section) }
   
-  let!(:problem) { FactoryGirl.create(:problem, online: true, section: section, level: 1) }
-  let!(:problem_with_submissions) { FactoryGirl.create(:problem, online: true, section: section, level: 1) }
+  let!(:problem) { FactoryBot.create(:problem, online: true, section: section, level: 1) }
+  let!(:problem_with_submissions) { FactoryBot.create(:problem, online: true, section: section, level: 1) }
   
-  let!(:waiting_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: user, status: :waiting) } 
-  let!(:wrong_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: other_user, status: :wrong) }
-  let!(:good_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: other_user2, status: :correct, created_at: DateTime.now - 2.days) }
-  let!(:good_solvedproblem) { FactoryGirl.create(:solvedproblem, problem: problem_with_submissions, submission: good_submission, resolution_time: good_submission.created_at, user: other_user2) }
+  let!(:waiting_submission) { FactoryBot.create(:submission, problem: problem_with_submissions, user: user, status: :waiting) } 
+  let!(:wrong_submission) { FactoryBot.create(:submission, problem: problem_with_submissions, user: other_user, status: :wrong) }
+  let!(:good_submission) { FactoryBot.create(:submission, problem: problem_with_submissions, user: other_user2, status: :correct, created_at: DateTime.now - 2.days) }
+  let!(:good_solvedproblem) { FactoryBot.create(:solvedproblem, problem: problem_with_submissions, submission: good_submission, resolution_time: good_submission.created_at, user: other_user2) }
   
-  let!(:good_corrector_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: good_corrector, status: :correct, created_at: DateTime.now - 1.day) }
-  let!(:good_corrector_solvedproblem) { FactoryGirl.create(:solvedproblem, problem: problem_with_submissions, submission: good_corrector_submission, resolution_time: good_corrector_submission.created_at, user: good_corrector) }
+  let!(:good_corrector_submission) { FactoryBot.create(:submission, problem: problem_with_submissions, user: good_corrector, status: :correct, created_at: DateTime.now - 1.day) }
+  let!(:good_corrector_solvedproblem) { FactoryBot.create(:solvedproblem, problem: problem_with_submissions, submission: good_corrector_submission, resolution_time: good_corrector_submission.created_at, user: good_corrector) }
   
   let(:newsubmission) { "Voici ma belle soumission." }
   let(:newcorrection) { "Voici ma belle correction." }
@@ -81,7 +81,7 @@ describe "Submission pages" do
         
         describe "and tries to comment a waiting submission in test (hack)" do
           let(:new_submission) { problem.submissions.order(:id).last }
-          let!(:virtualtest) { FactoryGirl.create(:virtualtest, online: true) }
+          let!(:virtualtest) { FactoryBot.create(:virtualtest, online: true) }
           let!(:takentest) { Takentest.create(virtualtest: virtualtest, user: user, status: :finished) }
           before do
             problem.update_attribute(:virtualtest, virtualtest)
@@ -122,7 +122,7 @@ describe "Submission pages" do
       
       describe "and sends new submission while one is already waiting" do # Can only be done with several tabs
         before do
-          FactoryGirl.create(:submission, problem: problem, user: user, status: :waiting)
+          FactoryBot.create(:submission, problem: problem, user: user, status: :waiting)
           fill_in "MathInput", with: newsubmission
           click_button "Soumettre cette solution"
         end
@@ -130,13 +130,13 @@ describe "Submission pages" do
           expect(page).to have_selector("h1", text: "Problème ##{problem.number}")
           expect(page).to have_no_link("Nouvelle soumission")
           expect(problem.submissions.order(:id).last.content).not_to eq(newsubmission)
-          expect(problem.submissions.where(:user => user).count).to eq(1) # Only the one created by FactoryGirl 
+          expect(problem.submissions.where(:user => user).count).to eq(1) # Only the one created by FactoryBot 
         end
       end
       
       describe "and sends new submission while another one was recently plagiarized" do # Can only be done with several tabs
         before do
-          plagiarism = FactoryGirl.create(:submission, problem: problem, user: user, status: :plagiarized)
+          plagiarism = FactoryBot.create(:submission, problem: problem, user: user, status: :plagiarized)
           plagiarism.update_attribute(:last_comment_time, DateTime.now - 3.months)
           fill_in "MathInput", with: newsubmission
           click_button "Soumettre cette solution"
@@ -146,13 +146,13 @@ describe "Submission pages" do
           expect(page).to have_no_link("Nouvelle soumission")
           expect(page).to have_content("Vous avez soumis une solution plagiée à ce problème.")
           expect(problem.submissions.order(:id).last.content).not_to eq(newsubmission)
-          expect(problem.submissions.where(:user => user).count).to eq(1) # Only the plagiarized one created by FactoryGirl 
+          expect(problem.submissions.where(:user => user).count).to eq(1) # Only the plagiarized one created by FactoryBot 
         end
       end
         
       describe "and sends new submission while another one was plagiarized long ago" do
         before do
-          plagiarism = FactoryGirl.create(:submission, problem: problem, user: user, status: :plagiarized)
+          plagiarism = FactoryBot.create(:submission, problem: problem, user: user, status: :plagiarized)
           plagiarism.update_attribute(:last_comment_time, DateTime.now - 2.years)
           fill_in "MathInput", with: newsubmission
           click_button "Soumettre cette solution"
@@ -168,7 +168,7 @@ describe "Submission pages" do
       
       describe "and sends new submission while another one was recently closed" do # Can only be done with several tabs
         before do
-          closed = FactoryGirl.create(:submission, problem: problem, user: user, status: :closed)
+          closed = FactoryBot.create(:submission, problem: problem, user: user, status: :closed)
           closed.update_attribute(:last_comment_time, DateTime.now - 3.days)
           fill_in "MathInput", with: newsubmission
           click_button "Soumettre cette solution"
@@ -178,13 +178,13 @@ describe "Submission pages" do
           expect(page).to have_no_link("Nouvelle soumission")
           expect(page).to have_content("Vous avez soumis une solution à ce problème qui a été clôturée par un correcteur.")
           expect(problem.submissions.order(:id).last.content).not_to eq(newsubmission)
-          expect(problem.submissions.where(:user => user).count).to eq(1) # Only the closed one created by FactoryGirl 
+          expect(problem.submissions.where(:user => user).count).to eq(1) # Only the closed one created by FactoryBot 
         end
       end
       
       describe "and sends new submission while another one was closed long ago" do
         before do
-          closed = FactoryGirl.create(:submission, problem: problem, user: user, status: :closed)
+          closed = FactoryBot.create(:submission, problem: problem, user: user, status: :closed)
           closed.update_attribute(:last_comment_time, DateTime.now - 2.weeks)
           fill_in "MathInput", with: newsubmission
           click_button "Soumettre cette solution"
@@ -200,7 +200,7 @@ describe "Submission pages" do
       
       describe "and sends new submission while he did not solve chapters to write a submission" do # Hack
         before do
-          FactoryGirl.create(:chapter, online: true, submission_prerequisite: true)
+          FactoryBot.create(:chapter, online: true, submission_prerequisite: true)
           fill_in "MathInput", with: newsubmission
           click_button "Soumettre cette solution"
         end
@@ -229,7 +229,7 @@ describe "Submission pages" do
     end
       
     describe "visits problem with a draft" do
-      let!(:draft_submission) { FactoryGirl.create(:submission, problem: problem, user: user, status: :draft, content: newsubmission) }
+      let!(:draft_submission) { FactoryBot.create(:submission, problem: problem, user: user, status: :draft, content: newsubmission) }
       before { visit problem_path(problem) }
       it do
         should have_selector("h1", text: "Problème ##{problem.number}")
@@ -239,7 +239,7 @@ describe "Submission pages" do
     end
     
     describe "visits draft page" do
-      let!(:draft_submission) { FactoryGirl.create(:submission, problem: problem, user: user, status: :draft, content: newsubmission) }
+      let!(:draft_submission) { FactoryBot.create(:submission, problem: problem, user: user, status: :draft, content: newsubmission) }
       before { visit problem_path(problem, :sub => 0) }
       it do
         should have_selector("h3", text: "Énoncé")
@@ -324,7 +324,7 @@ describe "Submission pages" do
     end
     
     describe "sends a submission to a virtualtest problem (later)" do
-      let!(:virtualtest) { FactoryGirl.create(:virtualtest, online: true) }
+      let!(:virtualtest) { FactoryBot.create(:virtualtest, online: true) }
       let!(:takentest) { Takentest.create(virtualtest: virtualtest, user: user, status: :finished) }
       before do
         problem.update_attribute(:virtualtest, virtualtest)
@@ -396,7 +396,7 @@ describe "Submission pages" do
       
     describe "visits reserved waiting submission" do
       before do
-        FactoryGirl.create(:following, user: good_corrector, submission: waiting_submission, read: true, kind: :reservation)
+        FactoryBot.create(:following, user: good_corrector, submission: waiting_submission, read: true, kind: :reservation)
         visit problem_path(problem_with_submissions, :sub => waiting_submission) # Reload
       end
       it do
@@ -483,7 +483,7 @@ describe "Submission pages" do
       
       describe "and rejects it while another comment was posted" do
         before do
-          FactoryGirl.create(:correction, submission: waiting_submission, user: user, content: "J'ajoute une précision")
+          FactoryBot.create(:correction, submission: waiting_submission, user: user, content: "J'ajoute une précision")
           fill_in "MathInput", with: newcorrection
           click_button "Poster et refuser la soumission"
           waiting_submission.reload
@@ -611,7 +611,7 @@ describe "Submission pages" do
             
             describe "and answers while another submission of same user was marked as plagiarized" do
               before do
-                FactoryGirl.create(:submission, user: waiting_submission.user, problem: waiting_submission.problem, status: :plagiarized, last_comment_time: DateTime.now - 2.months)
+                FactoryBot.create(:submission, user: waiting_submission.user, problem: waiting_submission.problem, status: :plagiarized, last_comment_time: DateTime.now - 2.months)
                 fill_in "MathInput", with: newanswer
                 click_button "Poster"
                 waiting_submission.reload
@@ -624,7 +624,7 @@ describe "Submission pages" do
             
             describe "and answers while another submission of same user was closed" do
               before do
-                FactoryGirl.create(:submission, user: waiting_submission.user, problem: waiting_submission.problem, status: :closed, last_comment_time: DateTime.now - 2.days)
+                FactoryBot.create(:submission, user: waiting_submission.user, problem: waiting_submission.problem, status: :closed, last_comment_time: DateTime.now - 2.days)
                 fill_in "MathInput", with: newanswer
                 click_button "Poster"
                 waiting_submission.reload
@@ -636,7 +636,7 @@ describe "Submission pages" do
             end
             
             describe "and answers while a sanction was given" do
-              let!(:sanction) { FactoryGirl.create(:sanction, user: waiting_submission.user, sanction_type: :no_submission) }
+              let!(:sanction) { FactoryBot.create(:sanction, user: waiting_submission.user, sanction_type: :no_submission) }
               before do
                 fill_in "MathInput", with: newanswer
                 click_button "Poster"
@@ -920,8 +920,8 @@ describe "Submission pages" do
       end
     
       describe "when there is another correct submission" do
-        let!(:other_correct_submission) { FactoryGirl.create(:submission, problem: problem_with_submissions, user: good_corrector, status: :correct, created_at: DateTime.now - 2.weeks) }
-        let!(:other_correction) { FactoryGirl.create(:correction, submission: other_correct_submission, user: root, created_at: DateTime.now - 1.week) }
+        let!(:other_correct_submission) { FactoryBot.create(:submission, problem: problem_with_submissions, user: good_corrector, status: :correct, created_at: DateTime.now - 2.weeks) }
+        let!(:other_correction) { FactoryBot.create(:correction, submission: other_correct_submission, user: root, created_at: DateTime.now - 1.week) }
         before do
           visit problem_path(problem_with_submissions, :sub => good_corrector_submission)
           click_link "Marquer comme erronée"
@@ -941,9 +941,9 @@ describe "Submission pages" do
     end
     
     describe "visits reserved virtualtest submission" do
-      let!(:virtualtest) { FactoryGirl.create(:virtualtest, online: true, number: 12) }
-      let!(:problem_in_test) { FactoryGirl.create(:problem, virtualtest: virtualtest, section: section) }
-      let!(:waiting_submission_in_test) { FactoryGirl.create(:submission, problem: problem_in_test, user: user, status: :waiting, intest: true) }
+      let!(:virtualtest) { FactoryBot.create(:virtualtest, online: true, number: 12) }
+      let!(:problem_in_test) { FactoryBot.create(:problem, virtualtest: virtualtest, section: section) }
+      let!(:waiting_submission_in_test) { FactoryBot.create(:submission, problem: problem_in_test, user: user, status: :waiting, intest: true) }
       before do
         Takentest.create(:user => user, :virtualtest => virtualtest, :taken_time => DateTime.now - 2.weeks)
         Following.create(:user => root, :submission => waiting_submission_in_test, :read => true, :kind => :reservation)

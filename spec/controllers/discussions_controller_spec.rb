@@ -3,9 +3,9 @@ require "spec_helper"
 
 describe DiscussionsController, type: :controller, discussion: true do
 
-  let(:user1) { FactoryGirl.create(:user) }
-  let(:user2) { FactoryGirl.create(:user) }
-  let(:user_other) { FactoryGirl.create(:user) }
+  let(:user1) { FactoryBot.create(:user) }
+  let(:user2) { FactoryBot.create(:user) }
+  let(:user_other) { FactoryBot.create(:user) }
   let!(:discussion) { Discussion.create }
   let!(:link1) { Link.create(discussion: discussion, user: user1) }
   let!(:link2) { Link.create(discussion: discussion, user: user2) }

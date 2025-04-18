@@ -5,13 +5,13 @@ describe "Contestproblemcheck pages", contestproblem: true do
 
   subject { page }
 
-  let!(:user_following_contest) { FactoryGirl.create(:user) }
-  let!(:user_following_subject) { FactoryGirl.create(:user) }
+  let!(:user_following_contest) { FactoryBot.create(:user) }
+  let!(:user_following_subject) { FactoryBot.create(:user) }
     
-  let!(:running_contest) { FactoryGirl.create(:contest, status: :in_progress) }
-  let!(:running_contestproblem) { FactoryGirl.create(:contestproblem, contest: running_contest, number: 1, status: :not_started_yet, start_time: DateTime.now + 2.days, end_time: DateTime.now + 2.days) }
-  let!(:running_contestproblemcheck) { FactoryGirl.create(:contestproblemcheck, contestproblem: running_contestproblem) }
-  let!(:running_contestsubject) { FactoryGirl.create(:subject, contest: running_contest, category: Category.where(:name => "Mathraining").first, last_comment_time: DateTime.now - 2.days) }
+  let!(:running_contest) { FactoryBot.create(:contest, status: :in_progress) }
+  let!(:running_contestproblem) { FactoryBot.create(:contestproblem, contest: running_contest, number: 1, status: :not_started_yet, start_time: DateTime.now + 2.days, end_time: DateTime.now + 2.days) }
+  let!(:running_contestproblemcheck) { FactoryBot.create(:contestproblemcheck, contestproblem: running_contestproblem) }
+  let!(:running_contestsubject) { FactoryBot.create(:subject, contest: running_contest, category: Category.where(:name => "Mathraining").first, last_comment_time: DateTime.now - 2.days) }
   
   before do
     user_following_subject.followed_subjects << running_contestsubject

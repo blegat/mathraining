@@ -5,9 +5,9 @@ describe "Puzzle pages", puzzle: true do
 
   subject { page }
 
-  let(:root) { FactoryGirl.create(:root) }
-  let(:user) { FactoryGirl.create(:user) }
-  let!(:puzzle) { FactoryGirl.create(:puzzle, position: 1) }
+  let(:root) { FactoryBot.create(:root) }
+  let(:user) { FactoryBot.create(:user) }
+  let!(:puzzle) { FactoryBot.create(:puzzle, position: 1) }
   
   let(:newstatement) { "Voici une énigme très compliquée !" }
   let(:newcode) { "45AB2" }
@@ -36,7 +36,7 @@ describe "Puzzle pages", puzzle: true do
     end
     
     describe "visits puzzle index page with more than one puzzle" do
-      let!(:puzzle2) { FactoryGirl.create(:puzzle, position: 2) }
+      let!(:puzzle2) { FactoryBot.create(:puzzle, position: 2) }
       before { visit puzzles_path }
       it do
         should have_link("bas", href: order_puzzle_path(puzzle, :new_position => 2))
@@ -271,7 +271,7 @@ describe "Puzzle pages", puzzle: true do
     end
     
     describe "visits subject" do # Puzzle 4
-      let!(:sub) { FactoryGirl.create(:subject) }
+      let!(:sub) { FactoryBot.create(:subject) }
       describe "at page 9.75" do
         before { visit subject_path(sub, :page => "9.75") }
         it { should have_content("Rendez-vous sur la plus longue") }
@@ -400,7 +400,7 @@ describe "Puzzle pages", puzzle: true do
     end
     
     describe "sends to Jacques" do # Puzzle 10
-      let!(:user_jh) { FactoryGirl.create(:user, :email => "j@h.fr", :email_confirmation => "j@h.fr") }
+      let!(:user_jh) { FactoryBot.create(:user, :email => "j@h.fr", :email_confirmation => "j@h.fr") }
       describe "a message that is not right" do
         before do
           visit user_path(user_jh)

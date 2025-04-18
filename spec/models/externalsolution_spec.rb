@@ -9,7 +9,7 @@
 require "spec_helper"
 
 describe Externalsolution, externalsolution: true do
-  let!(:externalsolution) { FactoryGirl.build(:externalsolution) }
+  let!(:externalsolution) { FactoryBot.build(:externalsolution) }
 
   subject { externalsolution }
   

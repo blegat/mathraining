@@ -21,7 +21,7 @@ require "spec_helper"
 
 describe Question, question: true do
 
-  let!(:question) { FactoryGirl.build(:question) }
+  let!(:question) { FactoryBot.build(:question) }
 
   subject { question }
 
@@ -78,8 +78,8 @@ describe Question, question: true do
   # check_answer
   describe "check_answer" do
     describe "of integer exercise" do
-      let!(:exercise) { FactoryGirl.create(:exercise, answer: 42000) }
-      let(:unsolvedquestion) { FactoryGirl.create(:unsolvedquestion, question: exercise, guess: 43000) }
+      let!(:exercise) { FactoryBot.create(:exercise, answer: 42000) }
+      let(:unsolvedquestion) { FactoryBot.create(:unsolvedquestion, question: exercise, guess: 43000) }
       specify do
         expect(exercise.check_answer(nil, {:ans => "42000"})).to eq(["correct", nil])
         expect(exercise.check_answer(nil, {:ans => "42 000"})).to eq(["correct", nil])
@@ -95,8 +95,8 @@ describe Question, question: true do
     end
     
     describe "of decimal exercise" do
-      let!(:exercise) { FactoryGirl.create(:exercise_decimal, answer: 1.234) }
-      let(:unsolvedquestion) { FactoryGirl.create(:unsolvedquestion, question: exercise, guess: 2.345) }
+      let!(:exercise) { FactoryBot.create(:exercise_decimal, answer: 1.234) }
+      let(:unsolvedquestion) { FactoryBot.create(:unsolvedquestion, question: exercise, guess: 2.345) }
       specify do
         expect(exercise.check_answer(nil, {:ans => "1.234"})).to eq(["correct", nil])
         expect(exercise.check_answer(nil, {:ans => "1,2342"})).to eq(["correct", nil])
@@ -113,11 +113,11 @@ describe Question, question: true do
     end
     
     describe "of qcm with single answer" do
-      let!(:qcm) { FactoryGirl.create(:qcm) }
-      let!(:item1) { FactoryGirl.create(:item, question: qcm, ok: false) }
-      let!(:item2) { FactoryGirl.create(:item, question: qcm, ok: true) }
-      let!(:item3) { FactoryGirl.create(:item, question: qcm, ok: false) }
-      let!(:unsolvedquestion) { FactoryGirl.create(:unsolvedquestion, question: qcm, guess: 0) }
+      let!(:qcm) { FactoryBot.create(:qcm) }
+      let!(:item1) { FactoryBot.create(:item, question: qcm, ok: false) }
+      let!(:item2) { FactoryBot.create(:item, question: qcm, ok: true) }
+      let!(:item3) { FactoryBot.create(:item, question: qcm, ok: false) }
+      let!(:unsolvedquestion) { FactoryBot.create(:unsolvedquestion, question: qcm, guess: 0) }
       before { unsolvedquestion.items << item1 }
       specify do
         expect(qcm.check_answer(nil, {:ans => {item2.id.to_s => "1"}})).to eq(["correct", nil])
@@ -130,13 +130,13 @@ describe Question, question: true do
     end
     
     describe "of qcm with multiple answers" do
-      let!(:qcm) { FactoryGirl.create(:qcm_multiple) }
-      let!(:item1) { FactoryGirl.create(:item, question: qcm, ok: false) }
-      let!(:item2) { FactoryGirl.create(:item, question: qcm, ok: true) }
-      let!(:item3) { FactoryGirl.create(:item, question: qcm, ok: false) }
-      let!(:item4) { FactoryGirl.create(:item, question: qcm, ok: true) }
-      let!(:unsolvedquestion) { FactoryGirl.create(:unsolvedquestion, question: qcm, guess: 0) }
-      let!(:unsolvedquestion_empty) { FactoryGirl.create(:unsolvedquestion, question: qcm, guess: 0) }
+      let!(:qcm) { FactoryBot.create(:qcm_multiple) }
+      let!(:item1) { FactoryBot.create(:item, question: qcm, ok: false) }
+      let!(:item2) { FactoryBot.create(:item, question: qcm, ok: true) }
+      let!(:item3) { FactoryBot.create(:item, question: qcm, ok: false) }
+      let!(:item4) { FactoryBot.create(:item, question: qcm, ok: true) }
+      let!(:unsolvedquestion) { FactoryBot.create(:unsolvedquestion, question: qcm, guess: 0) }
+      let!(:unsolvedquestion_empty) { FactoryBot.create(:unsolvedquestion, question: qcm, guess: 0) }
       before do
         unsolvedquestion.items << item2
         unsolvedquestion.items << item3
@@ -157,11 +157,11 @@ describe Question, question: true do
     end
     
     describe "of qcm with all answers wrong" do
-      let!(:qcm) { FactoryGirl.create(:qcm_multiple) }
-      let!(:item1) { FactoryGirl.create(:item, question: qcm, ok: false) }
-      let!(:item2) { FactoryGirl.create(:item, question: qcm, ok: false) }
-      let!(:item3) { FactoryGirl.create(:item, question: qcm, ok: false) }
-      let!(:unsolvedquestion) { FactoryGirl.create(:unsolvedquestion, question: qcm, guess: 0) }
+      let!(:qcm) { FactoryBot.create(:qcm_multiple) }
+      let!(:item1) { FactoryBot.create(:item, question: qcm, ok: false) }
+      let!(:item2) { FactoryBot.create(:item, question: qcm, ok: false) }
+      let!(:item3) { FactoryBot.create(:item, question: qcm, ok: false) }
+      let!(:unsolvedquestion) { FactoryBot.create(:unsolvedquestion, question: qcm, guess: 0) }
       before do
         unsolvedquestion.items << item1
       end

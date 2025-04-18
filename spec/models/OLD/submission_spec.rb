@@ -16,7 +16,7 @@
 require "spec_helper"
 
 describe Submission do
-  before { @p = FactoryGirl.build(:submission) }
+  before { @p = FactoryBot.build(:submission) }
 
   subject { @p }
 

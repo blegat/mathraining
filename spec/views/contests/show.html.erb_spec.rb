@@ -5,13 +5,13 @@ describe "contests/show.html.erb", type: :view, contest: true do
 
   subject { rendered }
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:user_bad) { FactoryGirl.create(:user, rating: 0) }
-  let(:user) { FactoryGirl.create(:advanced_user) }
-  let(:user_organizer) { FactoryGirl.create(:user) }
-  let(:contest) { FactoryGirl.create(:contest, medal: true) }
-  let(:contestproblem1) { FactoryGirl.create(:contestproblem, contest: contest) }
-  let(:contestproblem2) { FactoryGirl.create(:contestproblem, contest: contest) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:user_bad) { FactoryBot.create(:user, rating: 0) }
+  let(:user) { FactoryBot.create(:advanced_user) }
+  let(:user_organizer) { FactoryBot.create(:user) }
+  let(:contest) { FactoryBot.create(:contest, medal: true) }
+  let(:contestproblem1) { FactoryBot.create(:contestproblem, contest: contest) }
+  let(:contestproblem2) { FactoryBot.create(:contestproblem, contest: contest) }
   
   before do
     contest.organizers << user_organizer

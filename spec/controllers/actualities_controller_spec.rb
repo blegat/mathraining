@@ -3,8 +3,8 @@ require "spec_helper"
 
 describe ActualitiesController, type: :controller, actuality: true do
 
-  let(:user) { FactoryGirl.create(:user) }
-  let(:actuality) { FactoryGirl.create(:actuality) }
+  let(:user) { FactoryBot.create(:user) }
+  let(:actuality) { FactoryBot.create(:actuality) }
   
   context "if the user is not signed in" do    
     it { expect(response).to have_controller_new_behavior(:must_be_connected) }

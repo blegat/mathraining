@@ -3,12 +3,12 @@ require "spec_helper"
 
 describe ProblemsController, type: :controller, problem: true do
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:user) { FactoryGirl.create(:user, rating: 200) }
-  let(:section) { FactoryGirl.create(:section) }
-  let(:chapter) { FactoryGirl.create(:chapter, online: true) }
-  let(:online_problem) { FactoryGirl.create(:problem, online: true) }
-  let(:offline_problem) { FactoryGirl.create(:problem, online: false) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:user) { FactoryBot.create(:user, rating: 200) }
+  let(:section) { FactoryBot.create(:section) }
+  let(:chapter) { FactoryBot.create(:chapter, online: true) }
+  let(:online_problem) { FactoryBot.create(:problem, online: true) }
+  let(:offline_problem) { FactoryBot.create(:problem, online: false) }
   
   before { online_problem.chapters << chapter }
   

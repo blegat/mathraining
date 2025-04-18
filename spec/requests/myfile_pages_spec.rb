@@ -5,30 +5,30 @@ describe "Myfile pages", myfile: true do
 
   subject { page }
 
-  let(:root) { FactoryGirl.create(:root) }
-  let(:user) { FactoryGirl.create(:advanced_user) }
+  let(:root) { FactoryBot.create(:root) }
+  let(:user) { FactoryBot.create(:advanced_user) }
   
-  let(:sub) { FactoryGirl.create(:subject) } # Don't use name "subject" because it is used for the page
-  let(:message) { FactoryGirl.create(:message, subject: sub) }
+  let(:sub) { FactoryBot.create(:subject) } # Don't use name "subject" because it is used for the page
+  let(:message) { FactoryBot.create(:message, subject: sub) }
   
-  let(:problem) { FactoryGirl.create(:problem, online: true) }
-  let(:submission) { FactoryGirl.create(:submission, problem: problem, status: :correct) }
-  let(:correction) { FactoryGirl.create(:correction, submission: submission) }
+  let(:problem) { FactoryBot.create(:problem, online: true) }
+  let(:submission) { FactoryBot.create(:submission, problem: problem, status: :correct) }
+  let(:correction) { FactoryBot.create(:correction, submission: submission) }
   
-  let(:contest) { FactoryGirl.create(:contest) }
-  let(:contestproblem) { FactoryGirl.create(:contestproblem, contest: contest) }
-  let(:contestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem) }
+  let(:contest) { FactoryBot.create(:contest) }
+  let(:contestproblem) { FactoryBot.create(:contestproblem, contest: contest) }
+  let(:contestsolution) { FactoryBot.create(:contestsolution, contestproblem: contestproblem) }
   let(:contestcorrection) { contestsolution.contestcorrection }
   
   let(:discussion) { create_discussion_between(root, user, "Bonjour", "Salut") }
   let(:tchatmessage) { discussion.tchatmessages.first }
   
-  let(:messagemyfile) { FactoryGirl.create(:messagemyfile, myfiletable: message) }
-  let(:submissionmyfile) { FactoryGirl.create(:submissionmyfile, myfiletable: submission) }
-  let(:correctionmyfile) { FactoryGirl.create(:correctionmyfile, myfiletable: correction) }
-  let(:contestsolutionmyfile) { FactoryGirl.create(:contestsolutionmyfile, myfiletable: contestsolution) }
-  let(:contestcorrectionmyfile) { FactoryGirl.create(:contestcorrectionmyfile, myfiletable: contestcorrection) }
-  let(:tchatmessagemyfile) { FactoryGirl.create(:tchatmessagemyfile, myfiletable: tchatmessage) }
+  let(:messagemyfile) { FactoryBot.create(:messagemyfile, myfiletable: message) }
+  let(:submissionmyfile) { FactoryBot.create(:submissionmyfile, myfiletable: submission) }
+  let(:correctionmyfile) { FactoryBot.create(:correctionmyfile, myfiletable: correction) }
+  let(:contestsolutionmyfile) { FactoryBot.create(:contestsolutionmyfile, myfiletable: contestsolution) }
+  let(:contestcorrectionmyfile) { FactoryBot.create(:contestcorrectionmyfile, myfiletable: contestcorrection) }
+  let(:tchatmessagemyfile) { FactoryBot.create(:tchatmessagemyfile, myfiletable: tchatmessage) }
   
   let(:attachments_folder) { "./spec/attachments/" }
   let(:new_image) { "Smiley1.gif" }
@@ -38,7 +38,7 @@ describe "Myfile pages", myfile: true do
     before { sign_in root }
     
     describe "visits all files page" do
-      let!(:messagemyfile) { FactoryGirl.create(:messagemyfile, myfiletable: message) } # Force its creation
+      let!(:messagemyfile) { FactoryBot.create(:messagemyfile, myfiletable: message) } # Force its creation
       before { visit myfiles_path }
       it do
         should have_selector("h1", text: "Pièces jointes")
@@ -143,7 +143,7 @@ describe "Myfile pages", myfile: true do
     end
     
     describe "visits one tchatmessage file manually" do
-      let!(:tchatmessagemyfile) { FactoryGirl.create(:tchatmessagemyfile, myfiletable: tchatmessage) } # Force its creation
+      let!(:tchatmessagemyfile) { FactoryBot.create(:tchatmessagemyfile, myfiletable: tchatmessage) } # Force its creation
       before { visit discussion_path(discussion) }
       it do
         should have_link(tchatmessagemyfile.file.filename.to_s, href: rails_blob_url(tchatmessagemyfile.file, :only_path => true, :disposition => 'attachment'))

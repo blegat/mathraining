@@ -5,10 +5,10 @@ describe "contestcorrections/_edit.html.erb", type: :view, contestcorrection: tr
 
   subject { rendered }
 
-  let(:user) { FactoryGirl.create(:user) }
-  let(:contestproblem) { FactoryGirl.create(:contestproblem) }
-  let(:contestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, official: false) }
-  let(:contestsolution_official) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, official: true) }
+  let(:user) { FactoryBot.create(:user) }
+  let(:contestproblem) { FactoryBot.create(:contestproblem) }
+  let(:contestsolution) { FactoryBot.create(:contestsolution, contestproblem: contestproblem, official: false) }
+  let(:contestsolution_official) { FactoryBot.create(:contestsolution, contestproblem: contestproblem, official: true) }
   
   before do
     contestproblem.contest.organizers << user

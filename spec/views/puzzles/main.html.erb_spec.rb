@@ -5,9 +5,9 @@ describe "puzzles/main.html.erb", type: :view, puzzle: true do
 
   subject { rendered }
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:root) { FactoryGirl.create(:root) }
-  let!(:puzzle) { FactoryGirl.create(:puzzle, position: 1) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:root) { FactoryBot.create(:root) }
+  let!(:puzzle) { FactoryBot.create(:puzzle, position: 1) }
   
   before { assign(:faqs, Faq.all) }
   

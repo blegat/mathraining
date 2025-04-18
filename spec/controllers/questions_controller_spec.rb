@@ -3,13 +3,13 @@ require "spec_helper"
 
 describe QuestionsController, type: :controller, question: true do
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:user) { FactoryGirl.create(:user) }
-  let(:chapter) { FactoryGirl.create(:chapter, online: true) }
-  let(:chapter2) { FactoryGirl.create(:chapter, online: true) }
-  let(:question) { FactoryGirl.create(:question, chapter: chapter, online: true) }
-  let(:question_offline) { FactoryGirl.create(:question, chapter: chapter, online: false) }
-  let(:question2) { FactoryGirl.create(:question, chapter: chapter2, online: true) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:user) { FactoryBot.create(:user) }
+  let(:chapter) { FactoryBot.create(:chapter, online: true) }
+  let(:chapter2) { FactoryBot.create(:chapter, online: true) }
+  let(:question) { FactoryBot.create(:question, chapter: chapter, online: true) }
+  let(:question_offline) { FactoryBot.create(:question, chapter: chapter, online: false) }
+  let(:question2) { FactoryBot.create(:question, chapter: chapter2, online: true) }
   
   before { chapter2.prerequisites << chapter }
   
@@ -24,7 +24,7 @@ describe QuestionsController, type: :controller, question: true do
     it { expect(response).to have_controller_destroy_behavior(question_offline, :access_refused) }
     it { expect(response).to have_controller_get_path_behavior('edit_explanation', question, :must_be_connected) }
     it { expect(response).to have_controller_get_path_behavior('manage_items', question, :must_be_connected) }
-    it { expect(response).to have_controller_patch_path_behavior('update_explanation', question, :access_refused, {:question => FactoryGirl.attributes_for(:question)}) }
+    it { expect(response).to have_controller_patch_path_behavior('update_explanation', question, :access_refused, {:question => FactoryBot.attributes_for(:question)}) }
     it { expect(response).to have_controller_put_path_behavior('order', question, :access_refused, {:new_position => 2}) }
     it { expect(response).to have_controller_put_path_behavior('put_online', question_offline, :access_refused) }
   end
@@ -42,7 +42,7 @@ describe QuestionsController, type: :controller, question: true do
     it { expect(response).to have_controller_destroy_behavior(question_offline, :access_refused) }
     it { expect(response).to have_controller_get_path_behavior('edit_explanation', question, :access_refused) }
     it { expect(response).to have_controller_get_path_behavior('manage_items', question, :access_refused) }
-    it { expect(response).to have_controller_patch_path_behavior('update_explanation', question, :access_refused, {:question => FactoryGirl.attributes_for(:question)}) }
+    it { expect(response).to have_controller_patch_path_behavior('update_explanation', question, :access_refused, {:question => FactoryBot.attributes_for(:question)}) }
     it { expect(response).to have_controller_put_path_behavior('order', question, :access_refused, {:new_position => 2}) }
     it { expect(response).to have_controller_put_path_behavior('put_online', question_offline, :access_refused) }
   end
@@ -61,7 +61,7 @@ describe QuestionsController, type: :controller, question: true do
     it { expect(response).to have_controller_destroy_behavior(question_offline, :ok) }
     it { expect(response).to have_controller_get_path_behavior('edit_explanation', question, :ok) }
     it { expect(response).to have_controller_get_path_behavior('manage_items', question, :ok) }
-    it { expect(response).to have_controller_patch_path_behavior('update_explanation', question, :ok, {:question => FactoryGirl.attributes_for(:question)}) }
+    it { expect(response).to have_controller_patch_path_behavior('update_explanation', question, :ok, {:question => FactoryBot.attributes_for(:question)}) }
     it { expect(response).to have_controller_put_path_behavior('order', question, :ok, {:new_position => 2}) }
     it { expect(response).to have_controller_put_path_behavior('put_online', question_offline, :ok) }
   end

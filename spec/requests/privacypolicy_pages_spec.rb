@@ -5,8 +5,8 @@ describe "Privacy policy pages", privacypolicy: true do
 
   subject { page }
 
-  let(:root) { FactoryGirl.create(:root) }
-  let(:user) { FactoryGirl.create(:user) }
+  let(:root) { FactoryBot.create(:root) }
+  let(:user) { FactoryBot.create(:user) }
   
   let(:newpolicy) { "Et ceci est la nouvelle politique !" }
   let(:newdescription) { "Et ceci la nouvelle description !" }
@@ -48,9 +48,9 @@ describe "Privacy policy pages", privacypolicy: true do
   end
   
   describe "when one policy" do
-    let!(:policy1) { FactoryGirl.create(:privacypolicy, online: true, publication_time: DateTime.now - 2.weeks) }
-    let!(:policy2) { FactoryGirl.create(:privacypolicy, online: true, publication_time: DateTime.now - 1.week) }
-    let!(:policy3_offline) { FactoryGirl.create(:privacypolicy, online: false, publication_time: DateTime.now) }
+    let!(:policy1) { FactoryBot.create(:privacypolicy, online: true, publication_time: DateTime.now - 2.weeks) }
+    let!(:policy2) { FactoryBot.create(:privacypolicy, online: true, publication_time: DateTime.now - 1.week) }
+    let!(:policy3_offline) { FactoryBot.create(:privacypolicy, online: false, publication_time: DateTime.now) }
     before { user.update(:consent_time => DateTime.now - 10.days, :last_policy_read => false) }
     
     describe "user" do

@@ -13,7 +13,7 @@
 require "spec_helper"
 
 describe Fakefile, fakefile: true do
-  let!(:sub) { FactoryGirl.create(:subject) }
+  let!(:sub) { FactoryBot.create(:subject) }
   let!(:fakefile) { Fakefile.new(:fakefiletable => sub, :filename => "coucou.png", :content_type => "image/png", :byte_size => "32") }
 
   subject { fakefile }

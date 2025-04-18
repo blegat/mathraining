@@ -6,21 +6,21 @@ describe "Stats pages" do
 
   subject { page }
 
-  let(:user1) { FactoryGirl.create(:user) }
-  let(:user2) { FactoryGirl.create(:user) }
-  let(:user3) { FactoryGirl.create(:user) }
-  let(:admin) { FactoryGirl.create(:admin) }
+  let(:user1) { FactoryBot.create(:user) }
+  let(:user2) { FactoryBot.create(:user) }
+  let(:user3) { FactoryBot.create(:user) }
+  let(:admin) { FactoryBot.create(:admin) }
   
-  let!(:section) { FactoryGirl.create(:section) }
+  let!(:section) { FactoryBot.create(:section) }
   
-  let!(:chapter1) { FactoryGirl.create(:chapter, section: section, online: true) }
-  let!(:chapter2) { FactoryGirl.create(:chapter, section: section, online: true) }
+  let!(:chapter1) { FactoryBot.create(:chapter, section: section, online: true) }
+  let!(:chapter2) { FactoryBot.create(:chapter, section: section, online: true) }
   
-  let!(:exercise11) { FactoryGirl.create(:exercise_decimal, chapter: chapter1, online: true, position: 1, level: 1) }
-  let!(:exercise12) { FactoryGirl.create(:exercise_decimal, chapter: chapter1, online: true, position: 2, level: 2) }
-  let!(:exercise13_offline) { FactoryGirl.create(:exercise_decimal, chapter: chapter1, online: false, position: 3, level: 3) }
-  let!(:exercise21) { FactoryGirl.create(:exercise_decimal, chapter: chapter2, online: true, position: 1, level: 1) }
-  let!(:exercise22) { FactoryGirl.create(:exercise_decimal, chapter: chapter2, online: true, position: 2, level: 2) }
+  let!(:exercise11) { FactoryBot.create(:exercise_decimal, chapter: chapter1, online: true, position: 1, level: 1) }
+  let!(:exercise12) { FactoryBot.create(:exercise_decimal, chapter: chapter1, online: true, position: 2, level: 2) }
+  let!(:exercise13_offline) { FactoryBot.create(:exercise_decimal, chapter: chapter1, online: false, position: 3, level: 3) }
+  let!(:exercise21) { FactoryBot.create(:exercise_decimal, chapter: chapter2, online: true, position: 1, level: 1) }
+  let!(:exercise22) { FactoryBot.create(:exercise_decimal, chapter: chapter2, online: true, position: 2, level: 2) }
   
   describe "user" do
     before { sign_in user1 }
@@ -156,11 +156,11 @@ describe "Stats pages" do
   describe "admin" do
     before { sign_in admin }
     let!(:now) { DateTime.now }
-    let!(:problem) { FactoryGirl.create(:problem, section: section, online: true) }
-    let!(:problem2) { FactoryGirl.create(:problem, section: section, online: true) }
-    let!(:submission1) { FactoryGirl.create(:submission, problem: problem, user: user1, created_at: now - 7.days) }
-    let!(:submission2) { FactoryGirl.create(:submission, problem: problem, user: user2, created_at: now - 4.days) }
-    let!(:submission3) { FactoryGirl.create(:submission, problem: problem, user: user3, created_at: now - 2.days) }
+    let!(:problem) { FactoryBot.create(:problem, section: section, online: true) }
+    let!(:problem2) { FactoryBot.create(:problem, section: section, online: true) }
+    let!(:submission1) { FactoryBot.create(:submission, problem: problem, user: user1, created_at: now - 7.days) }
+    let!(:submission2) { FactoryBot.create(:submission, problem: problem, user: user2, created_at: now - 4.days) }
+    let!(:submission3) { FactoryBot.create(:submission, problem: problem, user: user3, created_at: now - 2.days) }
     
     describe "marks a solution as correct" do
       before do
@@ -237,10 +237,10 @@ describe "Stats pages" do
       let!(:now) { Time.zone.local(2015, 1, 14, 5, 0, 0) } # Wednesday 14/01/2015 at 5 am
       let!(:today) { now.in_time_zone.to_date }
       let!(:mondaybeforelastmonday) { today - 9 } # 05/01/2015
-      let!(:solvedq11) { FactoryGirl.create(:solvedquestion, user: user1, question: exercise11, resolution_time: now-28.days) }
-      let!(:solvedq12) { FactoryGirl.create(:solvedquestion, user: user1, question: exercise12, resolution_time: now-28.days) }
-      let!(:solvedq21) { FactoryGirl.create(:unsolvedquestion, user: user1, question: exercise21, guess: exercise21.answer + 1, last_guess_time: now-21.days) }
-      let!(:solvedq22) { FactoryGirl.create(:solvedquestion, user: user1, question: exercise22, resolution_time: now-14.days) }
+      let!(:solvedq11) { FactoryBot.create(:solvedquestion, user: user1, question: exercise11, resolution_time: now-28.days) }
+      let!(:solvedq12) { FactoryBot.create(:solvedquestion, user: user1, question: exercise12, resolution_time: now-28.days) }
+      let!(:solvedq21) { FactoryBot.create(:unsolvedquestion, user: user1, question: exercise21, guess: exercise21.answer + 1, last_guess_time: now-21.days) }
+      let!(:solvedq22) { FactoryBot.create(:solvedquestion, user: user1, question: exercise22, resolution_time: now-14.days) }
       
       before do
         travel_to now
@@ -271,24 +271,24 @@ describe "Stats pages" do
       let!(:now) { Time.zone.local(2015, 1, 21, 5, 0, 0) } # Wednesday 21/01/2015 at 5 am
       let!(:today) { now.in_time_zone.to_date }
       let!(:mondaybeforelastmonday) { today - 9 } # 12/01/2015
-      let!(:problem1) { FactoryGirl.create(:problem, section: section, online: true, number: 1111, level: 1) }
-      let!(:problem2) { FactoryGirl.create(:problem, section: section, online: true, number: 1112, level: 2) }
-      let!(:problem3) { FactoryGirl.create(:problem, section: section, online: true, number: 1113, level: 3) }
-      let!(:sub11) { FactoryGirl.create(:submission, user: user1, problem: problem1, status: :correct, created_at: now-35.days) } # 17/12
-      let!(:cor11) { FactoryGirl.create(:correction, user: admin, submission: sub11, created_at: now-33.days) } # 2 days later
-      let!(:sub12) { FactoryGirl.create(:submission, user: user1, problem: problem2, status: :correct, created_at: now-28.days) } # 24/12
-      let!(:cor12) { FactoryGirl.create(:correction, user: admin, submission: sub12, created_at: now-27.days) } # 1 day later
-      let!(:sub13) { FactoryGirl.create(:submission, user: user1, problem: problem3, status: :wrong, created_at: now-28.days) } # 24/12
-      let!(:cor13) { FactoryGirl.create(:correction, user: admin, submission: sub13, created_at: now-26.days) } # 2 days later
-      let!(:sub21) { FactoryGirl.create(:submission, user: user2, problem: problem1, status: :wrong_to_read, created_at: now-28.days) } # 24/12
-      let!(:cor21) { FactoryGirl.create(:correction, user: admin, submission: sub21, created_at: now-24.days) } # 4 days later
-      let!(:sub22) { FactoryGirl.create(:submission, user: user2, problem: problem2, status: :waiting, created_at: now-21.days) } # 31/12
-      let!(:sub23) { FactoryGirl.create(:submission, user: user2, problem: problem3, status: :draft, created_at: now-21.days) }
+      let!(:problem1) { FactoryBot.create(:problem, section: section, online: true, number: 1111, level: 1) }
+      let!(:problem2) { FactoryBot.create(:problem, section: section, online: true, number: 1112, level: 2) }
+      let!(:problem3) { FactoryBot.create(:problem, section: section, online: true, number: 1113, level: 3) }
+      let!(:sub11) { FactoryBot.create(:submission, user: user1, problem: problem1, status: :correct, created_at: now-35.days) } # 17/12
+      let!(:cor11) { FactoryBot.create(:correction, user: admin, submission: sub11, created_at: now-33.days) } # 2 days later
+      let!(:sub12) { FactoryBot.create(:submission, user: user1, problem: problem2, status: :correct, created_at: now-28.days) } # 24/12
+      let!(:cor12) { FactoryBot.create(:correction, user: admin, submission: sub12, created_at: now-27.days) } # 1 day later
+      let!(:sub13) { FactoryBot.create(:submission, user: user1, problem: problem3, status: :wrong, created_at: now-28.days) } # 24/12
+      let!(:cor13) { FactoryBot.create(:correction, user: admin, submission: sub13, created_at: now-26.days) } # 2 days later
+      let!(:sub21) { FactoryBot.create(:submission, user: user2, problem: problem1, status: :wrong_to_read, created_at: now-28.days) } # 24/12
+      let!(:cor21) { FactoryBot.create(:correction, user: admin, submission: sub21, created_at: now-24.days) } # 4 days later
+      let!(:sub22) { FactoryBot.create(:submission, user: user2, problem: problem2, status: :waiting, created_at: now-21.days) } # 31/12
+      let!(:sub23) { FactoryBot.create(:submission, user: user2, problem: problem3, status: :draft, created_at: now-21.days) }
       
-      let!(:virtualtest) { FactoryGirl.create(:virtualtest, online: true, duration: 2880) } # Test taking 2 days
-      let!(:problem4_in_test) { FactoryGirl.create(:problem, section: section, online: true, number: 1114, level: 4, virtualtest: virtualtest) }
+      let!(:virtualtest) { FactoryBot.create(:virtualtest, online: true, duration: 2880) } # Test taking 2 days
+      let!(:problem4_in_test) { FactoryBot.create(:problem, section: section, online: true, number: 1114, level: 4, virtualtest: virtualtest) }
       let!(:takentest) { Takentest.create(user: user1, virtualtest: virtualtest, taken_time: now-17.days, status: :in_progress) } # 04/01
-      let!(:sub14) { FactoryGirl.create(:submission, user: user1, problem: problem4_in_test, status: :waiting, intest: true, created_at: takentest.taken_time + virtualtest.duration.minutes)} # 04/01 + 2 days = 06/01
+      let!(:sub14) { FactoryBot.create(:submission, user: user1, problem: problem4_in_test, status: :waiting, intest: true, created_at: takentest.taken_time + virtualtest.duration.minutes)} # 04/01 + 2 days = 06/01
       
       before do
         travel_to now
@@ -333,8 +333,8 @@ describe "Stats pages" do
       end
       
       describe "and recompute submission stats a week later" do
-        let!(:cor22) { FactoryGirl.create(:correction, user: admin, submission: sub22, created_at: now+2.days+6.hours) } # 23.25 days later
-        let!(:cor14) { FactoryGirl.create(:correction, user: admin, submission: sub14, created_at: now+1.day+12.hours) } # 16.5 days after end of test
+        let!(:cor22) { FactoryBot.create(:correction, user: admin, submission: sub22, created_at: now+2.days+6.hours) } # 23.25 days later
+        let!(:cor14) { FactoryBot.create(:correction, user: admin, submission: sub14, created_at: now+1.day+12.hours) } # 16.5 days after end of test
         before do
           sub22.wrong_to_read!
           sub23.waiting!

@@ -13,7 +13,7 @@ require "spec_helper"
 
 describe Sanction, sanction: true do
 
-  let!(:sanction) { FactoryGirl.build(:sanction) }
+  let!(:sanction) { FactoryBot.build(:sanction) }
 
   subject { sanction }
 

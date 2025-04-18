@@ -5,13 +5,13 @@ describe "chapters/all.html.erb", type: :view, chapter: true do
 
   subject { rendered }
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:user) { FactoryGirl.create(:user) }
-  let!(:chapter) { FactoryGirl.create(:chapter, online: true) }
-  let!(:theory) { FactoryGirl.create(:theory, chapter: chapter, position: 1, online: true) }
-  let!(:theory_offline) { FactoryGirl.create(:theory, chapter: chapter, position: 2, online: false) }
-  let!(:theory2) { FactoryGirl.create(:theory, chapter: chapter, position: 3, online: true, content: "Premier test /latextest/") }
-  let!(:theory3) { FactoryGirl.create(:theory, chapter: chapter, position: 4, online: true, content: "Deuxième test /latextest/") }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:user) { FactoryBot.create(:user) }
+  let!(:chapter) { FactoryBot.create(:chapter, online: true) }
+  let!(:theory) { FactoryBot.create(:theory, chapter: chapter, position: 1, online: true) }
+  let!(:theory_offline) { FactoryBot.create(:theory, chapter: chapter, position: 2, online: false) }
+  let!(:theory2) { FactoryBot.create(:theory, chapter: chapter, position: 3, online: true, content: "Premier test /latextest/") }
+  let!(:theory3) { FactoryBot.create(:theory, chapter: chapter, position: 4, online: true, content: "Deuxième test /latextest/") }
   
   RSpec::Matchers.define :have_chapter_all_content do
     match do |rendered|

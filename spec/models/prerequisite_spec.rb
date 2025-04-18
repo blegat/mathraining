@@ -10,7 +10,9 @@ require "spec_helper"
 
 describe Prerequisite, prerequisite: true do
 
-  let!(:pre) { FactoryGirl.build(:prerequisite) }
+  let!(:chap1) { FactoryBot.create(:chapter) }
+  let!(:chap2) { FactoryBot.create(:chapter) }
+  let!(:pre) { FactoryBot.build(:prerequisite, chapter: chap1, prerequisite: chap2) }
 
   subject { pre }
 
@@ -30,22 +32,22 @@ describe Prerequisite, prerequisite: true do
   
   # Avoid duplicates
   describe "when (prerequisite, chapter) already exists" do
-    before { other_pre = Prerequisite.create(:chapter => pre.chapter, :prerequisite => pre.prerequisite) }
+    before { other_pre = FactoryBot.create(:prerequisite, chapter: chap1, prerequisite: chap2) }
     it { should_not be_valid }
   end
 
   # Graph checks
   let(:a) { pre.chapter }
   let(:b) { pre.prerequisite }
-  let(:c) { FactoryGirl.create(:chapter) }
-  let(:d) { FactoryGirl.create(:chapter) }
-  let(:e) { FactoryGirl.create(:chapter) }
-  let(:f) { FactoryGirl.create(:chapter) }
-  let(:g) { FactoryGirl.create(:chapter) }
-  let(:h) { FactoryGirl.create(:chapter) }
-  let(:i) { FactoryGirl.create(:chapter) }
-  let(:j) { FactoryGirl.create(:chapter) }
-  let(:k) { FactoryGirl.create(:chapter) }
+  let(:c) { FactoryBot.create(:chapter) }
+  let(:d) { FactoryBot.create(:chapter) }
+  let(:e) { FactoryBot.create(:chapter) }
+  let(:f) { FactoryBot.create(:chapter) }
+  let(:g) { FactoryBot.create(:chapter) }
+  let(:h) { FactoryBot.create(:chapter) }
+  let(:i) { FactoryBot.create(:chapter) }
+  let(:j) { FactoryBot.create(:chapter) }
+  let(:k) { FactoryBot.create(:chapter) }
 
   describe "when there is a loop" do
     # a->b->c->a

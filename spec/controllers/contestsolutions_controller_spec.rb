@@ -3,11 +3,11 @@ require "spec_helper"
 
 describe ContestsolutionsController, type: :controller, contestsolution: true do
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:user) { FactoryGirl.create(:user) }
-  let(:user_other) { FactoryGirl.create(:user) }
-  let(:contestproblem) { FactoryGirl.create(:contestproblem) }
-  let(:contestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, official: false) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:user) { FactoryBot.create(:user) }
+  let(:user_other) { FactoryBot.create(:user) }
+  let(:contestproblem) { FactoryBot.create(:contestproblem) }
+  let(:contestsolution) { FactoryBot.create(:contestsolution, contestproblem: contestproblem, official: false) }
   
   before do
     contestproblem.contest.organizers << user
@@ -30,7 +30,7 @@ describe ContestsolutionsController, type: :controller, contestsolution: true do
   end
   
   context "if the user is a participant with a solution" do
-    let!(:contestsolution_other) { FactoryGirl.create(:contestsolution, user: user_other, contestproblem: contestproblem, official: false) }
+    let!(:contestsolution_other) { FactoryBot.create(:contestsolution, user: user_other, contestproblem: contestproblem, official: false) }
    
     before do
       sign_in_controller(user_other)

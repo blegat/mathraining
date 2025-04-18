@@ -5,20 +5,20 @@ describe "Question pages", question: true do
 
   subject { page }
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:user) { FactoryGirl.create(:user) }
-  let!(:chapter) { FactoryGirl.create(:chapter, online: true) }
-  let!(:empty_chapter) { FactoryGirl.create(:chapter, online: true) }
-  let!(:online_exercise) { FactoryGirl.create(:exercise, chapter: chapter, online: true, position: 1) }
-  let!(:online_qcm) { FactoryGirl.create(:qcm, chapter: chapter, online: true, position: 2) }
-  let!(:online_item_correct) { FactoryGirl.create(:item_correct, question: online_qcm, position: 1) }
-  let!(:online_item_incorrect) { FactoryGirl.create(:item, question: online_qcm, position: 2) }
-  let!(:offline_exercise) { FactoryGirl.create(:exercise_decimal, chapter: chapter, online: false, position: 3) }
-  let!(:offline_qcm) { FactoryGirl.create(:qcm_multiple, chapter: chapter, online: false, position: 4) }
-  let!(:offline_item_correct) { FactoryGirl.create(:item_correct, question: offline_qcm, position: 1) }
-  let!(:offline_item_incorrect) { FactoryGirl.create(:item, question: offline_qcm, position: 2) }
-  let!(:offline_item_correct2) { FactoryGirl.create(:item_correct, question: offline_qcm, position: 3) }
-  let!(:empty_qcm) { FactoryGirl.create(:qcm, chapter: chapter, online: false, position: 5) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:user) { FactoryBot.create(:user) }
+  let!(:chapter) { FactoryBot.create(:chapter, online: true) }
+  let!(:empty_chapter) { FactoryBot.create(:chapter, online: true) }
+  let!(:online_exercise) { FactoryBot.create(:exercise, chapter: chapter, online: true, position: 1) }
+  let!(:online_qcm) { FactoryBot.create(:qcm, chapter: chapter, online: true, position: 2) }
+  let!(:online_item_correct) { FactoryBot.create(:item_correct, question: online_qcm, position: 1) }
+  let!(:online_item_incorrect) { FactoryBot.create(:item, question: online_qcm, position: 2) }
+  let!(:offline_exercise) { FactoryBot.create(:exercise_decimal, chapter: chapter, online: false, position: 3) }
+  let!(:offline_qcm) { FactoryBot.create(:qcm_multiple, chapter: chapter, online: false, position: 4) }
+  let!(:offline_item_correct) { FactoryBot.create(:item_correct, question: offline_qcm, position: 1) }
+  let!(:offline_item_incorrect) { FactoryBot.create(:item, question: offline_qcm, position: 2) }
+  let!(:offline_item_correct2) { FactoryBot.create(:item_correct, question: offline_qcm, position: 3) }
+  let!(:empty_qcm) { FactoryBot.create(:qcm, chapter: chapter, online: false, position: 5) }
   
   let(:newstatement) { "Combien vaut 3+3.5 ?" }
   let(:newanswer) { 6.5 }
@@ -62,7 +62,7 @@ describe "Question pages", question: true do
     end
     
     describe "visits online exercise with subject" do
-      let!(:sub) { FactoryGirl.create(:subject, section: chapter.section, chapter: chapter, question: online_exercise) }
+      let!(:sub) { FactoryBot.create(:subject, section: chapter.section, chapter: chapter, question: online_exercise) }
       before { visit chapter_question_path(chapter, online_exercise) }
       it do
         should have_selector("div", text: online_exercise.statement)

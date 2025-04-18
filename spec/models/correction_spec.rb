@@ -11,7 +11,7 @@
 require "spec_helper"
 
 describe Correction do
-  let!(:correction) { FactoryGirl.build(:correction) }
+  let!(:correction) { FactoryBot.build(:correction) }
 
   subject { correction }
 

@@ -5,24 +5,24 @@ describe ProblemsHelper, type: :helper, problem: true do
   include ChaptersHelper
   include ProblemsHelper
   
-  let(:user_bad) { FactoryGirl.create(:user, rating: 150) }
-  let(:user) { FactoryGirl.create(:user, rating: 200) }
-  let(:user1) { FactoryGirl.create(:user, rating: 200) }
-  let(:user2) { FactoryGirl.create(:user, rating: 200) }
-  let(:user12) { FactoryGirl.create(:user, rating: 200) }
-  let(:user12_virtualtest) { FactoryGirl.create(:user, rating: 400) }
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:section) { FactoryGirl.create(:section) }
-  let!(:chapter1) { FactoryGirl.create(:chapter, section: section, online: true) }
-  let!(:chapter2) { FactoryGirl.create(:chapter, section: section, online: true) }
-  let!(:problem_no_prerequisite) { FactoryGirl.create(:problem, section: section, online: true, level: 1, position: 1) } # Should not happen in production but we still want to support such problems
-  let!(:problem1) { FactoryGirl.create(:problem, section: section, online: true, level: 1, position: 2) }
-  let!(:problem2) { FactoryGirl.create(:problem, section: section, online: true, level: 1, position: 3) }
-  let!(:problem12) { FactoryGirl.create(:problem, section: section, online: true, level: 2, position: 1) }
-  let!(:problem_offline) { FactoryGirl.create(:problem, section: section, online: false, level: 2, position: 2) }
-  let!(:problem1_other_section) { FactoryGirl.create(:problem, online: true, level: 1, position: 1) }
-  let!(:virtualtest) { FactoryGirl.create(:virtualtest, online: true) }
-  let!(:problem1_virtualtest) { FactoryGirl.create(:problem, section: section, virtualtest: virtualtest, online: true, level: 3, position: 1) }
+  let(:user_bad) { FactoryBot.create(:user, rating: 150) }
+  let(:user) { FactoryBot.create(:user, rating: 200) }
+  let(:user1) { FactoryBot.create(:user, rating: 200) }
+  let(:user2) { FactoryBot.create(:user, rating: 200) }
+  let(:user12) { FactoryBot.create(:user, rating: 200) }
+  let(:user12_virtualtest) { FactoryBot.create(:user, rating: 400) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:section) { FactoryBot.create(:section) }
+  let!(:chapter1) { FactoryBot.create(:chapter, section: section, online: true) }
+  let!(:chapter2) { FactoryBot.create(:chapter, section: section, online: true) }
+  let!(:problem_no_prerequisite) { FactoryBot.create(:problem, section: section, online: true, level: 1, position: 1) } # Should not happen in production but we still want to support such problems
+  let!(:problem1) { FactoryBot.create(:problem, section: section, online: true, level: 1, position: 2) }
+  let!(:problem2) { FactoryBot.create(:problem, section: section, online: true, level: 1, position: 3) }
+  let!(:problem12) { FactoryBot.create(:problem, section: section, online: true, level: 2, position: 1) }
+  let!(:problem_offline) { FactoryBot.create(:problem, section: section, online: false, level: 2, position: 2) }
+  let!(:problem1_other_section) { FactoryBot.create(:problem, online: true, level: 1, position: 1) }
+  let!(:virtualtest) { FactoryBot.create(:virtualtest, online: true) }
+  let!(:problem1_virtualtest) { FactoryBot.create(:problem, section: section, virtualtest: virtualtest, online: true, level: 3, position: 1) }
   
   before do
     user1.chapters << chapter1

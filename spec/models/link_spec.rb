@@ -10,7 +10,7 @@
 require "spec_helper"
 
 describe Link, link: true do
-  let!(:user) { FactoryGirl.create(:user) }
+  let!(:user) { FactoryBot.create(:user) }
   let!(:discussion) { Discussion.create }
   let!(:link) { Link.create(:user => user, :discussion => discussion, :nonread => 0) }
 

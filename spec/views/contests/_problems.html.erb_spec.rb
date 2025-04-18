@@ -5,10 +5,10 @@ describe "contests/_problems.html.erb", type: :view, contest: true do
 
   subject { rendered }
 
-  let(:user) { FactoryGirl.create(:user) }
-  let(:user_organizer) { FactoryGirl.create(:user) }
-  let!(:contest) { FactoryGirl.create(:contest) }
-  let!(:contestproblem) { FactoryGirl.create(:contestproblem, contest: contest) }
+  let(:user) { FactoryBot.create(:user) }
+  let(:user_organizer) { FactoryBot.create(:user) }
+  let!(:contest) { FactoryBot.create(:contest) }
+  let!(:contestproblem) { FactoryBot.create(:contestproblem, contest: contest) }
   
   before do
     contest.organizers << user_organizer
@@ -108,7 +108,7 @@ describe "contests/_problems.html.erb", type: :view, contest: true do
     before do
       contest.in_correction!
       contestproblem.in_correction!
-      FactoryGirl.create(:contestsolution, contestproblem: contestproblem, official: false, score: -1)
+      FactoryBot.create(:contestsolution, contestproblem: contestproblem, official: false, score: -1)
     end
     
     context "and the user is a participant" do
@@ -131,8 +131,8 @@ describe "contests/_problems.html.erb", type: :view, contest: true do
     before do
       contest.completed!
       contestproblem.corrected!
-      FactoryGirl.create(:contestsolution, contestproblem: contestproblem, official: false, corrected: true, score: 7)
-      FactoryGirl.create(:contestsolution, contestproblem: contestproblem, official: false, corrected: true, score: 4)
+      FactoryBot.create(:contestsolution, contestproblem: contestproblem, official: false, corrected: true, score: 7)
+      FactoryBot.create(:contestsolution, contestproblem: contestproblem, official: false, corrected: true, score: 4)
     end
     
     context "and the user is a participant" do

@@ -5,9 +5,9 @@ describe "puzzles/_puzzles.html.erb", type: :view, puzzle: true do
 
   subject { rendered }
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:root) { FactoryGirl.create(:root) }
-  let!(:puzzle) { FactoryGirl.create(:puzzle) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:root) { FactoryBot.create(:root) }
+  let!(:puzzle) { FactoryBot.create(:puzzle) }
     
   context "if the user is not a root" do
     before { sign_in_view(admin) }

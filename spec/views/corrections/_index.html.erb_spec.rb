@@ -5,9 +5,9 @@ describe "corrections/_index.html.erb", type: :view, correction: true do
 
   subject { rendered }
 
-  let(:user) { FactoryGirl.create(:user) }
-  let(:admin) { FactoryGirl.create(:user) }
-  let(:submission) { FactoryGirl.create(:submission, user: user) }
+  let(:user) { FactoryBot.create(:user) }
+  let(:admin) { FactoryBot.create(:user) }
+  let(:submission) { FactoryBot.create(:submission, user: user) }
   
   before { assign(:submission, submission) }
   
@@ -26,8 +26,8 @@ describe "corrections/_index.html.erb", type: :view, correction: true do
     end
     
     context "and there are some corrections" do
-      let!(:correction1) { FactoryGirl.create(:correction, submission: submission, user: user) }
-      let!(:correction2) { FactoryGirl.create(:correction, submission: submission, user: admin, created_at: correction1.created_at + 1.minute) }
+      let!(:correction1) { FactoryBot.create(:correction, submission: submission, user: user) }
+      let!(:correction2) { FactoryBot.create(:correction, submission: submission, user: admin, created_at: correction1.created_at + 1.minute) }
       
       before { submission.wrong! }
       
@@ -40,7 +40,7 @@ describe "corrections/_index.html.erb", type: :view, correction: true do
       end
       
       context "and there is one more correction from the user" do
-        let!(:correction3) { FactoryGirl.create(:correction, submission: submission, user: user, created_at: correction2.created_at + 1.minute) }
+        let!(:correction3) { FactoryBot.create(:correction, submission: submission, user: user, created_at: correction2.created_at + 1.minute) }
         
         it "does not render the message about how to correct a solution anymore" do
           render partial: "corrections/index"
@@ -55,7 +55,7 @@ describe "corrections/_index.html.erb", type: :view, correction: true do
     before { sign_in_view(admin) }
     
     context "and the submission is wrong" do
-      let!(:correction) { FactoryGirl.create(:correction, submission: submission, user: admin) }
+      let!(:correction) { FactoryBot.create(:correction, submission: submission, user: admin) }
       
       before { submission.wrong! }
       

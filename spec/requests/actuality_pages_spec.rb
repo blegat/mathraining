@@ -5,8 +5,8 @@ describe "Actuality pages", actuality: true do
 
   subject { page }
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let!(:actuality) { FactoryGirl.create(:actuality) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let!(:actuality) { FactoryBot.create(:actuality) }
   let(:newtitle) { "Nouveau titre" }
   let(:newcontent) { "Nouveau contenu" }
 

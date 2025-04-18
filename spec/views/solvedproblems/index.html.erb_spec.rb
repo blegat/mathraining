@@ -6,31 +6,31 @@ describe "solvedproblems/index.html.erb", solvedproblem: true do
 
   subject { page }
   
-  let(:user_199_with_prerequisite) { FactoryGirl.create(:user, rating: 199) }
-  let(:user_200) { FactoryGirl.create(:user, rating: 200) }
-  let(:user_200_with_prerequisite) { FactoryGirl.create(:user, rating: 200) }
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:admin2) { FactoryGirl.create(:admin) }
-  let(:user1) { FactoryGirl.create(:user, rating: 543) }
-  let(:user2) { FactoryGirl.create(:user, rating: 345) }
-  let(:user3) { FactoryGirl.create(:user, rating: 1234) }
+  let(:user_199_with_prerequisite) { FactoryBot.create(:user, rating: 199) }
+  let(:user_200) { FactoryBot.create(:user, rating: 200) }
+  let(:user_200_with_prerequisite) { FactoryBot.create(:user, rating: 200) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:admin2) { FactoryBot.create(:admin) }
+  let(:user1) { FactoryBot.create(:user, rating: 543) }
+  let(:user2) { FactoryBot.create(:user, rating: 345) }
+  let(:user3) { FactoryBot.create(:user, rating: 1234) }
   
-  let!(:problem1) { FactoryGirl.create(:problem, online: true, level: 1) }
-  let!(:problem2_with_prerequisite) { FactoryGirl.create(:problem, online: true, level: 2) }
-  let!(:problem3) { FactoryGirl.create(:problem, online: true, level: 3) }
-  let!(:chapter) { FactoryGirl.create(:chapter, online: true) }
+  let!(:problem1) { FactoryBot.create(:problem, online: true, level: 1) }
+  let!(:problem2_with_prerequisite) { FactoryBot.create(:problem, online: true, level: 2) }
+  let!(:problem3) { FactoryBot.create(:problem, online: true, level: 3) }
+  let!(:chapter) { FactoryBot.create(:chapter, online: true) }
   
   let!(:date_today) { Date.today }
   let!(:date_midnight) { date_today.in_time_zone.to_datetime }
-  let!(:submission1) { FactoryGirl.create(:submission, problem: problem1, user: user1, status: :correct, created_at: date_midnight - 4.days) }
-  let!(:solvedproblem1) { FactoryGirl.create(:solvedproblem, problem: problem1, submission: submission1, user: user1, resolution_time: date_midnight - 4.days, correction_time: date_midnight + 1.hour) }
-  let!(:following1) { FactoryGirl.create(:following, submission: submission1, user: admin, read: true, kind: :first_corrector, created_at: solvedproblem1.correction_time) }
-  let!(:submission2) { FactoryGirl.create(:submission, problem: problem2_with_prerequisite, user: user2, status: :correct, created_at: date_midnight - 23.days) }
-  let!(:solvedproblem2) { FactoryGirl.create(:solvedproblem, problem: problem2_with_prerequisite, submission: submission2, user: user2, resolution_time: date_midnight - 23.days, correction_time: date_midnight + 3.hours) }
-  let!(:following2) { FactoryGirl.create(:following, submission: submission2, user: admin2, read: true, kind: :first_corrector, created_at: solvedproblem2.correction_time) }
-  let!(:submission3_old) { FactoryGirl.create(:submission, problem: problem3, user: user3, status: :correct, created_at: date_midnight - 36.days) }
-  let!(:solvedproblem3_old) { FactoryGirl.create(:solvedproblem, problem: problem3, submission: submission3_old, user: user3, resolution_time: date_midnight - 36.days, correction_time: date_midnight - 3.hours) }
-  let!(:following3_old) { FactoryGirl.create(:following, submission: submission3_old, user: admin, read: true, kind: :first_corrector, created_at: solvedproblem3_old.correction_time) }
+  let!(:submission1) { FactoryBot.create(:submission, problem: problem1, user: user1, status: :correct, created_at: date_midnight - 4.days) }
+  let!(:solvedproblem1) { FactoryBot.create(:solvedproblem, problem: problem1, submission: submission1, user: user1, resolution_time: date_midnight - 4.days, correction_time: date_midnight + 1.hour) }
+  let!(:following1) { FactoryBot.create(:following, submission: submission1, user: admin, read: true, kind: :first_corrector, created_at: solvedproblem1.correction_time) }
+  let!(:submission2) { FactoryBot.create(:submission, problem: problem2_with_prerequisite, user: user2, status: :correct, created_at: date_midnight - 23.days) }
+  let!(:solvedproblem2) { FactoryBot.create(:solvedproblem, problem: problem2_with_prerequisite, submission: submission2, user: user2, resolution_time: date_midnight - 23.days, correction_time: date_midnight + 3.hours) }
+  let!(:following2) { FactoryBot.create(:following, submission: submission2, user: admin2, read: true, kind: :first_corrector, created_at: solvedproblem2.correction_time) }
+  let!(:submission3_old) { FactoryBot.create(:submission, problem: problem3, user: user3, status: :correct, created_at: date_midnight - 36.days) }
+  let!(:solvedproblem3_old) { FactoryBot.create(:solvedproblem, problem: problem3, submission: submission3_old, user: user3, resolution_time: date_midnight - 36.days, correction_time: date_midnight - 3.hours) }
+  let!(:following3_old) { FactoryBot.create(:following, submission: submission3_old, user: admin, read: true, kind: :first_corrector, created_at: solvedproblem3_old.correction_time) }
   
   before do
     problem2_with_prerequisite.chapters << chapter

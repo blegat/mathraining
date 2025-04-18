@@ -5,17 +5,17 @@ describe "Problem pages", problem: true do
 
   subject { page }
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:user_with_rating_199) { FactoryGirl.create(:user, rating: 199) }
-  let(:user_with_rating_200) { FactoryGirl.create(:user, rating: 200) }
-  let!(:section) { FactoryGirl.create(:section) }
-  let!(:chapter) { FactoryGirl.create(:chapter, online: true, name: "Mon chapitre prérequis") }
-  let!(:online_problem) { FactoryGirl.create(:problem, section: section, online: true, level: 1, number: 1123, statement: "Statement1") }
-  let!(:online_problem_with_prerequisite) { FactoryGirl.create(:problem, section: section, online: true, level: 1, number: 1124, statement: "Statement2") }
-  let!(:offline_problem) { FactoryGirl.create(:problem, section: section, online: false, level: 1, number: 1134, statement: "Statement3") }
-  let!(:online_virtualtest) { FactoryGirl.create(:virtualtest, online: true, number: 42, duration: 10) }
-  let!(:problem_in_virtualtest) { FactoryGirl.create(:problem, section: section, online: true, level: 2, number: 1256, statement: "Statement4", position: 1, virtualtest: online_virtualtest) }
-  let!(:offline_virtualtest) { FactoryGirl.create(:virtualtest, online: false, number: 23, duration: 15) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:user_with_rating_199) { FactoryBot.create(:user, rating: 199) }
+  let(:user_with_rating_200) { FactoryBot.create(:user, rating: 200) }
+  let!(:section) { FactoryBot.create(:section) }
+  let!(:chapter) { FactoryBot.create(:chapter, online: true, name: "Mon chapitre prérequis") }
+  let!(:online_problem) { FactoryBot.create(:problem, section: section, online: true, level: 1, number: 1123, statement: "Statement1") }
+  let!(:online_problem_with_prerequisite) { FactoryBot.create(:problem, section: section, online: true, level: 1, number: 1124, statement: "Statement2") }
+  let!(:offline_problem) { FactoryBot.create(:problem, section: section, online: false, level: 1, number: 1134, statement: "Statement3") }
+  let!(:online_virtualtest) { FactoryBot.create(:virtualtest, online: true, number: 42, duration: 10) }
+  let!(:problem_in_virtualtest) { FactoryBot.create(:problem, section: section, online: true, level: 2, number: 1256, statement: "Statement4", position: 1, virtualtest: online_virtualtest) }
+  let!(:offline_virtualtest) { FactoryBot.create(:virtualtest, online: false, number: 23, duration: 15) }
   
   let(:newstatement) { "Prière de résoudre ce problème de combinatoire." }
   let(:neworigin) { "Origine du problème" }
@@ -79,8 +79,8 @@ describe "Problem pages", problem: true do
     end
     
     describe "visits online problem with auto param" do
-      let!(:correct_submission) { FactoryGirl.create(:submission, :user => user_with_rating_200, :problem => online_problem, :status => :correct) }
-      let!(:solvedproblem) { FactoryGirl.create(:solvedproblem, :user => user_with_rating_200, :problem => online_problem, :submission => correct_submission) }
+      let!(:correct_submission) { FactoryBot.create(:submission, :user => user_with_rating_200, :problem => online_problem, :status => :correct) }
+      let!(:solvedproblem) { FactoryBot.create(:solvedproblem, :user => user_with_rating_200, :problem => online_problem, :submission => correct_submission) }
       before { visit problem_path(online_problem, :auto => 1) }
       it do
         should have_current_path(problem_path(online_problem, :sub => correct_submission))
@@ -89,7 +89,7 @@ describe "Problem pages", problem: true do
     end
     
     describe "visits online problem with auto param when not solved" do
-      let!(:incorrect_submission) { FactoryGirl.create(:submission, :user => user_with_rating_200, :problem => online_problem, :status => :wrong) }
+      let!(:incorrect_submission) { FactoryBot.create(:submission, :user => user_with_rating_200, :problem => online_problem, :status => :wrong) }
       before { visit problem_path(online_problem, :auto => 1) }
       it do
         should have_current_path(problem_path(online_problem))

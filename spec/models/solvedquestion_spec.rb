@@ -12,7 +12,7 @@ require "spec_helper"
 
 describe Solvedquestion, solvedquestion: true do
 
-  let(:sq) { FactoryGirl.build(:solvedquestion) }
+  let(:sq) { FactoryBot.build(:solvedquestion) }
 
   subject { sq }
 
@@ -41,21 +41,21 @@ describe Solvedquestion, solvedquestion: true do
   # detect_suspicious_users
   describe "detect_suspicious_users" do
     let!(:yesterday) { Date.today.in_time_zone - 1.day + 10.hours }
-    let!(:cheater) { FactoryGirl.create(:user) }
-    let!(:sq1)  { FactoryGirl.create(:solvedquestion, user: cheater, resolution_time: yesterday) }
-    let!(:sq2)  { FactoryGirl.create(:solvedquestion, user: cheater, resolution_time: yesterday + 15.seconds) }
-    let!(:sq3)  { FactoryGirl.create(:solvedquestion, user: cheater, resolution_time: yesterday + 40.seconds) }
-    let!(:sq4)  { FactoryGirl.create(:solvedquestion, user: cheater, resolution_time: yesterday + 45.seconds) }
-    let!(:sq5)  { FactoryGirl.create(:solvedquestion, user: cheater, resolution_time: yesterday + 1.minute) }
-    let!(:sq6)  { FactoryGirl.create(:solvedquestion, user: cheater, resolution_time: yesterday + 2.minutes + 4.seconds) }
-    let!(:sq7)  { FactoryGirl.create(:solvedquestion, user: cheater, resolution_time: yesterday + 5.minutes) }
-    let!(:sq8)  { FactoryGirl.create(:solvedquestion, user: cheater, resolution_time: yesterday + 5.minutes + 10.seconds) }
-    let!(:sq9)  { FactoryGirl.create(:solvedquestion, user: cheater, resolution_time: yesterday + 11.minutes) }
-    let!(:sq10) { FactoryGirl.create(:solvedquestion, user: cheater, resolution_time: yesterday + 11.minutes + 40.seconds) }
-    let!(:sq11) { FactoryGirl.create(:solvedquestion, user: cheater, resolution_time: yesterday + 12.minutes + 20.seconds) }
-    let!(:sq12) { FactoryGirl.create(:solvedquestion, user: cheater, resolution_time: yesterday + 12.minutes + 30.seconds) }
-    let!(:sq13) { FactoryGirl.create(:solvedquestion, user: cheater, resolution_time: yesterday + 12.minutes + 40.seconds) }
-    let!(:sq14) { FactoryGirl.create(:solvedquestion, user: cheater, resolution_time: yesterday + 12.minutes + 50.seconds) }
+    let!(:cheater) { FactoryBot.create(:user) }
+    let!(:sq1)  { FactoryBot.create(:solvedquestion, user: cheater, resolution_time: yesterday) }
+    let!(:sq2)  { FactoryBot.create(:solvedquestion, user: cheater, resolution_time: yesterday + 15.seconds) }
+    let!(:sq3)  { FactoryBot.create(:solvedquestion, user: cheater, resolution_time: yesterday + 40.seconds) }
+    let!(:sq4)  { FactoryBot.create(:solvedquestion, user: cheater, resolution_time: yesterday + 45.seconds) }
+    let!(:sq5)  { FactoryBot.create(:solvedquestion, user: cheater, resolution_time: yesterday + 1.minute) }
+    let!(:sq6)  { FactoryBot.create(:solvedquestion, user: cheater, resolution_time: yesterday + 2.minutes + 4.seconds) }
+    let!(:sq7)  { FactoryBot.create(:solvedquestion, user: cheater, resolution_time: yesterday + 5.minutes) }
+    let!(:sq8)  { FactoryBot.create(:solvedquestion, user: cheater, resolution_time: yesterday + 5.minutes + 10.seconds) }
+    let!(:sq9)  { FactoryBot.create(:solvedquestion, user: cheater, resolution_time: yesterday + 11.minutes) }
+    let!(:sq10) { FactoryBot.create(:solvedquestion, user: cheater, resolution_time: yesterday + 11.minutes + 40.seconds) }
+    let!(:sq11) { FactoryBot.create(:solvedquestion, user: cheater, resolution_time: yesterday + 12.minutes + 20.seconds) }
+    let!(:sq12) { FactoryBot.create(:solvedquestion, user: cheater, resolution_time: yesterday + 12.minutes + 30.seconds) }
+    let!(:sq13) { FactoryBot.create(:solvedquestion, user: cheater, resolution_time: yesterday + 12.minutes + 40.seconds) }
+    let!(:sq14) { FactoryBot.create(:solvedquestion, user: cheater, resolution_time: yesterday + 12.minutes + 50.seconds) }
     
     describe "searches for suspicious users for the first time" do
       before do

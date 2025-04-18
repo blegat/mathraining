@@ -5,8 +5,8 @@ describe "Picture pages", picture: true do
 
   subject { page }
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:admin2) { FactoryGirl.create(:admin) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:admin2) { FactoryBot.create(:admin) }
   
   let(:image_folder) { "./spec/attachments/" }
   let(:good_image) { "mathraining.png" }

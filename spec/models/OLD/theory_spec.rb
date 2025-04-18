@@ -12,7 +12,7 @@
 require "spec_helper"
 
 describe Theory do
-  before { @theo = FactoryGirl.build(:theory) }
+  before { @theo = FactoryBot.build(:theory) }
 
   subject { @theo }
 

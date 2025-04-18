@@ -30,10 +30,10 @@ describe SubjectsHelper do
   end
   
   describe "category formatting" do
-    let!(:subject) { FactoryGirl.create(:subject, category: nil) }
-    let!(:section) { FactoryGirl.create(:section) }
-    let!(:chapter) { FactoryGirl.create(:chapter, section: section) }
-    let!(:category) { FactoryGirl.create(:category) }
+    let!(:subject) { FactoryBot.create(:subject, category: nil) }
+    let!(:section) { FactoryBot.create(:section) }
+    let!(:chapter) { FactoryBot.create(:chapter, section: section) }
+    let!(:category) { FactoryBot.create(:category) }
     it "for a subject without any association" do
       expect(get_category_name(subject)).to eq("")
     end

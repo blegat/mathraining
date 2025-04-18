@@ -14,7 +14,7 @@ require "spec_helper"
 
 describe Savedreply, savedreply: true do
 
-  let!(:savedreply) { FactoryGirl.build(:savedreply) }
+  let!(:savedreply) { FactoryBot.build(:savedreply) }
 
   subject { savedreply }
 

@@ -15,9 +15,9 @@
 require "spec_helper"
 
 describe Contestsolution, contestsolution: true do
-  let!(:contestproblem) { FactoryGirl.create(:contestproblem) }
-  let!(:user) { FactoryGirl.create(:user) }
-  let!(:contestsolution) { FactoryGirl.build(:contestsolution, contestproblem: contestproblem, user: user) }
+  let!(:contestproblem) { FactoryBot.create(:contestproblem) }
+  let!(:user) { FactoryBot.create(:user) }
+  let!(:contestsolution) { FactoryBot.build(:contestsolution, contestproblem: contestproblem, user: user) }
 
   subject { contestsolution }
 
@@ -25,7 +25,7 @@ describe Contestsolution, contestsolution: true do
   
   # Uniqueness
   describe "when already present" do
-    before { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, user: user) }
+    before { FactoryBot.create(:contestsolution, contestproblem: contestproblem, user: user) }
     it { should_not be_valid }
   end
   

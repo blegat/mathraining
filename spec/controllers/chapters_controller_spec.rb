@@ -3,15 +3,15 @@ require "spec_helper"
 
 describe ChaptersController, type: :controller, chapter: true do
 
-  let(:root) { FactoryGirl.create(:root) }
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:user) { FactoryGirl.create(:user) }
-  let(:section) { FactoryGirl.create(:section) }
-  let(:online_chapter) { FactoryGirl.create(:chapter, online: true) }
-  let(:offline_chapter) { FactoryGirl.create(:chapter, online: false) }
-  let(:theory) { FactoryGirl.create(:theory, chapter: online_chapter, online: true) }
-  let(:question) { FactoryGirl.create(:exercise, chapter: online_chapter, online: true) }
-  let!(:offline_question) { FactoryGirl.create(:exercise, chapter: offline_chapter, online: false) } # So that offline_chapter can be put online
+  let(:root) { FactoryBot.create(:root) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:user) { FactoryBot.create(:user) }
+  let(:section) { FactoryBot.create(:section) }
+  let(:online_chapter) { FactoryBot.create(:chapter, online: true) }
+  let(:offline_chapter) { FactoryBot.create(:chapter, online: false) }
+  let(:theory) { FactoryBot.create(:theory, chapter: online_chapter, online: true) }
+  let(:question) { FactoryBot.create(:exercise, chapter: online_chapter, online: true) }
+  let!(:offline_question) { FactoryBot.create(:exercise, chapter: offline_chapter, online: false) } # So that offline_chapter can be put online
   
   context "if the user is not signed in" do
     it { expect(response).to have_controller_show_behavior(online_chapter, :ok) }

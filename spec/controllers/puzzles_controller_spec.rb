@@ -3,9 +3,9 @@ require "spec_helper"
 
 describe PuzzlesController, type: :controller, puzzle: true do
 
-  let(:root) { FactoryGirl.create(:root) }
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:puzzle) { FactoryGirl.create(:puzzle) }
+  let(:root) { FactoryBot.create(:root) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:puzzle) { FactoryBot.create(:puzzle) }
   
   context "if the user is not signed in" do
     it { expect(response).to have_controller_new_behavior(:must_be_connected) }

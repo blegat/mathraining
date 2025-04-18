@@ -5,10 +5,10 @@ describe "Section pages", section: true do
 
   subject { page }
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:user) { FactoryGirl.create(:user) }
-  let(:section) { FactoryGirl.create(:section) }
-  let(:section_fondation) { FactoryGirl.create(:fondation_section) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:user) { FactoryBot.create(:user) }
+  let(:section) { FactoryBot.create(:section) }
+  let(:section_fondation) { FactoryBot.create(:fondation_section) }
   let(:newtitle) { "Mon nouveau titre de section" }
   let(:newabbreviation) { "Nouv. Tit. Sec." }
   let(:newshortabbreviation) { "Nv. Tit." }

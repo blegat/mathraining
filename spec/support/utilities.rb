@@ -198,7 +198,7 @@ end
 
 RSpec::Matchers.define :have_controller_create_behavior do |name, behavior, other_params = {}|
   match do |response|
-    post :create, params: {name => FactoryGirl.attributes_for(name)}.merge(other_params)
+    post :create, params: {name => FactoryBot.attributes_for(name)}.merge(other_params)
     expect(response).to have_behavior(behavior)
   end
 end
@@ -213,7 +213,7 @@ end
 RSpec::Matchers.define :have_controller_update_behavior do |obj, behavior, other_params = {}|
   name = obj.class.name.downcase
   match do |response|
-    patch :update, params: {:id => obj.id, name => FactoryGirl.attributes_for(name)}.merge(other_params)
+    patch :update, params: {:id => obj.id, name => FactoryBot.attributes_for(name)}.merge(other_params)
     expect(response).to have_behavior(behavior)
   end
 end

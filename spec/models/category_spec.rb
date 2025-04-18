@@ -8,7 +8,7 @@
 require "spec_helper"
 
 describe Category, category: true do
-  let!(:category) { FactoryGirl.create(:category) }
+  let!(:category) { FactoryBot.create(:category) }
 
   subject { category }
   

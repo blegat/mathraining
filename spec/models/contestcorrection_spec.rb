@@ -9,7 +9,7 @@
 require "spec_helper"
 
 describe Contestcorrection, contestcorrection: true do
-  let!(:contestsolution) { FactoryGirl.create(:contestsolution) } # Creates the contestcorrection automatically
+  let!(:contestsolution) { FactoryBot.create(:contestsolution) } # Creates the contestcorrection automatically
   let!(:contestcorrection) { contestsolution.contestcorrection }
 
   subject { contestcorrection }
@@ -29,7 +29,7 @@ describe Contestcorrection, contestcorrection: true do
   
   # Uniqueness
   describe "when already present" do
-    let!(:contestsolution2) { FactoryGirl.create(:contestsolution) }
+    let!(:contestsolution2) { FactoryBot.create(:contestsolution) }
     before { contestcorrection.contestsolution = contestsolution2 }
     it { should_not be_valid }
   end

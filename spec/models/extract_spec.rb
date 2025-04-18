@@ -9,7 +9,7 @@
 require "spec_helper"
 
 describe Extract, extract: true do
-  let!(:extract) { FactoryGirl.build(:extract) }
+  let!(:extract) { FactoryBot.build(:extract) }
 
   subject { extract }
   

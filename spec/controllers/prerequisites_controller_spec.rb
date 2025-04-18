@@ -3,9 +3,9 @@ require "spec_helper"
 
 describe PrerequisitesController, type: :controller, prerequisite: true do
 
-  let(:user) { FactoryGirl.create(:user) }
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:prerequisite) { FactoryGirl.create(:prerequisite) }
+  let(:user) { FactoryBot.create(:user) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:prerequisite) { FactoryBot.create(:prerequisite) }
   
   context "if the user is not an admin" do
     before { sign_in_controller(user) }

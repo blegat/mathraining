@@ -39,7 +39,7 @@ require "spec_helper"
 
 describe User do
 
-  before { @user = FactoryGirl.build(:user) }
+  before { @user = FactoryBot.build(:user) }
 
   subject { @user }
 
@@ -156,12 +156,8 @@ describe User do
     end
     
     describe "when email address is already taken" do
-      before do
-        user_with_same_email = @user.dup
-        user_with_same_email.email = user_with_same_email.email.upcase
-        user_with_same_email.email_confirmation = user_with_same_email.email
-        user_with_same_email.save
-      end
+      let(:email_str) { @user.email.dup }
+      before { user_with_same_email = FactoryBot.create(:user, email: email_str.upcase, email_confirmation: email_str.upcase) }
       it { should_not be_valid }
     end
     
@@ -326,15 +322,15 @@ describe User do
   end
   
   describe "number of unseen forum subjects" do
-    let!(:user) {                  FactoryGirl.create(:user,  last_forum_visit_time: DateTime.now - 3.days) }
-    let!(:user_wepion) {           FactoryGirl.create(:user,  last_forum_visit_time: DateTime.now - 3.days, wepion: true) }
-    let!(:user_corrector) {        FactoryGirl.create(:user,  last_forum_visit_time: DateTime.now - 3.days, corrector: true) }
-    let!(:user_wepion_corrector) { FactoryGirl.create(:user,  last_forum_visit_time: DateTime.now - 3.days, wepion: true, corrector: true) }
-    let!(:user_admin) {            FactoryGirl.create(:admin, last_forum_visit_time: DateTime.now - 3.days) }
+    let!(:user) {                  FactoryBot.create(:user,  last_forum_visit_time: DateTime.now - 3.days) }
+    let!(:user_wepion) {           FactoryBot.create(:user,  last_forum_visit_time: DateTime.now - 3.days, wepion: true) }
+    let!(:user_corrector) {        FactoryBot.create(:user,  last_forum_visit_time: DateTime.now - 3.days, corrector: true) }
+    let!(:user_wepion_corrector) { FactoryBot.create(:user,  last_forum_visit_time: DateTime.now - 3.days, wepion: true, corrector: true) }
+    let!(:user_admin) {            FactoryBot.create(:admin, last_forum_visit_time: DateTime.now - 3.days) }
     
-    let!(:subject)            { FactoryGirl.create(:subject, last_comment_time: DateTime.now - 1.day, last_comment_user: user) }
-    let!(:subject_wepion)     { FactoryGirl.create(:subject, last_comment_time: DateTime.now - 1.day, last_comment_user: user_wepion, for_wepion: true) }
-    let!(:subject_correctors) { FactoryGirl.create(:subject, last_comment_time: DateTime.now - 1.day, last_comment_user: user_admin, for_correctors: true) }
+    let!(:subject)            { FactoryBot.create(:subject, last_comment_time: DateTime.now - 1.day, last_comment_user: user) }
+    let!(:subject_wepion)     { FactoryBot.create(:subject, last_comment_time: DateTime.now - 1.day, last_comment_user: user_wepion, for_wepion: true) }
+    let!(:subject_correctors) { FactoryBot.create(:subject, last_comment_time: DateTime.now - 1.day, last_comment_user: user_admin, for_correctors: true) }
     
     describe "when all subjects are new" do
       it do

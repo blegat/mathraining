@@ -5,43 +5,43 @@ describe "Contest pages", contest: true do
 
   subject { page }
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:user_with_rating_199) { FactoryGirl.create(:user, rating: 199) }
-  let(:user_with_rating_200) { FactoryGirl.create(:user, rating: 200) }
-  let(:user_participating1) { FactoryGirl.create(:user, rating: 250) }
-  let(:user_participating2) { FactoryGirl.create(:user, rating: 251) }
-  let(:user_participating3) { FactoryGirl.create(:user, rating: 252) }
-  let(:user_participating4) { FactoryGirl.create(:user, rating: 253) }
-  let(:user_participating5) { FactoryGirl.create(:user, rating: 254) }
-  let!(:user_organizer) { FactoryGirl.create(:user, rating: 300) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:user_with_rating_199) { FactoryBot.create(:user, rating: 199) }
+  let(:user_with_rating_200) { FactoryBot.create(:user, rating: 200) }
+  let(:user_participating1) { FactoryBot.create(:user, rating: 250) }
+  let(:user_participating2) { FactoryBot.create(:user, rating: 251) }
+  let(:user_participating3) { FactoryBot.create(:user, rating: 252) }
+  let(:user_participating4) { FactoryBot.create(:user, rating: 253) }
+  let(:user_participating5) { FactoryBot.create(:user, rating: 254) }
+  let!(:user_organizer) { FactoryBot.create(:user, rating: 300) }
   
-  let!(:contest) { FactoryGirl.create(:contest) }
-  let!(:contestproblem1) { FactoryGirl.create(:contestproblem, contest: contest) }
-  let!(:contestproblem2) { FactoryGirl.create(:contestproblem, contest: contest) }
-  let!(:contestsolution11) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem1, user: user_participating1, score: 7) }
-  let!(:contestsolution12) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem1, user: user_participating2, score: 6) }
-  let!(:contestsolution13) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem1, user: user_participating3, score: 5) }
-  let!(:contestsolution14) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem1, user: user_participating4, score: 5) }
-  let!(:contestsolution15) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem1, user: user_participating5, score: 7) }
-  let!(:contestsolution21) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem2, user: user_participating1, score: 7) }
-  let!(:contestsolution22) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem2, user: user_participating2, score: 7) }
-  let!(:contestsolution23) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem2, user: user_participating3, score: 6) }
-  let!(:contestsolution24) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem2, user: user_participating4, score: 2) }
-  let!(:contestsolution25) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem2, user: user_participating5, score: 0) }
-  let!(:contestscore1) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating1, rank: 1, score: 14) }
-  let!(:contestscore2) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating2, rank: 2, score: 13) }
-  let!(:contestscore3) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating3, rank: 3, score: 11) }
-  let!(:contestscore4) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating4, rank: 4, score: 7) }
-  let!(:contestscore5) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating5, rank: 4, score: 7) }
+  let!(:contest) { FactoryBot.create(:contest) }
+  let!(:contestproblem1) { FactoryBot.create(:contestproblem, contest: contest) }
+  let!(:contestproblem2) { FactoryBot.create(:contestproblem, contest: contest) }
+  let!(:contestsolution11) { FactoryBot.create(:contestsolution, contestproblem: contestproblem1, user: user_participating1, score: 7) }
+  let!(:contestsolution12) { FactoryBot.create(:contestsolution, contestproblem: contestproblem1, user: user_participating2, score: 6) }
+  let!(:contestsolution13) { FactoryBot.create(:contestsolution, contestproblem: contestproblem1, user: user_participating3, score: 5) }
+  let!(:contestsolution14) { FactoryBot.create(:contestsolution, contestproblem: contestproblem1, user: user_participating4, score: 5) }
+  let!(:contestsolution15) { FactoryBot.create(:contestsolution, contestproblem: contestproblem1, user: user_participating5, score: 7) }
+  let!(:contestsolution21) { FactoryBot.create(:contestsolution, contestproblem: contestproblem2, user: user_participating1, score: 7) }
+  let!(:contestsolution22) { FactoryBot.create(:contestsolution, contestproblem: contestproblem2, user: user_participating2, score: 7) }
+  let!(:contestsolution23) { FactoryBot.create(:contestsolution, contestproblem: contestproblem2, user: user_participating3, score: 6) }
+  let!(:contestsolution24) { FactoryBot.create(:contestsolution, contestproblem: contestproblem2, user: user_participating4, score: 2) }
+  let!(:contestsolution25) { FactoryBot.create(:contestsolution, contestproblem: contestproblem2, user: user_participating5, score: 0) }
+  let!(:contestscore1) { FactoryBot.create(:contestscore, contest: contest, user: user_participating1, rank: 1, score: 14) }
+  let!(:contestscore2) { FactoryBot.create(:contestscore, contest: contest, user: user_participating2, rank: 2, score: 13) }
+  let!(:contestscore3) { FactoryBot.create(:contestscore, contest: contest, user: user_participating3, rank: 3, score: 11) }
+  let!(:contestscore4) { FactoryBot.create(:contestscore, contest: contest, user: user_participating4, rank: 4, score: 7) }
+  let!(:contestscore5) { FactoryBot.create(:contestscore, contest: contest, user: user_participating5, rank: 4, score: 7) }
   
-  let!(:contest_in_progress) { FactoryGirl.create(:contest, status: :in_progress) }
-  let!(:contestproblem1_corrected) { FactoryGirl.create(:contestproblem, contest: contest_in_progress, status: :corrected) }
-  let!(:contestproblem2_in_correction) { FactoryGirl.create(:contestproblem, contest: contest_in_progress, status: :in_correction) }
-  let!(:contestproblem3_in_progress) { FactoryGirl.create(:contestproblem, contest: contest_in_progress, status: :in_progress) }
-  let!(:contestproblem4_not_started_yet) { FactoryGirl.create(:contestproblem, contest: contest_in_progress, status: :not_started_yet) }
+  let!(:contest_in_progress) { FactoryBot.create(:contest, status: :in_progress) }
+  let!(:contestproblem1_corrected) { FactoryBot.create(:contestproblem, contest: contest_in_progress, status: :corrected) }
+  let!(:contestproblem2_in_correction) { FactoryBot.create(:contestproblem, contest: contest_in_progress, status: :in_correction) }
+  let!(:contestproblem3_in_progress) { FactoryBot.create(:contestproblem, contest: contest_in_progress, status: :in_progress) }
+  let!(:contestproblem4_not_started_yet) { FactoryBot.create(:contestproblem, contest: contest_in_progress, status: :not_started_yet) }
   
-  let!(:offline_contest) { FactoryGirl.create(:contest, status: :in_construction) }
-  let!(:offline_contestproblem) { FactoryGirl.create(:contestproblem, contest: offline_contest, status: :in_construction, start_time: DateTime.now + 1.day, end_time: DateTime.now + 2.days) }
+  let!(:offline_contest) { FactoryBot.create(:contest, status: :in_construction) }
+  let!(:offline_contestproblem) { FactoryBot.create(:contestproblem, contest: offline_contest, status: :in_construction, start_time: DateTime.now + 1.day, end_time: DateTime.now + 2.days) }
   
   let(:newnumber) { 42 }
   let(:newdescription) { "Voici une toute nouvelle description" }
@@ -128,7 +128,7 @@ describe "Contest pages", contest: true do
           contestscore3.update(score: 23, rank: 7)
           contestscore4.update(score: 23, rank: 7)
           contestscore5.destroy
-          FactoryGirl.create(:contestscore, contest: contest, score: 23, rank: 7)
+          FactoryBot.create(:contestscore, contest: contest, score: 23, rank: 7)
           fill_in "bronze_cutoff", with: bronze_cutoff
           fill_in "silver_cutoff", with: silver_cutoff
           fill_in "gold_cutoff", with: gold_cutoff

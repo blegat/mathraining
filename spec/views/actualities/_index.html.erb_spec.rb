@@ -5,9 +5,9 @@ describe "actualities/_index.html.erb", type: :view, actuality: true do
 
   subject { rendered }
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:user) { FactoryGirl.create(:user) }
-  let!(:actuality) { FactoryGirl.create(:actuality) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:user) { FactoryBot.create(:user) }
+  let!(:actuality) { FactoryBot.create(:actuality) }
   
   before { assign(:actualities, Actuality.paginate(:page => 1, :per_page => 5)) }
   

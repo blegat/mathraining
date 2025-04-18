@@ -5,14 +5,14 @@ describe "Savedreply pages", savedreply: true do
 
   subject { page }
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:root) { FactoryGirl.create(:root) }
-  let!(:section) { FactoryGirl.create(:section, short_abbreviation: "A. B.") }
-  let!(:problem) { FactoryGirl.create(:problem, section: section, online: true) }
-  let!(:submission) { FactoryGirl.create(:submission, problem: problem, status: :waiting) }
-  let!(:savedreply_generic) { FactoryGirl.create(:savedreply, content: "Es-tu sûr[e] de toi ?") }
-  let!(:savedreply_section) { FactoryGirl.create(:savedreply, section: problem.section) }
-  let!(:savedreply_problem) { FactoryGirl.create(:savedreply, problem: problem) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:root) { FactoryBot.create(:root) }
+  let!(:section) { FactoryBot.create(:section, short_abbreviation: "A. B.") }
+  let!(:problem) { FactoryBot.create(:problem, section: section, online: true) }
+  let!(:submission) { FactoryBot.create(:submission, problem: problem, status: :waiting) }
+  let!(:savedreply_generic) { FactoryBot.create(:savedreply, content: "Es-tu sûr[e] de toi ?") }
+  let!(:savedreply_section) { FactoryBot.create(:savedreply, section: problem.section) }
+  let!(:savedreply_problem) { FactoryBot.create(:savedreply, problem: problem) }
   let(:newcontent) { "Es-tu certain que $1$ est un nombre premier ?" }
 
   describe "root" do

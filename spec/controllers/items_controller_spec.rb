@@ -3,10 +3,10 @@ require "spec_helper"
 
 describe ItemsController, type: :controller, item: true do
 
-  let(:user) { FactoryGirl.create(:user) }
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:question) { FactoryGirl.create(:qcm, online: false) }
-  let(:item) { FactoryGirl.create(:item, question: question) }
+  let(:user) { FactoryBot.create(:user) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:question) { FactoryBot.create(:qcm, online: false) }
+  let(:item) { FactoryBot.create(:item, question: question) }
   
   context "if the user is not an admin" do
     before { sign_in_controller(user) }

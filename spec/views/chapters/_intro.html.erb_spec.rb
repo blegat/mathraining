@@ -5,12 +5,12 @@ describe "chapters/_intro.html.erb", type: :view, chapter: true do
 
   subject { rendered }
 
-  let(:root) { FactoryGirl.create(:root) }
-  let(:user) { FactoryGirl.create(:user) }
-  let(:section_fondation) { FactoryGirl.create(:section, fondation: true) }
-  let(:chapter1) { FactoryGirl.create(:chapter, section: section_fondation, level: 1, position: 1, author: nil, publication_date: nil, online: false) }
-  let(:chapter2) { FactoryGirl.create(:chapter, section: section_fondation, level: 1, position: 2, author: "Jean Dupont", publication_date: Date.new(2023, 11, 10), online: true, submission_prerequisite: true) }
-  let(:chapter3) { FactoryGirl.create(:chapter, section: section_fondation, level: 1, position: 3, author: "Jean Flabour", publication_date: nil, online: true) }
+  let(:root) { FactoryBot.create(:root) }
+  let(:user) { FactoryBot.create(:user) }
+  let(:section_fondation) { FactoryBot.create(:section, fondation: true) }
+  let(:chapter1) { FactoryBot.create(:chapter, section: section_fondation, level: 1, position: 1, author: nil, publication_date: nil, online: false) }
+  let(:chapter2) { FactoryBot.create(:chapter, section: section_fondation, level: 1, position: 2, author: "Jean Dupont", publication_date: Date.new(2023, 11, 10), online: true, submission_prerequisite: true) }
+  let(:chapter3) { FactoryBot.create(:chapter, section: section_fondation, level: 1, position: 3, author: "Jean Flabour", publication_date: nil, online: true) }
   
   context "if the user is a root" do
     before { sign_in_view(root) }
@@ -44,7 +44,7 @@ describe "chapters/_intro.html.erb", type: :view, chapter: true do
     end
     
     context "and the chapter is very full" do
-      let!(:chapter_prerequisite) { FactoryGirl.create(:chapter, section: chapter2.section, level: chapter2.level, position: chapter2.position - 1) }
+      let!(:chapter_prerequisite) { FactoryBot.create(:chapter, section: chapter2.section, level: chapter2.level, position: chapter2.position - 1) }
       
       before do
         chapter2.prerequisites << chapter_prerequisite

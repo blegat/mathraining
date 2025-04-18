@@ -10,7 +10,7 @@
 require "spec_helper"
 
 describe Faq, faq: true do
-  let!(:faq) { FactoryGirl.create(:faq) }
+  let!(:faq) { FactoryBot.create(:faq) }
 
   subject { faq }
   

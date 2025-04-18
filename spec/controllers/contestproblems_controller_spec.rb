@@ -3,12 +3,12 @@ require "spec_helper"
 
 describe ContestproblemsController, type: :controller, contestproblem: true do
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:user_organizer) { FactoryGirl.create(:advanced_user) }
-  let(:user) { FactoryGirl.create(:advanced_user) }
-  let(:root) { FactoryGirl.create(:root) }
-  let(:contest) { FactoryGirl.create(:contest) }
-  let(:contestproblem) { FactoryGirl.create(:contestproblem, contest: contest) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:user_organizer) { FactoryBot.create(:advanced_user) }
+  let(:user) { FactoryBot.create(:advanced_user) }
+  let(:root) { FactoryBot.create(:root) }
+  let(:contest) { FactoryBot.create(:contest) }
+  let(:contestproblem) { FactoryBot.create(:contestproblem, contest: contest) }
   
   before do
     contest.organizers << user_organizer
@@ -99,13 +99,13 @@ describe ContestproblemsController, type: :controller, contestproblem: true do
       it { expect(response).to have_controller_put_path_behavior('publish_results', contestproblem, :danger) } # Because no star solution
       
       context "and there is a star solution" do
-        let!(:star_contestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, corrected: true, star: true) }
-        let!(:subject_contest) { FactoryGirl.create(:subject, contest: contest) }
+        let!(:star_contestsolution) { FactoryBot.create(:contestsolution, contestproblem: contestproblem, corrected: true, star: true) }
+        let!(:subject_contest) { FactoryBot.create(:subject, contest: contest) }
         it { expect(response).to have_controller_put_path_behavior('publish_results', contestproblem, :ok) }
       end
       
       context "and there is a non-corrected solution" do
-        let!(:non_corrected_contestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, corrected: false) }
+        let!(:non_corrected_contestsolution) { FactoryBot.create(:contestsolution, contestproblem: contestproblem, corrected: false) }
         it { expect(response).to have_controller_put_path_behavior('publish_results', contestproblem, :danger) }
       end
     end

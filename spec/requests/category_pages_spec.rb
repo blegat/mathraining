@@ -5,8 +5,8 @@ describe "Category pages", category: true do
 
   subject { page }
 
-  let(:root) { FactoryGirl.create(:root) }
-  let!(:category) { FactoryGirl.create(:category) }
+  let(:root) { FactoryBot.create(:root) }
+  let!(:category) { FactoryBot.create(:category) }
   let(:newname) { "Nouveau nom" }
 
   describe "root" do

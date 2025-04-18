@@ -3,9 +3,9 @@ require "spec_helper"
 
 describe SanctionsController, type: :controller, sanction: true do
 
-  let!(:user) { FactoryGirl.create(:user) }
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:sanction) { FactoryGirl.create(:sanction) }
+  let!(:user) { FactoryBot.create(:user) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:sanction) { FactoryBot.create(:sanction) }
   
   context "if the user is not an root" do
     before { sign_in_controller(admin) }

@@ -12,7 +12,7 @@
 require "spec_helper"
 
 describe Color, color: true do
-  let!(:color) { FactoryGirl.build(:color) }
+  let!(:color) { FactoryBot.build(:color) }
 
   subject { color }
   

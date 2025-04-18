@@ -8,7 +8,7 @@
 require "spec_helper"
 
 describe Contestproblemcheck, contestproblem: true do
-  let!(:contestproblem) { FactoryGirl.create(:contestproblem) }
+  let!(:contestproblem) { FactoryBot.create(:contestproblem) }
   let!(:contestproblemcheck) { Contestproblemcheck.new(contestproblem: contestproblem) }
 
   subject { contestproblemcheck }

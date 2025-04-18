@@ -5,16 +5,16 @@ describe "Star proposal pages" do
 
   subject { page }
 
-  let(:root) { FactoryGirl.create(:root) }
-  let(:corrector) { FactoryGirl.create(:corrector) }
+  let(:root) { FactoryBot.create(:root) }
+  let(:corrector) { FactoryBot.create(:corrector) }
   
-  let!(:problem) { FactoryGirl.create(:problem, online: true, level: 1) }
-  let!(:correct_submission) { FactoryGirl.create(:submission, problem: problem, status: :correct) }
-  let!(:correct_submission2) { FactoryGirl.create(:submission, problem: problem, status: :correct) }
-  let!(:wrong_submission) { FactoryGirl.create(:submission, problem: problem, status: :wrong) }
+  let!(:problem) { FactoryBot.create(:problem, online: true, level: 1) }
+  let!(:correct_submission) { FactoryBot.create(:submission, problem: problem, status: :correct) }
+  let!(:correct_submission2) { FactoryBot.create(:submission, problem: problem, status: :correct) }
+  let!(:wrong_submission) { FactoryBot.create(:submission, problem: problem, status: :wrong) }
   
-  let!(:corrector_submission) { FactoryGirl.create(:submission, problem: problem, status: :correct) }
-  let!(:corrector_solvedproblem) { FactoryGirl.create(:solvedproblem, problem: problem, submission: corrector_submission, user: corrector) }
+  let!(:corrector_submission) { FactoryBot.create(:submission, problem: problem, status: :correct) }
+  let!(:corrector_solvedproblem) { FactoryBot.create(:solvedproblem, problem: problem, submission: corrector_submission, user: corrector) }
   
   let(:new_reason) { "Très belle solution." }
   let(:new_answer) { "Voici ma réponse." }
@@ -80,9 +80,9 @@ describe "Star proposal pages" do
     end
     
     describe "visits his proposals" do
-      let!(:starproposal1) { FactoryGirl.create(:starproposal, :user => corrector, :status => :waiting_treatment) }
-      let!(:starproposal2) { FactoryGirl.create(:starproposal, :user => corrector, :status => :rejected) }
-      let!(:starproposal_root) { FactoryGirl.create(:starproposal, :user => root, :status => :accepted) }
+      let!(:starproposal1) { FactoryBot.create(:starproposal, :user => corrector, :status => :waiting_treatment) }
+      let!(:starproposal2) { FactoryBot.create(:starproposal, :user => corrector, :status => :rejected) }
+      let!(:starproposal_root) { FactoryBot.create(:starproposal, :user => root, :status => :accepted) }
       before { visit starproposals_path }
       it do
         should have_selector("h1", text: "Propositions d'étoiles")
@@ -99,8 +99,8 @@ describe "Star proposal pages" do
     before { sign_in root }
     
     describe "visits waiting star proposals" do
-      let!(:starproposal1) { FactoryGirl.create(:starproposal, :user => corrector, :submission => correct_submission, :status => :waiting_treatment) }
-      let!(:starproposal2) { FactoryGirl.create(:starproposal, :user => corrector, :submission => correct_submission2, :status => :accepted) }
+      let!(:starproposal1) { FactoryBot.create(:starproposal, :user => corrector, :submission => correct_submission, :status => :waiting_treatment) }
+      let!(:starproposal2) { FactoryBot.create(:starproposal, :user => corrector, :submission => correct_submission2, :status => :accepted) }
       before { visit starproposals_path }
       it do
         should have_selector("h1", text: "Propositions d'étoiles")
@@ -123,7 +123,7 @@ describe "Star proposal pages" do
     end
     
     describe "visits a submission with waiting star proposal" do
-      let!(:starproposal) { FactoryGirl.create(:starproposal, :user => corrector, :submission => correct_submission, :status => :waiting_treatment) }
+      let!(:starproposal) { FactoryBot.create(:starproposal, :user => corrector, :submission => correct_submission, :status => :waiting_treatment) }
       before { visit problem_path(problem, :sub => correct_submission) }
       specify do
         expect(page).to have_selector("td", text: starproposal.reason)

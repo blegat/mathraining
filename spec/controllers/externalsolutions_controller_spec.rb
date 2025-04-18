@@ -3,9 +3,9 @@ require "spec_helper"
 
 describe ExternalsolutionsController, type: :controller, externalsolution: true do
 
-  let(:user) { FactoryGirl.create(:user) }
-  let(:problem) { FactoryGirl.create(:problem) }
-  let(:externalsolution) { FactoryGirl.create(:externalsolution) }
+  let(:user) { FactoryBot.create(:user) }
+  let(:problem) { FactoryBot.create(:problem) }
+  let(:externalsolution) { FactoryBot.create(:externalsolution) }
   
   context "if the user is not an signed in" do 
     it { expect(response).to have_controller_create_behavior('externalsolution', :access_refused, {:problem_id => problem.id}) }

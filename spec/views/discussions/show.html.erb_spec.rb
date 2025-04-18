@@ -5,8 +5,8 @@ describe "discussions/show.html.erb", type: :view, discussion: true do
 
   subject { rendered }
 
-  let(:user) { FactoryGirl.create(:user) }
-  let(:user2) { FactoryGirl.create(:user) }
+  let(:user) { FactoryBot.create(:user) }
+  let(:user2) { FactoryBot.create(:user) }
   let!(:discussion) { Discussion.create(last_message_time: DateTime.now) }
   let!(:link1) { Link.create(user: user,  discussion: discussion, nonread: 1) }
   let!(:link2) { Link.create(user: user2, discussion: discussion, nonread: 0) }

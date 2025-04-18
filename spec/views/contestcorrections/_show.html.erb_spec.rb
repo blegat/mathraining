@@ -5,9 +5,9 @@ describe "contestcorrections/_show.html.erb", type: :view, contestcorrection: tr
 
   subject { rendered }
 
-  let(:user) { FactoryGirl.create(:user) }
-  let!(:contestproblem) { FactoryGirl.create(:contestproblem, status: :corrected) }
-  let!(:contestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, official: false, score: 4) }
+  let(:user) { FactoryBot.create(:user) }
+  let!(:contestproblem) { FactoryBot.create(:contestproblem, status: :corrected) }
+  let!(:contestsolution) { FactoryBot.create(:contestsolution, contestproblem: contestproblem, official: false, score: 4) }
   let!(:contestsolution_official) { contestproblem.contestsolutions.where(:official => true).first }
   
   before do

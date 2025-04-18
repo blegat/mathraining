@@ -18,7 +18,7 @@
 require "spec_helper"
 
 describe Contest, contest: true do
-  let!(:contest) { FactoryGirl.build(:contest) }
+  let!(:contest) { FactoryBot.build(:contest) }
 
   subject { contest }
 
@@ -68,9 +68,9 @@ describe Contest, contest: true do
   # Update problem numbers and contest details
   describe "when there are some problems" do
     let!(:d) { Date.new(2030, 1, 1).to_datetime }
-    let!(:contestproblem1) { FactoryGirl.create(:contestproblem, contest: contest, number: 20, start_time: d + 2.days, end_time: d + 3.days) }
-    let!(:contestproblem2) { FactoryGirl.create(:contestproblem, contest: contest, number: 15, start_time: d + 3.days, end_time: d + 5.days) }
-    let!(:contestproblem3) { FactoryGirl.create(:contestproblem, contest: contest, number: 4, start_time: d + 3.days, end_time: d + 4.days) }
+    let!(:contestproblem1) { FactoryBot.create(:contestproblem, contest: contest, number: 20, start_time: d + 2.days, end_time: d + 3.days) }
+    let!(:contestproblem2) { FactoryBot.create(:contestproblem, contest: contest, number: 15, start_time: d + 3.days, end_time: d + 5.days) }
+    let!(:contestproblem3) { FactoryBot.create(:contestproblem, contest: contest, number: 4, start_time: d + 3.days, end_time: d + 4.days) }
     
     describe "computation of new numbers should be correct" do
       before do

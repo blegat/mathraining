@@ -18,8 +18,8 @@
 require "spec_helper"
 
 describe Chapter, chapter: true do
-  let!(:sec) { FactoryGirl.build(:section) }
-  let!(:chap) { FactoryGirl.build(:chapter, section: sec) }
+  let!(:sec) { FactoryBot.build(:section) }
+  let!(:chap) { FactoryBot.build(:chapter, section: sec) }
 
   subject { chap }
 
@@ -38,7 +38,7 @@ describe Chapter, chapter: true do
   
   describe "when name is already taken" do
     before do
-      FactoryGirl.create(:chapter, section: sec, name: chap.name)
+      FactoryBot.create(:chapter, section: sec, name: chap.name)
     end
     it { should_not be_valid }
   end
@@ -82,10 +82,10 @@ describe Chapter, chapter: true do
 
   # Prerequisites
   describe "when there are some prerequisites" do
-    let!(:chap1) { FactoryGirl.create(:chapter) }
-    let!(:chap2) { FactoryGirl.create(:chapter) }
-    let!(:chap3) { FactoryGirl.create(:chapter) }
-    let!(:chap4) { FactoryGirl.create(:chapter) }
+    let!(:chap1) { FactoryBot.create(:chapter) }
+    let!(:chap2) { FactoryBot.create(:chapter) }
+    let!(:chap3) { FactoryBot.create(:chapter) }
+    let!(:chap4) { FactoryBot.create(:chapter) }
     before do
       chap1.prerequisites << chap3
       chap.save

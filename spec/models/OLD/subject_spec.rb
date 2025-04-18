@@ -21,7 +21,7 @@ require "spec_helper"
 
 describe Subject do
 
-  before { @s = FactoryGirl.build(:subject) }
+  before { @s = FactoryBot.build(:subject) }
 
   subject { @s }
 

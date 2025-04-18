@@ -12,8 +12,8 @@
 require "spec_helper"
 
 describe Message, message: true do
-
-  let!(:message) { FactoryGirl.build(:message) }
+  let!(:user) { FactoryBot.create(:user) }
+  let!(:message) { FactoryBot.build(:message, user: user) }
 
   subject { message }
 
@@ -43,15 +43,15 @@ describe Message, message: true do
   
   # can_be_udpated_by
   describe "can_be_updated_by should work" do
-    let!(:user) { FactoryGirl.create(:user) }
-    let!(:user2) { FactoryGirl.create(:user) }
-    let!(:admin) { FactoryGirl.create(:admin) }
-    let!(:root) { FactoryGirl.create(:root) }
-    let!(:message_user) { FactoryGirl.create(:message, user: user) }
-    let!(:message_user_erased) { FactoryGirl.create(:message, user: user, erased: true) }
-    let!(:message_admin) { FactoryGirl.create(:message, user: admin) }
-    let!(:message_root) { FactoryGirl.create(:message, user: root) }
-    let!(:message_auto) { FactoryGirl.create(:message, user_id: 0) }
+    let!(:user) { FactoryBot.create(:user) }
+    let!(:user2) { FactoryBot.create(:user) }
+    let!(:admin) { FactoryBot.create(:admin) }
+    let!(:root) { FactoryBot.create(:root) }
+    let!(:message_user) { FactoryBot.create(:message, user: user) }
+    let!(:message_user_erased) { FactoryBot.create(:message, user: user, erased: true) }
+    let!(:message_admin) { FactoryBot.create(:message, user: admin) }
+    let!(:message_root) { FactoryBot.create(:message, user: root) }
+    let!(:message_auto) { FactoryBot.create(:message, user_id: 0) }
     
     specify do
       expect(message_user.can_be_updated_by(user)).to eq(true)

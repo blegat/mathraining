@@ -3,10 +3,10 @@ require "spec_helper"
 
 describe "Static pages" do
 
-  let(:user) { FactoryGirl.create(:user) }
-  let(:user_wepion) { FactoryGirl.create(:user, wepion: true) }
-  let(:corrector) { FactoryGirl.create(:corrector) }
-  let(:admin) { FactoryGirl.create(:admin) }
+  let(:user) { FactoryBot.create(:user) }
+  let(:user_wepion) { FactoryBot.create(:user, wepion: true) }
+  let(:corrector) { FactoryBot.create(:corrector) }
+  let(:admin) { FactoryBot.create(:admin) }
 
   subject { page }
 

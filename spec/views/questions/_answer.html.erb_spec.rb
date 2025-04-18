@@ -5,7 +5,7 @@ describe "questions/_answer.html.erb", type: :view, question: true do
 
   subject { rendered }
 
-  let(:question) { FactoryGirl.create(:question) }
+  let(:question) { FactoryBot.create(:question) }
   
   context "if the question is an exercise with integer answer" do
     before { question.update(:is_qcm => false, :decimal => false, :answer => 4321) }
@@ -40,8 +40,8 @@ describe "questions/_answer.html.erb", type: :view, question: true do
   end
   
   context "if the question is a qcm" do
-    let!(:item1) { FactoryGirl.create(:item, question: question, position: 1, ok: true) }
-    let!(:item2) { FactoryGirl.create(:item, question: question, position: 2, ok: false) }
+    let!(:item1) { FactoryBot.create(:item, question: question, position: 1, ok: true) }
+    let!(:item2) { FactoryBot.create(:item, question: question, position: 2, ok: false) }
     
     context "that has a single answer" do
       before { question.update(:is_qcm => true, :many_answers => false) }

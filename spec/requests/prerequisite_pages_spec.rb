@@ -5,15 +5,15 @@ describe "prerequisite pages", prerequisite: true do
 
   subject { page }
 
-  let(:root) { FactoryGirl.create(:root) }
-  let!(:section) { FactoryGirl.create(:section) }
-  let!(:section_fondation) { FactoryGirl.create(:fondation_section) }
-  let!(:chapter_online) { FactoryGirl.create(:chapter, section: section, online: true) }
-  let!(:chapter_online2) { FactoryGirl.create(:chapter, section: section, online: true) }
-  let!(:chapter_fondation_online) { FactoryGirl.create(:chapter, section: section_fondation, online: true) }
-  let!(:chapter_offline) { FactoryGirl.create(:chapter, section: section, online: false) }
-  let!(:chapter_offline2) { FactoryGirl.create(:chapter, section: section, online: false) }
-  let!(:chapter_fondation_offline) { FactoryGirl.create(:chapter, section: section_fondation, online: false) }
+  let(:root) { FactoryBot.create(:root) }
+  let!(:section) { FactoryBot.create(:section) }
+  let!(:section_fondation) { FactoryBot.create(:fondation_section) }
+  let!(:chapter_online) { FactoryBot.create(:chapter, section: section, online: true) }
+  let!(:chapter_online2) { FactoryBot.create(:chapter, section: section, online: true) }
+  let!(:chapter_fondation_online) { FactoryBot.create(:chapter, section: section_fondation, online: true) }
+  let!(:chapter_offline) { FactoryBot.create(:chapter, section: section, online: false) }
+  let!(:chapter_offline2) { FactoryBot.create(:chapter, section: section, online: false) }
+  let!(:chapter_fondation_offline) { FactoryBot.create(:chapter, section: section_fondation, online: false) }
 
   describe "root" do
     before { sign_in root }

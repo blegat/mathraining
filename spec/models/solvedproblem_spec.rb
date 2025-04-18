@@ -13,7 +13,7 @@ require "spec_helper"
 
 describe Solvedproblem, solvedproblem: true do
 
-  let(:sp) { FactoryGirl.build(:solvedproblem) }
+  let(:sp) { FactoryBot.build(:solvedproblem) }
 
   subject { sp }
   

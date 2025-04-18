@@ -15,7 +15,7 @@
 require "spec_helper"
 
 describe Contestproblem, contestproblem: true do
-  let!(:contestproblem) { FactoryGirl.build(:contestproblem) }
+  let!(:contestproblem) { FactoryBot.build(:contestproblem) }
 
   subject { contestproblem }
 

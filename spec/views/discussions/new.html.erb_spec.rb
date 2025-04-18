@@ -5,7 +5,7 @@ describe "discussions/new.html.erb", type: :view, discussion: true do
 
   subject { rendered }
 
-  let(:user) { FactoryGirl.create(:user) }
+  let(:user) { FactoryBot.create(:user) }
   
   before do
     sign_in_view(user)

@@ -5,9 +5,9 @@ describe "corrections/_new.html.erb", type: :view, correction: true do
 
   subject { rendered }
 
-  let(:user) { FactoryGirl.create(:user) }
-  let(:admin) { FactoryGirl.create(:user) }
-  let(:submission) { FactoryGirl.create(:submission, user: user) }
+  let(:user) { FactoryBot.create(:user) }
+  let(:admin) { FactoryBot.create(:user) }
+  let(:submission) { FactoryBot.create(:submission, user: user) }
   
   before do
     assign(:problem, submission.problem)

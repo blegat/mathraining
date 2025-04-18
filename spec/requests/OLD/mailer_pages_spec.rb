@@ -3,7 +3,7 @@ require "spec_helper"
 
 feature 'Emailer' do
   describe "inscription emails" do
-    let!(:country) { FactoryGirl.create(:country) }
+    let!(:country) { FactoryBot.create(:country) }
     
     before do
       clear_emails
@@ -33,7 +33,7 @@ feature 'Emailer' do
   end
   
   describe "forgot password emails" do
-    let!(:user) { FactoryGirl.create(:user) }
+    let!(:user) { FactoryBot.create(:user) }
     before do
       clear_emails
       visit forgot_password_path
@@ -52,8 +52,8 @@ feature 'Emailer' do
   end
 
   describe "tchatmessage emails" do
-    let(:user) { FactoryGirl.create(:user) }
-    let!(:other_user) { FactoryGirl.create(:user, last_connexion_date: DateTime.now) } # last_connexion_date to be sure that other_user appears in the list
+    let(:user) { FactoryBot.create(:user) }
+    let!(:other_user) { FactoryBot.create(:user, last_connexion_date: DateTime.now) } # last_connexion_date to be sure that other_user appears in the list
   
     before do
       clear_emails
@@ -75,9 +75,9 @@ feature 'Emailer' do
   end
   
   describe "message emails" do
-    let(:user) { FactoryGirl.create(:user) }
-    let!(:other_user) { FactoryGirl.create(:user) }
-    let!(:sub) { FactoryGirl.create(:subject) }
+    let(:user) { FactoryBot.create(:user) }
+    let!(:other_user) { FactoryBot.create(:user) }
+    let!(:sub) { FactoryBot.create(:subject) }
     
     before do
       clear_emails
@@ -99,8 +99,8 @@ feature 'Emailer' do
   end
   
   describe "group message emails" do
-    let!(:user_in_group_A) { FactoryGirl.create(:user, wepion: true, group: "A") }
-    let(:root) { FactoryGirl.create(:root) }
+    let!(:user_in_group_A) { FactoryBot.create(:user, wepion: true, group: "A") }
+    let(:root) { FactoryBot.create(:root) }
     
     describe "new subject" do
       before do
@@ -123,7 +123,7 @@ feature 'Emailer' do
     end
     
     describe "new message" do
-      let!(:sub) { FactoryGirl.create(:subject, :for_wepion => true) }
+      let!(:sub) { FactoryBot.create(:subject, :for_wepion => true) }
       before do
         clear_emails
         sign_in root
@@ -143,18 +143,18 @@ feature 'Emailer' do
   end
   
   describe "contest emails" do
-    let!(:user_following_contest) { FactoryGirl.create(:user) }
-    let!(:user_following_subject) { FactoryGirl.create(:user) }
-    let!(:root) { FactoryGirl.create(:root) }
+    let!(:user_following_contest) { FactoryBot.create(:user) }
+    let!(:user_following_subject) { FactoryBot.create(:user) }
+    let!(:root) { FactoryBot.create(:root) }
   
-    let!(:category) { FactoryGirl.create(:category, name: "Mathraining") } # For the Forum subject
+    let!(:category) { FactoryBot.create(:category, name: "Mathraining") } # For the Forum subject
     
-    let!(:running_contest) { FactoryGirl.create(:contest, status: :in_progress) }
-    let!(:finished_contestproblem) { FactoryGirl.create(:contestproblem, contest: running_contest, number: 2, status: :in_correction, start_time: DateTime.now - 4.days, end_time: DateTime.now - 2.days) }
+    let!(:running_contest) { FactoryBot.create(:contest, status: :in_progress) }
+    let!(:finished_contestproblem) { FactoryBot.create(:contestproblem, contest: running_contest, number: 2, status: :in_correction, start_time: DateTime.now - 4.days, end_time: DateTime.now - 2.days) }
     let!(:finished_contestproblem_officialsol) { finished_contestproblem.contestsolutions.where(:official => true).first }
-    let!(:running_contestproblem) { FactoryGirl.create(:contestproblem, contest: running_contest, number: 1, status: :not_started_yet, start_time: DateTime.now + 1.day - 5.minutes, end_time: DateTime.now + 3.days, reminder_status: :no_reminder_sent) }
-    let!(:running_contestproblemcheck) { FactoryGirl.create(:contestproblemcheck, contestproblem: running_contestproblem) }
-    let!(:running_contestsubject) { FactoryGirl.create(:subject, contest: running_contest, category: category, last_comment_time: DateTime.now - 2.days) }
+    let!(:running_contestproblem) { FactoryBot.create(:contestproblem, contest: running_contest, number: 1, status: :not_started_yet, start_time: DateTime.now + 1.day - 5.minutes, end_time: DateTime.now + 3.days, reminder_status: :no_reminder_sent) }
+    let!(:running_contestproblemcheck) { FactoryBot.create(:contestproblemcheck, contestproblem: running_contestproblem) }
+    let!(:running_contestsubject) { FactoryBot.create(:subject, contest: running_contest, category: category, last_comment_time: DateTime.now - 2.days) }
     
   
     before do
@@ -205,10 +205,10 @@ feature 'Emailer' do
     end
     
     describe "new problems in one day" do
-      let!(:running_contestproblem2) { FactoryGirl.create(:contestproblem, contest: running_contest, number: 2, status: :not_started_yet, start_time: running_contestproblem.start_time, end_time: DateTime.now + 4.days, reminder_status: :no_reminder_sent) }
-      let!(:running_contestproblemcheck2) { FactoryGirl.create(:contestproblemcheck, contestproblem: running_contestproblem2) }
-      let!(:running_contestproblem3) { FactoryGirl.create(:contestproblem, contest: running_contest, number: 2, status: :not_started_yet, start_time: running_contestproblem.start_time, end_time: DateTime.now + 6.days, reminder_status: :no_reminder_sent) }
-      let!(:running_contestproblemcheck3) { FactoryGirl.create(:contestproblemcheck, contestproblem: running_contestproblem3) }
+      let!(:running_contestproblem2) { FactoryBot.create(:contestproblem, contest: running_contest, number: 2, status: :not_started_yet, start_time: running_contestproblem.start_time, end_time: DateTime.now + 4.days, reminder_status: :no_reminder_sent) }
+      let!(:running_contestproblemcheck2) { FactoryBot.create(:contestproblemcheck, contestproblem: running_contestproblem2) }
+      let!(:running_contestproblem3) { FactoryBot.create(:contestproblem, contest: running_contest, number: 2, status: :not_started_yet, start_time: running_contestproblem.start_time, end_time: DateTime.now + 6.days, reminder_status: :no_reminder_sent) }
+      let!(:running_contestproblemcheck3) { FactoryBot.create(:contestproblemcheck, contestproblem: running_contestproblem3) }
       
       before do
         clear_emails

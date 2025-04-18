@@ -10,15 +10,15 @@ describe "Contestsolution pages" do
   let(:datetime_after) { DateTime.now + 1.hour }
   let(:datetime_after2) { DateTime.now + 2.hours }
 
-  let(:root) { FactoryGirl.create(:root) }
-  let(:user_with_rating_199) { FactoryGirl.create(:user, rating: 199) }
-  let(:user_with_rating_200) { FactoryGirl.create(:user, rating: 200) }
-  let!(:user_organizer) { FactoryGirl.create(:user, rating: 300) }
+  let(:root) { FactoryBot.create(:root) }
+  let(:user_with_rating_199) { FactoryBot.create(:user, rating: 199) }
+  let(:user_with_rating_200) { FactoryBot.create(:user, rating: 200) }
+  let!(:user_organizer) { FactoryBot.create(:user, rating: 300) }
   
-  let!(:contest) { FactoryGirl.create(:contest, status: :in_progress) }
-  let!(:contestproblem_finished) { FactoryGirl.create(:contestproblem, contest: contest, number: 1, start_time: datetime_before, end_time: datetime_before2, status: :in_correction) }
-  let!(:contestproblem_running) { FactoryGirl.create(:contestproblem, contest: contest, number: 2, start_time: datetime_before2, end_time: datetime_after, status: :in_progress) }
-  let!(:contestproblem_not_started) { FactoryGirl.create(:contestproblem, contest: contest, number: 3, start_time: datetime_after, end_time: datetime_after2, status: :not_started_yet) }
+  let!(:contest) { FactoryBot.create(:contest, status: :in_progress) }
+  let!(:contestproblem_finished) { FactoryBot.create(:contestproblem, contest: contest, number: 1, start_time: datetime_before, end_time: datetime_before2, status: :in_correction) }
+  let!(:contestproblem_running) { FactoryBot.create(:contestproblem, contest: contest, number: 2, start_time: datetime_before2, end_time: datetime_after, status: :in_progress) }
+  let!(:contestproblem_not_started) { FactoryBot.create(:contestproblem, contest: contest, number: 3, start_time: datetime_after, end_time: datetime_after2, status: :not_started_yet) }
   
   let(:officialsol_finished) { contestproblem_finished.contestsolutions.where(:official => true).first }
   let(:officialsol_running) { contestproblem_running.contestsolutions.where(:official => true).first }
@@ -263,8 +263,8 @@ describe "Contestsolution pages" do
     end
     
     describe "edits a solution with a file" do
-      let!(:usercontestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem_running, user: user_with_rating_200) }
-      let!(:contestsolutionmyfile) { FactoryGirl.create(:contestsolutionmyfile, myfiletable: usercontestsolution) }
+      let!(:usercontestsolution) { FactoryBot.create(:contestsolution, contestproblem: contestproblem_running, user: user_with_rating_200) }
+      let!(:contestsolutionmyfile) { FactoryBot.create(:contestsolutionmyfile, myfiletable: usercontestsolution) }
       before do
         visit contestproblem_path(contestproblem_running, :sol => usercontestsolution)
         wait_for_js_imports
@@ -286,8 +286,8 @@ describe "Contestsolution pages" do
     end
     
     describe "edits a solution with too many files" do # 3 x image1 should do > 15 ko, which is the limit in test mode
-      let!(:usercontestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem_running, user: user_with_rating_200) }
-      let!(:contestsolutionmyfile) { FactoryGirl.create(:contestsolutionmyfile, myfiletable: usercontestsolution) }
+      let!(:usercontestsolution) { FactoryBot.create(:contestsolution, contestproblem: contestproblem_running, user: user_with_rating_200) }
+      let!(:contestsolutionmyfile) { FactoryBot.create(:contestsolutionmyfile, myfiletable: usercontestsolution) }
       before do
         visit contestproblem_path(contestproblem_running, :sol => usercontestsolution)
         wait_for_js_imports

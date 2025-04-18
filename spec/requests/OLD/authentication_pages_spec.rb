@@ -5,7 +5,7 @@ describe "Authentication" do
 
   subject { page }
   
-  let!(:user) { FactoryGirl.create(:user) }
+  let!(:user) { FactoryBot.create(:user) }
 
   describe "signin button" do
     before { visit root_path }
@@ -68,7 +68,7 @@ describe "Authentication" do
     end
     
     describe "to an account that was recently banned" do
-      let!(:sanction) { FactoryGirl.create(:sanction, user: user, sanction_type: :ban, start_time: DateTime.now - 1.week, duration: 14, reason: "Ce compte a été désactivé jusqu'au [DATE].") }
+      let!(:sanction) { FactoryBot.create(:sanction, user: user, sanction_type: :ban, start_time: DateTime.now - 1.week, duration: 14, reason: "Ce compte a été désactivé jusqu'au [DATE].") }
       before { sign_in_with_form(user) }
       it do
         should have_error_message("Ce compte a été désactivé jusqu'au #{write_date_only(sanction.end_time)}")
@@ -77,7 +77,7 @@ describe "Authentication" do
     end
     
     describe "to an account that was banned some time ago" do
-      let!(:sanction) { FactoryGirl.create(:sanction, user: user, sanction_type: :ban, start_time: DateTime.now - 1.month, duration: 14) }
+      let!(:sanction) { FactoryBot.create(:sanction, user: user, sanction_type: :ban, start_time: DateTime.now - 1.month, duration: 14) }
       before { sign_in_with_form(user) }
       it { should have_content(user.fullname) } # Should be connected
     end

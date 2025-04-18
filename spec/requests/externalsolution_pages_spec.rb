@@ -5,10 +5,10 @@ describe "External solution pages", externalsolution: true do
 
   subject { page }
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let!(:problem) { FactoryGirl.create(:problem) }
-  let!(:externalsolution) { FactoryGirl.create(:externalsolution, problem: problem) }
-  let!(:extract) { FactoryGirl.create(:extract, externalsolution: externalsolution) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let!(:problem) { FactoryBot.create(:problem) }
+  let!(:externalsolution) { FactoryBot.create(:externalsolution, problem: problem) }
+  let!(:extract) { FactoryBot.create(:extract, externalsolution: externalsolution) }
   let(:newurl) { "https://www.mathraining.be" }
   let(:newtext) { "Nouveau petit extrait" }
 
@@ -76,8 +76,8 @@ describe "External solution pages", externalsolution: true do
     
     describe "creates an extract" do
       describe "with good information" do
-        let!(:submission_plagiarized) { FactoryGirl.create(:submission, problem: problem, status: :plagiarized, content: "Ma solution : " + newtext) }
-        let!(:suspicion) { FactoryGirl.create(:suspicion, submission: submission_plagiarized, source: externalsolution.url, status: :confirmed) }
+        let!(:submission_plagiarized) { FactoryBot.create(:submission, problem: problem, status: :plagiarized, content: "Ma solution : " + newtext) }
+        let!(:suspicion) { FactoryBot.create(:suspicion, submission: submission_plagiarized, source: externalsolution.url, status: :confirmed) }
         before do
           find_by_id('create_extract_field_' + externalsolution.id.to_s).set(newtext)
           find_by_id('create_extract_button_' + externalsolution.id.to_s).click

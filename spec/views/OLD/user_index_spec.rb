@@ -5,40 +5,40 @@ describe "Page user/index" do
 
   subject { page }
   
-  let!(:country1) { FactoryGirl.create(:country) }
-  let!(:country2) { FactoryGirl.create(:country) }
-  let!(:country3) { FactoryGirl.create(:country) }
+  let!(:country1) { FactoryBot.create(:country) }
+  let!(:country2) { FactoryBot.create(:country) }
+  let!(:country3) { FactoryBot.create(:country) }
   
-  let!(:section) { FactoryGirl.create(:section, fondation: false) }
-  let!(:section_fondation) { FactoryGirl.create(:section, fondation: true) }
-  let!(:chapter)  { FactoryGirl.create(:chapter, section: section, online: true) }
-  let!(:chapter_fondation) { FactoryGirl.create(:chapter, section: section_fondation, online: true) }
-  let!(:problem1) { FactoryGirl.create(:problem, section: section, level: 1, online: true) }
-  let!(:problem2) { FactoryGirl.create(:problem, section: section, level: 2, online: true) }
-  let!(:question1) { FactoryGirl.create(:exercise, chapter: chapter, level: 1, online: true) }
-  let!(:question2) { FactoryGirl.create(:exercise_decimal, chapter: chapter, level: 2, online: true) }
-  let!(:question3) { FactoryGirl.create(:exercise, chapter: chapter_fondation, level: 3, online: true) }
+  let!(:section) { FactoryBot.create(:section, fondation: false) }
+  let!(:section_fondation) { FactoryBot.create(:section, fondation: true) }
+  let!(:chapter)  { FactoryBot.create(:chapter, section: section, online: true) }
+  let!(:chapter_fondation) { FactoryBot.create(:chapter, section: section_fondation, online: true) }
+  let!(:problem1) { FactoryBot.create(:problem, section: section, level: 1, online: true) }
+  let!(:problem2) { FactoryBot.create(:problem, section: section, level: 2, online: true) }
+  let!(:question1) { FactoryBot.create(:exercise, chapter: chapter, level: 1, online: true) }
+  let!(:question2) { FactoryBot.create(:exercise_decimal, chapter: chapter, level: 2, online: true) }
+  let!(:question3) { FactoryBot.create(:exercise, chapter: chapter_fondation, level: 3, online: true) }
 
-  let!(:root)   { FactoryGirl.create(:root, country: country1) }
-  let!(:admin1) { FactoryGirl.create(:admin, country: country1) }
-  let!(:admin2) { FactoryGirl.create(:admin, country: country2) }
-  let!(:user1)  { FactoryGirl.create(:user, country: country1, rating: 6000) } # Maître
-  let!(:user2)  { FactoryGirl.create(:user, country: country2, rating: 6000) } # Maître
-  let!(:user3)  { FactoryGirl.create(:user, country: country1, rating: 4000) } # Expert
-  let!(:user4)  { FactoryGirl.create(:user, country: country1, rating: 3000) } # Chevronné
-  let!(:user5)  { FactoryGirl.create(:user, country: country2, rating: 2000) } # Chevronné
-  let!(:user6)  { FactoryGirl.create(:user, country: country2, rating: 1000) } # Qualifié
-  let!(:user7)  { FactoryGirl.create(:user, country: country2, rating: 500) }  # Compétent
-  let!(:user8)  { FactoryGirl.create(:user, country: country1, rating: 500) }  # Compétent
-  let!(:user9)  { FactoryGirl.create(:user, country: country1, rating: 500) }  # Compétent
-  let!(:user10) { FactoryGirl.create(:user, country: country2, rating: 300) }  # Initié
-  let!(:user11) { FactoryGirl.create(:user, country: country1, rating: 200) }  # Initié
-  let!(:user12) { FactoryGirl.create(:user, country: country1, rating: 100) }  # Débutant
-  let!(:user13) { FactoryGirl.create(:user, country: country1, rating: 50) }   # Novice
-  let!(:user14) { FactoryGirl.create(:user, country: country2, rating: 10) }   # Novice
-  let!(:user15) { FactoryGirl.create(:user, country: country1, rating: 0) }
-  let!(:user16) { FactoryGirl.create(:user, country: country2, rating: 0) }
-  let!(:user17) { FactoryGirl.create(:user, country: country2, rating: 0, email_confirm: false) }
+  let!(:root)   { FactoryBot.create(:root, country: country1) }
+  let!(:admin1) { FactoryBot.create(:admin, country: country1) }
+  let!(:admin2) { FactoryBot.create(:admin, country: country2) }
+  let!(:user1)  { FactoryBot.create(:user, country: country1, rating: 6000) } # Maître
+  let!(:user2)  { FactoryBot.create(:user, country: country2, rating: 6000) } # Maître
+  let!(:user3)  { FactoryBot.create(:user, country: country1, rating: 4000) } # Expert
+  let!(:user4)  { FactoryBot.create(:user, country: country1, rating: 3000) } # Chevronné
+  let!(:user5)  { FactoryBot.create(:user, country: country2, rating: 2000) } # Chevronné
+  let!(:user6)  { FactoryBot.create(:user, country: country2, rating: 1000) } # Qualifié
+  let!(:user7)  { FactoryBot.create(:user, country: country2, rating: 500) }  # Compétent
+  let!(:user8)  { FactoryBot.create(:user, country: country1, rating: 500) }  # Compétent
+  let!(:user9)  { FactoryBot.create(:user, country: country1, rating: 500) }  # Compétent
+  let!(:user10) { FactoryBot.create(:user, country: country2, rating: 300) }  # Initié
+  let!(:user11) { FactoryBot.create(:user, country: country1, rating: 200) }  # Initié
+  let!(:user12) { FactoryBot.create(:user, country: country1, rating: 100) }  # Débutant
+  let!(:user13) { FactoryBot.create(:user, country: country1, rating: 50) }   # Novice
+  let!(:user14) { FactoryBot.create(:user, country: country2, rating: 10) }   # Novice
+  let!(:user15) { FactoryBot.create(:user, country: country1, rating: 0) }
+  let!(:user16) { FactoryBot.create(:user, country: country2, rating: 0) }
+  let!(:user17) { FactoryBot.create(:user, country: country2, rating: 0, email_confirm: false) }
   
   before(:all) do
     Color.create_defaults
@@ -65,11 +65,11 @@ describe "Page user/index" do
       Problem.all.each do |p|
         if r.rand() < 0.5 # Tried to solve the problem
           if r.rand() < 0.5 # Incorrect
-            FactoryGirl.create(:submission, problem: p, user: u, status: :wrong)
+            FactoryBot.create(:submission, problem: p, user: u, status: :wrong)
           else # Correct
-            sub = FactoryGirl.create(:submission, problem: p, user: u, status: :correct)
+            sub = FactoryBot.create(:submission, problem: p, user: u, status: :correct)
             time = DateTime.now - ((rand() * 28).to_i).days # Date of resolution in the last 4 weeks
-            FactoryGirl.create(:solvedproblem, problem: p, user: u, submission: sub, resolution_time: time)
+            FactoryBot.create(:solvedproblem, problem: p, user: u, submission: sub, resolution_time: time)
           end
         end
       end
@@ -79,9 +79,9 @@ describe "Page user/index" do
           correct = r.rand() < 0.5 # Correct solution or not
           time = DateTime.now - ((rand() * 28).to_i).days # Date of resolution in the last 4 weeks
           if correct
-            FactoryGirl.create(:solvedquestion, question: q, user: u, resolution_time: time)
+            FactoryBot.create(:solvedquestion, question: q, user: u, resolution_time: time)
           else
-            FactoryGirl.create(:unsolvedquestion, question: q, user: u, last_guess_time: time)
+            FactoryBot.create(:unsolvedquestion, question: q, user: u, last_guess_time: time)
           end
         end
       end

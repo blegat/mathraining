@@ -3,9 +3,9 @@ require "spec_helper"
 
 describe PrivacypoliciesController, type: :controller, privacypolicy: true do
 
-  let(:root) { FactoryGirl.create(:root) }
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:privacypolicy) { FactoryGirl.create(:privacypolicy, online: false) }
+  let(:root) { FactoryBot.create(:root) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:privacypolicy) { FactoryBot.create(:privacypolicy, online: false) }
   
   context "if the user is not a root" do
     before { sign_in_controller(admin) }

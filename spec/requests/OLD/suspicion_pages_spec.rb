@@ -5,18 +5,18 @@ describe "Suspicion pages" do
 
   subject { page }
 
-  let(:root) { FactoryGirl.create(:root) }
-  let(:corrector) { FactoryGirl.create(:corrector) }
+  let(:root) { FactoryBot.create(:root) }
+  let(:corrector) { FactoryBot.create(:corrector) }
   
-  let!(:problem) { FactoryGirl.create(:problem, online: true, level: 1) }
-  let!(:waiting_submission) { FactoryGirl.create(:submission, problem: problem, status: :waiting) }
-  let!(:correct_submission) { FactoryGirl.create(:submission, problem: problem, status: :correct) }
-  let!(:wrong_submission) { FactoryGirl.create(:submission, problem: problem, status: :wrong) }
+  let!(:problem) { FactoryBot.create(:problem, online: true, level: 1) }
+  let!(:waiting_submission) { FactoryBot.create(:submission, problem: problem, status: :waiting) }
+  let!(:correct_submission) { FactoryBot.create(:submission, problem: problem, status: :correct) }
+  let!(:wrong_submission) { FactoryBot.create(:submission, problem: problem, status: :wrong) }
   
-  let!(:plagiarized_submission) { FactoryGirl.create(:submission, problem: problem, status: :plagiarized) }
+  let!(:plagiarized_submission) { FactoryBot.create(:submission, problem: problem, status: :plagiarized) }
   
-  let!(:corrector_submission) { FactoryGirl.create(:submission, problem: problem, status: :correct) }
-  let!(:corrector_solvedproblem) { FactoryGirl.create(:solvedproblem, problem: problem, submission: corrector_submission, user: corrector) }
+  let!(:corrector_submission) { FactoryBot.create(:submission, problem: problem, status: :correct) }
+  let!(:corrector_solvedproblem) { FactoryBot.create(:solvedproblem, problem: problem, submission: corrector_submission, user: corrector) }
   
   let(:new_source) { "http://www.pleindesolutions.com" }
   
@@ -60,9 +60,9 @@ describe "Suspicion pages" do
     end
     
     describe "visits his suspicions" do
-      let!(:suspicion1) { FactoryGirl.create(:suspicion, :user => corrector, :status => :waiting_confirmation) }
-      let!(:suspicion2) { FactoryGirl.create(:suspicion, :user => corrector, :status => :rejected) }
-      let!(:suspicion_root) { FactoryGirl.create(:suspicion, :user => root, :status => :forgiven) }
+      let!(:suspicion1) { FactoryBot.create(:suspicion, :user => corrector, :status => :waiting_confirmation) }
+      let!(:suspicion2) { FactoryBot.create(:suspicion, :user => corrector, :status => :rejected) }
+      let!(:suspicion_root) { FactoryBot.create(:suspicion, :user => root, :status => :forgiven) }
       before { visit suspicions_path }
       it do
         should have_selector("h1", text: "Suspicions de plagiat")
@@ -79,9 +79,9 @@ describe "Suspicion pages" do
     before { sign_in root }
     
     describe "visits waiting suspicions" do
-      let!(:suspicion1) { FactoryGirl.create(:suspicion, :user => corrector, :submission => wrong_submission, :status => :waiting_confirmation) }
-      let!(:suspicion2) { FactoryGirl.create(:suspicion, :user => corrector, :submission => correct_submission, :status => :waiting_confirmation) }
-      let!(:suspicion3) { FactoryGirl.create(:suspicion, :user => corrector, :submission => plagiarized_submission, :status => :confirmed) }
+      let!(:suspicion1) { FactoryBot.create(:suspicion, :user => corrector, :submission => wrong_submission, :status => :waiting_confirmation) }
+      let!(:suspicion2) { FactoryBot.create(:suspicion, :user => corrector, :submission => correct_submission, :status => :waiting_confirmation) }
+      let!(:suspicion3) { FactoryBot.create(:suspicion, :user => corrector, :submission => plagiarized_submission, :status => :confirmed) }
       before { visit suspicions_path }
       it do
         should have_selector("h1", text: "Suspicions de plagiat")
@@ -106,7 +106,7 @@ describe "Suspicion pages" do
     end
     
     describe "visits a submission with waiting suspicion" do
-      let!(:suspicion) { FactoryGirl.create(:suspicion, :user => corrector, :submission => wrong_submission, :status => :waiting_confirmation) }
+      let!(:suspicion) { FactoryBot.create(:suspicion, :user => corrector, :submission => wrong_submission, :status => :waiting_confirmation) }
       before { visit problem_path(problem, :sub => wrong_submission) }
       specify do
         expect(page).to have_selector("td", text: suspicion.source)
@@ -139,8 +139,8 @@ describe "Suspicion pages" do
     end
     
     describe "visits a reserved waiting submission in test with suspicion" do
-      let!(:suspicion) { FactoryGirl.create(:suspicion, :user => corrector, :submission => waiting_submission, :status => :waiting_confirmation) }
-      let!(:reservation) { FactoryGirl.create(:following, :user => corrector, :submission => waiting_submission, :kind => :reservation) }
+      let!(:suspicion) { FactoryBot.create(:suspicion, :user => corrector, :submission => waiting_submission, :status => :waiting_confirmation) }
+      let!(:reservation) { FactoryBot.create(:following, :user => corrector, :submission => waiting_submission, :kind => :reservation) }
       before do
         waiting_submission.update(:intest => true, :score => -1)
         visit problem_path(problem, :sub => waiting_submission)
@@ -185,9 +185,9 @@ describe "Suspicion pages" do
     end
     
     describe "confirms suspicion on a correct submission" do
-      let!(:suspicion) { FactoryGirl.create(:suspicion, :user => corrector, :submission => correct_submission, :status => :rejected) }
-      let!(:correction) { FactoryGirl.create(:correction, :user => corrector, :submission => correct_submission) }
-      let!(:solvedproblem) { FactoryGirl.create(:solvedproblem, :user => correct_submission.user, :problem => problem, :submission => correct_submission) }
+      let!(:suspicion) { FactoryBot.create(:suspicion, :user => corrector, :submission => correct_submission, :status => :rejected) }
+      let!(:correction) { FactoryBot.create(:correction, :user => corrector, :submission => correct_submission) }
+      let!(:solvedproblem) { FactoryBot.create(:solvedproblem, :user => correct_submission.user, :problem => problem, :submission => correct_submission) }
       before do
         correct_submission.user.update_attribute(:rating, 200)
         visit problem_path(problem, :sub => correct_submission)
@@ -206,8 +206,8 @@ describe "Suspicion pages" do
     end
     
     describe "unconfirm a suspicion on a plagiarized submission without comment" do
-      let!(:suspicion) { FactoryGirl.create(:suspicion, :user => corrector, :submission => plagiarized_submission, :status => :confirmed) }
-      let!(:auto_following) { FactoryGirl.create(:following, :user => corrector, :submission => plagiarized_submission, :kind => :first_corrector) }
+      let!(:suspicion) { FactoryBot.create(:suspicion, :user => corrector, :submission => plagiarized_submission, :status => :confirmed) }
+      let!(:auto_following) { FactoryBot.create(:following, :user => corrector, :submission => plagiarized_submission, :kind => :first_corrector) }
       before do
         visit problem_path(problem, :sub => plagiarized_submission)
         select "Rejeté", from: "edit_status_field_#{suspicion.id}"
@@ -223,8 +223,8 @@ describe "Suspicion pages" do
     end
     
     describe "unconfirm a suspicion on a plagiarized submission with a comment" do
-      let!(:suspicion) { FactoryGirl.create(:suspicion, :user => corrector, :submission => plagiarized_submission, :status => :confirmed) }
-      let!(:correction) { FactoryGirl.create(:correction, :user => root, :submission => plagiarized_submission) }
+      let!(:suspicion) { FactoryBot.create(:suspicion, :user => corrector, :submission => plagiarized_submission, :status => :confirmed) }
+      let!(:correction) { FactoryBot.create(:correction, :user => root, :submission => plagiarized_submission) }
       before do
         visit problem_path(problem, :sub => plagiarized_submission)
         select "Pardonné", from: "edit_status_field_#{suspicion.id}"

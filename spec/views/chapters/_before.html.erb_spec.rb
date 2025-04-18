@@ -5,20 +5,20 @@ describe "chapters/_before.html.erb", type: :view, chapter: true do
 
   subject { rendered }
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:user) { FactoryGirl.create(:user) }
-  let(:user_bad) { FactoryGirl.create(:user) }
-  let!(:chapter_prerequisite) { FactoryGirl.create(:chapter, online: true) }
-  let!(:chapter) { FactoryGirl.create(:chapter, online: true) }
-  let!(:theory1) { FactoryGirl.create(:theory, chapter: chapter, online: true, position: 1) }
-  let!(:theory2_offline) { FactoryGirl.create(:theory, chapter: chapter, online: false, position: 2) }
-  let!(:theory3) { FactoryGirl.create(:theory, chapter: chapter, online: true, position: 3) }
-  let!(:question1_offline) { FactoryGirl.create(:exercise, chapter: chapter, online: false, position: 1) }
-  let!(:question2) { FactoryGirl.create(:exercise_decimal, chapter: chapter, online: true, position: 2) }
-  let!(:question3) { FactoryGirl.create(:qcm, chapter: chapter, online: true, position: 4) }
-  let!(:question4) { FactoryGirl.create(:qcm_multiple, chapter: chapter, online: true, position: 5) }
-  let!(:sq3) { FactoryGirl.create(:solvedquestion, user: user, question: question3) }
-  let!(:sq4) { FactoryGirl.create(:unsolvedquestion, user: user, question: question4) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:user) { FactoryBot.create(:user) }
+  let(:user_bad) { FactoryBot.create(:user) }
+  let!(:chapter_prerequisite) { FactoryBot.create(:chapter, online: true) }
+  let!(:chapter) { FactoryBot.create(:chapter, online: true) }
+  let!(:theory1) { FactoryBot.create(:theory, chapter: chapter, online: true, position: 1) }
+  let!(:theory2_offline) { FactoryBot.create(:theory, chapter: chapter, online: false, position: 2) }
+  let!(:theory3) { FactoryBot.create(:theory, chapter: chapter, online: true, position: 3) }
+  let!(:question1_offline) { FactoryBot.create(:exercise, chapter: chapter, online: false, position: 1) }
+  let!(:question2) { FactoryBot.create(:exercise_decimal, chapter: chapter, online: true, position: 2) }
+  let!(:question3) { FactoryBot.create(:qcm, chapter: chapter, online: true, position: 4) }
+  let!(:question4) { FactoryBot.create(:qcm_multiple, chapter: chapter, online: true, position: 5) }
+  let!(:sq3) { FactoryBot.create(:solvedquestion, user: user, question: question3) }
+  let!(:sq4) { FactoryBot.create(:unsolvedquestion, user: user, question: question4) }
   
   before do
     user.theories << theory3

@@ -5,8 +5,8 @@ describe "Faq pages", faq: true do
 
   subject { page }
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let!(:faq) { FactoryGirl.create(:faq, position: 1) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let!(:faq) { FactoryBot.create(:faq, position: 1) }
   let(:newquestion) { "Nouvelle question" }
   let(:newanswer) { "Nouvelle réponse" }
 
@@ -43,7 +43,7 @@ describe "Faq pages", faq: true do
     end
     
     describe "visits faq path with 2 questions" do
-      let!(:faq2) { FactoryGirl.create(:faq, question: "Ma question", answer: "Ma réponse", position: 2) }
+      let!(:faq2) { FactoryBot.create(:faq, question: "Ma question", answer: "Ma réponse", position: 2) }
       before { visit faqs_path }
       specify do
         expect(page).to have_link("bas", href: order_faq_path(faq, :new_position => 2))

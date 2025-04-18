@@ -14,7 +14,9 @@ require "spec_helper"
 
 describe Following, following: true do
 
-  let!(:following) { FactoryGirl.build(:following) }
+  let!(:user) { FactoryBot.create(:user) }
+  let!(:submission) { FactoryBot.create(:submission) }
+  let!(:following) { FactoryBot.build(:following, user: user, submission: submission) }
 
   subject { following }
 
@@ -22,7 +24,7 @@ describe Following, following: true do
 
   # Uniqueness
   describe "when user and submission are already taken" do
-    before { FactoryGirl.create(:following, user: following.user, submission: following.submission) }
+    before { FactoryBot.create(:following, user: user, submission: submission) }
     it { should_not be_valid }
   end
   

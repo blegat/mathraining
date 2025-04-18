@@ -4,15 +4,15 @@ describe ChaptersHelper, type: :helper, chapter: true do
 
   include ChaptersHelper
   
-  let(:user) { FactoryGirl.create(:user) }
-  let(:user_bad) { FactoryGirl.create(:user) }
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:section_fondation) { FactoryGirl.create(:section, fondation: true) }
-  let(:section) { FactoryGirl.create(:section) }
-  let!(:chapter_offline) { FactoryGirl.create(:chapter, section: section_fondation, online: false) }
-  let!(:chapter_fondation) { FactoryGirl.create(:chapter, section: section_fondation, online: true) }
-  let!(:chapter1) { FactoryGirl.create(:chapter, section: section, online: true) }
-  let!(:chapter2) { FactoryGirl.create(:chapter, section: section, online: true) }
+  let(:user) { FactoryBot.create(:user) }
+  let(:user_bad) { FactoryBot.create(:user) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:section_fondation) { FactoryBot.create(:section, fondation: true) }
+  let(:section) { FactoryBot.create(:section) }
+  let!(:chapter_offline) { FactoryBot.create(:chapter, section: section_fondation, online: false) }
+  let!(:chapter_fondation) { FactoryBot.create(:chapter, section: section_fondation, online: true) }
+  let!(:chapter1) { FactoryBot.create(:chapter, section: section, online: true) }
+  let!(:chapter2) { FactoryBot.create(:chapter, section: section, online: true) }
   
   before do
     chapter2.prerequisites << chapter1

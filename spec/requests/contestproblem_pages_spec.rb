@@ -24,19 +24,19 @@ describe "Contestproblem pages", contestproblem: true do
   let(:datetime5) { Time.zone.parse(stringtime5).to_datetime }
   let(:datetime6) { Time.zone.parse(stringtime6).to_datetime }
 
-  let(:root) { FactoryGirl.create(:root) }
-  let(:user_with_rating_199) { FactoryGirl.create(:user, rating: 199) }
-  let(:user_with_rating_200) { FactoryGirl.create(:user, rating: 200) }
-  let(:user_participating) { FactoryGirl.create(:user, rating: 250) }
-  let!(:user_organizer) { FactoryGirl.create(:user, rating: 300) }
+  let(:root) { FactoryBot.create(:root) }
+  let(:user_with_rating_199) { FactoryBot.create(:user, rating: 199) }
+  let(:user_with_rating_200) { FactoryBot.create(:user, rating: 200) }
+  let(:user_participating) { FactoryBot.create(:user, rating: 250) }
+  let!(:user_organizer) { FactoryBot.create(:user, rating: 300) }
 
-  let!(:contest) { FactoryGirl.create(:contest) }
-  let!(:contestproblem) { FactoryGirl.create(:contestproblem, contest: contest, number: 1) }
-  let!(:contestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, user: user_participating, score: 7) }
-  let!(:contestscore) { FactoryGirl.create(:contestscore, contest: contest, user: user_participating, rank: 1, score: 7) }
+  let!(:contest) { FactoryBot.create(:contest) }
+  let!(:contestproblem) { FactoryBot.create(:contestproblem, contest: contest, number: 1) }
+  let!(:contestsolution) { FactoryBot.create(:contestsolution, contestproblem: contestproblem, user: user_participating, score: 7) }
+  let!(:contestscore) { FactoryBot.create(:contestscore, contest: contest, user: user_participating, rank: 1, score: 7) }
   
-  let!(:offline_contest) { FactoryGirl.create(:contest, status: :in_construction) }
-  let!(:offline_contestproblem) { FactoryGirl.create(:contestproblem, contest: offline_contest, number: 1, status: :in_construction, start_time: datetime2, end_time: datetime4) }
+  let!(:offline_contest) { FactoryBot.create(:contest, status: :in_construction) }
+  let!(:offline_contestproblem) { FactoryBot.create(:contestproblem, contest: offline_contest, number: 1, status: :in_construction, start_time: datetime2, end_time: datetime4) }
   
   let(:newstatement) { "Nouvel énoncé de problème" }
   let(:neworigin) { "Nouvelle origine de problème" }

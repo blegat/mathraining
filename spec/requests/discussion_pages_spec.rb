@@ -5,10 +5,10 @@ describe "Discussion pages", discussion: true do
 
   subject { page }
   
-  let(:root) { FactoryGirl.create(:root) }
-  let(:user) { FactoryGirl.create(:user) }
-  let!(:other_user) { FactoryGirl.create(:user, last_connexion_date: DateTime.now) } # last_connexion_date to be sure that other_user appears in the list
-  let!(:other_user2) { FactoryGirl.create(:user) }
+  let(:root) { FactoryBot.create(:root) }
+  let(:user) { FactoryBot.create(:user) }
+  let!(:other_user) { FactoryBot.create(:user, last_connexion_date: DateTime.now) } # last_connexion_date to be sure that other_user appears in the list
+  let!(:other_user2) { FactoryBot.create(:user) }
   let(:content) { "Salut mon ami!" }
   let(:content2) { "Salut mon pote!" }
   let(:content3) { "Comment vas-tu?" }
@@ -282,9 +282,9 @@ describe "Discussion pages", discussion: true do
     end
     
     describe "has more than 5 discussions", :js => false do
-      let!(:other_user3) { FactoryGirl.create(:user) }
-      let!(:other_user4) { FactoryGirl.create(:user) }
-      let!(:other_user5) { FactoryGirl.create(:user) }
+      let!(:other_user3) { FactoryBot.create(:user) }
+      let!(:other_user4) { FactoryBot.create(:user) }
+      let!(:other_user5) { FactoryBot.create(:user) }
       let!(:discussion_1) { create_discussion_between(user, root, content, content2) }
       let!(:discussion_2) { create_discussion_between(user, other_user, content, content2) }
       let!(:discussion_3) { create_discussion_between(user, other_user2, content, content2) }

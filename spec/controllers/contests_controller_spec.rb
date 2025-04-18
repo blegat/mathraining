@@ -3,10 +3,10 @@ require "spec_helper"
 
 describe ContestsController, type: :controller, contest: true do
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:user_organizer) { FactoryGirl.create(:advanced_user) }
-  let(:user) { FactoryGirl.create(:advanced_user) }
-  let(:contest) { FactoryGirl.create(:contest) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:user_organizer) { FactoryBot.create(:advanced_user) }
+  let(:user) { FactoryBot.create(:advanced_user) }
+  let(:contest) { FactoryBot.create(:contest) }
   
   before do
     contest.organizers << user_organizer

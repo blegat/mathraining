@@ -10,7 +10,7 @@ require "spec_helper"
 
 describe Privacypolicy, privacypolicy: true do
 
-  let!(:privacypolicy) { FactoryGirl.build(:privacypolicy) }
+  let!(:privacypolicy) { FactoryBot.build(:privacypolicy) }
 
   subject { privacypolicy }
 

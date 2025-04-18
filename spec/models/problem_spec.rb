@@ -21,7 +21,7 @@ require "spec_helper"
 
 describe Problem, problem: true do
 
-  let!(:problem) { FactoryGirl.build(:problem) }
+  let!(:problem) { FactoryBot.build(:problem) }
 
   subject { problem }
 
@@ -62,19 +62,19 @@ describe Problem, problem: true do
   
   # can_be_seen_by
   describe "can_be_updated_by should work" do
-    let!(:user1) { FactoryGirl.create(:user, rating: 200) }
-    let!(:user2) { FactoryGirl.create(:user, rating: 180) }
-    let!(:user3) { FactoryGirl.create(:user, rating: 200) }
-    let!(:user4) { FactoryGirl.create(:user, rating: 200) }
-    let!(:user5) { FactoryGirl.create(:user, rating: 200) }
-    let!(:admin) { FactoryGirl.create(:admin) }
-    let!(:chapter) { FactoryGirl.create(:chapter) }
+    let!(:user1) { FactoryBot.create(:user, rating: 200) }
+    let!(:user2) { FactoryBot.create(:user, rating: 180) }
+    let!(:user3) { FactoryBot.create(:user, rating: 200) }
+    let!(:user4) { FactoryBot.create(:user, rating: 200) }
+    let!(:user5) { FactoryBot.create(:user, rating: 200) }
+    let!(:admin) { FactoryBot.create(:admin) }
+    let!(:chapter) { FactoryBot.create(:chapter) }
     
     before { problem.save }
       
     describe "for a normal online problem" do
-      let!(:submission_draft_user4) { FactoryGirl.create(:submission, problem: problem, user: user4, status: :draft) }
-      let!(:submission_wrong_user5) { FactoryGirl.create(:submission, problem: problem, user: user5, status: :wrong) } 
+      let!(:submission_draft_user4) { FactoryBot.create(:submission, problem: problem, user: user4, status: :draft) }
+      let!(:submission_wrong_user5) { FactoryBot.create(:submission, problem: problem, user: user5, status: :wrong) } 
        
       before do
         problem.update(:online => true)
@@ -125,8 +125,8 @@ describe Problem, problem: true do
     end
     
     describe "for a problem in a virtualtest" do
-      let!(:virtualtest) { FactoryGirl.create(:virtualtest, online: true) }
-      let!(:submission_wrong_user5) { FactoryGirl.create(:submission, problem: problem, user: user5, status: :wrong) }
+      let!(:virtualtest) { FactoryBot.create(:virtualtest, online: true) }
+      let!(:submission_wrong_user5) { FactoryBot.create(:submission, problem: problem, user: user5, status: :wrong) }
       
       before do
         problem.update(:online => true, :virtualtest => virtualtest)

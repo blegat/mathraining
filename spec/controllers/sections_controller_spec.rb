@@ -3,8 +3,8 @@ require "spec_helper"
 
 describe SectionsController, type: :controller, section: true do
 
-  let(:user) { FactoryGirl.create(:user) }
-  let(:section) { FactoryGirl.create(:section) }
+  let(:user) { FactoryBot.create(:user) }
+  let(:section) { FactoryBot.create(:section) }
   
   context "if the user is not connected" do    
     it { expect(response).to have_controller_show_behavior(section, :ok) }

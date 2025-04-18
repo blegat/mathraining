@@ -3,12 +3,12 @@ require "spec_helper"
 
 describe SavedrepliesController, type: :controller, savedreply: true do
 
-  let(:user) { FactoryGirl.create(:user) }
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:root) { FactoryGirl.create(:root) }
-  let(:submission) { FactoryGirl.create(:submission) }
-  let(:savedreply) { FactoryGirl.create(:savedreply) }
-  let(:admin_savedreply) { FactoryGirl.create(:savedreply, user: admin) }
+  let(:user) { FactoryBot.create(:user) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:root) { FactoryBot.create(:root) }
+  let(:submission) { FactoryBot.create(:submission) }
+  let(:savedreply) { FactoryBot.create(:savedreply) }
+  let(:admin_savedreply) { FactoryBot.create(:savedreply, user: admin) }
   
   context "if the user is not a corrector" do
     before { sign_in_controller(user) }

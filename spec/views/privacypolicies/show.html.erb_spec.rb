@@ -5,12 +5,12 @@ describe "privacypolicies/show.html.erb", type: :view, privacypolicy: true do
 
   subject { rendered }
 
-  let(:root) { FactoryGirl.create(:root) }
-  let(:user) { FactoryGirl.create(:user) }
-  let!(:privacypolicy1) { FactoryGirl.create(:privacypolicy, publication_time: DateTime.now - 100.days, online: true) }
-  let!(:privacypolicy2) { FactoryGirl.create(:privacypolicy, publication_time: DateTime.now - 50.days, online: true) }
-  let!(:privacypolicy3) { FactoryGirl.create(:privacypolicy, publication_time: DateTime.now - 10.days, online: true) }
-  let!(:privacypolicy4) { FactoryGirl.create(:privacypolicy, online: false) }
+  let(:root) { FactoryBot.create(:root) }
+  let(:user) { FactoryBot.create(:user) }
+  let!(:privacypolicy1) { FactoryBot.create(:privacypolicy, publication_time: DateTime.now - 100.days, online: true) }
+  let!(:privacypolicy2) { FactoryBot.create(:privacypolicy, publication_time: DateTime.now - 50.days, online: true) }
+  let!(:privacypolicy3) { FactoryBot.create(:privacypolicy, publication_time: DateTime.now - 10.days, online: true) }
+  let!(:privacypolicy4) { FactoryBot.create(:privacypolicy, online: false) }
   
   context "if the user is a root" do
     before do

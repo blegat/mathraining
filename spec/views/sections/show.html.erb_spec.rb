@@ -5,36 +5,36 @@ describe "sections/show.html.erb", type: :view, section: true do
 
   subject { rendered }
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:user) { FactoryGirl.create(:user) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:user) { FactoryBot.create(:user) }
   
-  let!(:section) { FactoryGirl.create(:section) }
+  let!(:section) { FactoryBot.create(:section) }
   
-  let!(:chapter1) { FactoryGirl.create(:chapter, section: section, online: true, level: 1, position: 1) }
-  let!(:theory11) { FactoryGirl.create(:theory, chapter: chapter1, online: true, position: 1) }
-  let!(:theory12) { FactoryGirl.create(:theory, chapter: chapter1, online: true, position: 2) }
-  let!(:theory13_offline) { FactoryGirl.create(:theory, chapter: chapter1, online: false, position: 3) }
-  let!(:question11) { FactoryGirl.create(:exercise, chapter: chapter1, online: true, position: 1) }
-  let!(:question12) { FactoryGirl.create(:exercise, chapter: chapter1, online: true, position: 2) }
-  let!(:question13_offline) { FactoryGirl.create(:exercise, chapter: chapter1, online: false, position: 3) }
-  let!(:question14) { FactoryGirl.create(:exercise, chapter: chapter1, online: true, position: 4) }
+  let!(:chapter1) { FactoryBot.create(:chapter, section: section, online: true, level: 1, position: 1) }
+  let!(:theory11) { FactoryBot.create(:theory, chapter: chapter1, online: true, position: 1) }
+  let!(:theory12) { FactoryBot.create(:theory, chapter: chapter1, online: true, position: 2) }
+  let!(:theory13_offline) { FactoryBot.create(:theory, chapter: chapter1, online: false, position: 3) }
+  let!(:question11) { FactoryBot.create(:exercise, chapter: chapter1, online: true, position: 1) }
+  let!(:question12) { FactoryBot.create(:exercise, chapter: chapter1, online: true, position: 2) }
+  let!(:question13_offline) { FactoryBot.create(:exercise, chapter: chapter1, online: false, position: 3) }
+  let!(:question14) { FactoryBot.create(:exercise, chapter: chapter1, online: true, position: 4) }
   
-  let!(:chapter2) { FactoryGirl.create(:chapter, section: section, online: true, level: 1, position: 2) }
-  let!(:theory21) { FactoryGirl.create(:theory, chapter: chapter2, online: true, position: 1) }
-  let!(:theory22_offline) { FactoryGirl.create(:theory, chapter: chapter2, online: false, position: 2) }
-  let!(:question21) { FactoryGirl.create(:exercise, chapter: chapter2, online: true, position: 1) }
-  let!(:question22_offline) { FactoryGirl.create(:exercise, chapter: chapter2, online: false, position: 2) }
+  let!(:chapter2) { FactoryBot.create(:chapter, section: section, online: true, level: 1, position: 2) }
+  let!(:theory21) { FactoryBot.create(:theory, chapter: chapter2, online: true, position: 1) }
+  let!(:theory22_offline) { FactoryBot.create(:theory, chapter: chapter2, online: false, position: 2) }
+  let!(:question21) { FactoryBot.create(:exercise, chapter: chapter2, online: true, position: 1) }
+  let!(:question22_offline) { FactoryBot.create(:exercise, chapter: chapter2, online: false, position: 2) }
   
-  let!(:chapter3) { FactoryGirl.create(:chapter, section: section, online: true, level: 1, position: 3) }
-  let!(:theory31) { FactoryGirl.create(:theory, chapter: chapter3, online: true, position: 1) }
-  let!(:question31) { FactoryGirl.create(:exercise, chapter: chapter3, online: true, position: 1) }
+  let!(:chapter3) { FactoryBot.create(:chapter, section: section, online: true, level: 1, position: 3) }
+  let!(:theory31) { FactoryBot.create(:theory, chapter: chapter3, online: true, position: 1) }
+  let!(:question31) { FactoryBot.create(:exercise, chapter: chapter3, online: true, position: 1) }
   
-  let!(:chapter4) { FactoryGirl.create(:chapter, section: section, online: true, level: 1, position: 4) }
-  let!(:question41) { FactoryGirl.create(:exercise, chapter: chapter4, online: true, position: 1) }
+  let!(:chapter4) { FactoryBot.create(:chapter, section: section, online: true, level: 1, position: 4) }
+  let!(:question41) { FactoryBot.create(:exercise, chapter: chapter4, online: true, position: 1) }
   
-  let!(:chapter5_offline) { FactoryGirl.create(:chapter, section: section, online: false, level: 1, position: 5) }
-  let!(:theory51_offline) { FactoryGirl.create(:theory, chapter: chapter5_offline, online: false) }
-  let!(:question51_offline) { FactoryGirl.create(:question, chapter: chapter5_offline, online: false) }
+  let!(:chapter5_offline) { FactoryBot.create(:chapter, section: section, online: false, level: 1, position: 5) }
+  let!(:theory51_offline) { FactoryBot.create(:theory, chapter: chapter5_offline, online: false) }
+  let!(:question51_offline) { FactoryBot.create(:question, chapter: chapter5_offline, online: false) }
   
   before do
     chapter2.prerequisites << chapter1
@@ -136,8 +136,8 @@ describe "sections/show.html.erb", type: :view, section: true do
     
     describe "having completed no chapter" do
       before do
-        FactoryGirl.create(:solvedquestion, user: user, question: question11)
-        FactoryGirl.create(:unsolvedquestion, user: user, question: question12)
+        FactoryBot.create(:solvedquestion, user: user, question: question11)
+        FactoryBot.create(:unsolvedquestion, user: user, question: question12)
         user.theories << theory11
       end
       it do
@@ -187,10 +187,10 @@ describe "sections/show.html.erb", type: :view, section: true do
     
     describe "having completed two chapters" do
       before do
-        FactoryGirl.create(:solvedquestion, user: user, question: question11)
-        FactoryGirl.create(:solvedquestion, user: user, question: question12)
-        FactoryGirl.create(:solvedquestion, user: user, question: question14)
-        FactoryGirl.create(:solvedquestion, user: user, question: question21)
+        FactoryBot.create(:solvedquestion, user: user, question: question11)
+        FactoryBot.create(:solvedquestion, user: user, question: question12)
+        FactoryBot.create(:solvedquestion, user: user, question: question14)
+        FactoryBot.create(:solvedquestion, user: user, question: question21)
         user.theories << theory11
         user.theories << theory12
         user.chapters << chapter1
@@ -238,9 +238,9 @@ describe "sections/show.html.erb", type: :view, section: true do
     describe "having completed one chapter for a fondation section" do
       before do
         section.update_attribute(:fondation, true)
-        FactoryGirl.create(:solvedquestion, user: user, question: question11)
-        FactoryGirl.create(:solvedquestion, user: user, question: question12)
-        FactoryGirl.create(:solvedquestion, user: user, question: question14)
+        FactoryBot.create(:solvedquestion, user: user, question: question11)
+        FactoryBot.create(:solvedquestion, user: user, question: question12)
+        FactoryBot.create(:solvedquestion, user: user, question: question14)
         user.theories << theory11
         user.theories << theory12
         #user.chapters << chapter1 # We don't remember completed chapters for fondation section

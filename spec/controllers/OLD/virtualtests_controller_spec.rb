@@ -3,13 +3,13 @@ require "spec_helper"
 
 describe VirtualtestsController, :type => :controller do
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:user_with_rating_199) { FactoryGirl.create(:user, rating: 199) }
-  let(:user_with_rating_200) { FactoryGirl.create(:user, rating: 200) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:user_with_rating_199) { FactoryBot.create(:user, rating: 199) }
+  let(:user_with_rating_200) { FactoryBot.create(:user, rating: 200) }
   
-  let!(:virtualtest) { FactoryGirl.create(:virtualtest, online: true, number: 42) }
-  let!(:problem) { FactoryGirl.create(:problem, online: true, level: 1, number: 1123, virtualtest: virtualtest, position: 1, statement: "Statement1") }
-  let!(:chapter) { FactoryGirl.create(:chapter, online: true, name: "Mon chapitre prérequis") }
+  let!(:virtualtest) { FactoryBot.create(:virtualtest, online: true, number: 42) }
+  let!(:problem) { FactoryBot.create(:problem, online: true, level: 1, number: 1123, virtualtest: virtualtest, position: 1, statement: "Statement1") }
+  let!(:chapter) { FactoryBot.create(:chapter, online: true, name: "Mon chapitre prérequis") }
   
   before { problem.chapters << chapter }
 

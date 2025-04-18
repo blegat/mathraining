@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '3.0.0'                           # Ruby
+ruby '3.2.8'                           # Ruby
 
 gem 'rails', '7.1.4.1'                 # Ruby on Rails
 
@@ -37,7 +37,7 @@ group :test do
   gem 'capybara', '3.40.0'             # Tests  
   gem 'capybara-email'                 # Tests (email)
   gem 'puma'                           # Tests (mainly for javascript)
-  gem 'factory_girl_rails', '4.1.0'    # Tests (factory girl)
+  gem 'factory_bot_rails', '6.4.4'     # Tests (factory bot)
   gem 'database_cleaner-active_record' # Tests (clean database)
   gem 'capybara-select-2'              # Tests (select2)
   gem 'capybara-screenshot'            # Tests (screenshots to debug)

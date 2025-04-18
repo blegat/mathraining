@@ -12,7 +12,7 @@ require "spec_helper"
 
 describe Puzzle, puzzle: true do
 
-  let!(:puzzle) { FactoryGirl.build(:puzzle) }
+  let!(:puzzle) { FactoryBot.build(:puzzle) }
 
   subject { puzzle }
 

@@ -5,26 +5,26 @@ describe "Subject pages" do
 
   subject { page }
 
-  let(:root) { FactoryGirl.create(:root) }
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:user) { FactoryGirl.create(:advanced_user) } # Rating 200 is needed to have access to problems
+  let(:root) { FactoryBot.create(:root) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:user) { FactoryBot.create(:advanced_user) } # Rating 200 is needed to have access to problems
   
-  let!(:category) { FactoryGirl.create(:category) }
-  let!(:category2) { FactoryGirl.create(:category) }
+  let!(:category) { FactoryBot.create(:category) }
+  let!(:category2) { FactoryBot.create(:category) }
   
-  let!(:section) { FactoryGirl.create(:section) }
-  let!(:chapter) { FactoryGirl.create(:chapter, section: section, online: true) }
-  let!(:question) { FactoryGirl.create(:exercise, chapter: chapter, online: true, position: 1) }
-  let!(:problem) { FactoryGirl.create(:problem, section: section, online: true) }
+  let!(:section) { FactoryBot.create(:section) }
+  let!(:chapter) { FactoryBot.create(:chapter, section: section, online: true) }
+  let!(:question) { FactoryBot.create(:exercise, chapter: chapter, online: true, position: 1) }
+  let!(:problem) { FactoryBot.create(:problem, section: section, online: true) }
   
-  let(:sub) { FactoryGirl.create(:subject) }
+  let(:sub) { FactoryBot.create(:subject) }
   
-  let(:sub_nothing) { FactoryGirl.create(:subject) }
-  let(:sub_category) { FactoryGirl.create(:subject, category: category) }
-  let(:sub_section) { FactoryGirl.create(:subject, section: section) }
-  let(:sub_chapter) { FactoryGirl.create(:subject, section: section, chapter: chapter) }
-  let(:sub_question) { FactoryGirl.create(:subject, section: section, chapter: chapter, question: question) }
-  let(:sub_problem) { FactoryGirl.create(:subject, section: section, problem: problem) }
+  let(:sub_nothing) { FactoryBot.create(:subject) }
+  let(:sub_category) { FactoryBot.create(:subject, category: category) }
+  let(:sub_section) { FactoryBot.create(:subject, section: section) }
+  let(:sub_chapter) { FactoryBot.create(:subject, section: section, chapter: chapter) }
+  let(:sub_question) { FactoryBot.create(:subject, section: section, chapter: chapter, question: question) }
+  let(:sub_problem) { FactoryBot.create(:subject, section: section, problem: problem) }
   
   let(:title) { "Mon titre" }
   let(:content) { "Mon message" }
@@ -260,7 +260,7 @@ describe "Subject pages" do
     end
 
     describe "deletes a subject with a message (DEPENDENCY)" do
-      let!(:mes) { FactoryGirl.create(:message, subject: sub) }
+      let!(:mes) { FactoryBot.create(:message, subject: sub) }
       before { visit subject_path(sub) }
       specify {	expect { click_link("Supprimer ce sujet") }.to change(Message, :count).by(-1) }
     end
@@ -290,10 +290,10 @@ describe "Subject pages" do
     before { sign_in root }
     
     describe "visits a subject" do
-      let!(:sub1) { FactoryGirl.create(:subject) }
-      let!(:mes1) { FactoryGirl.create(:message, subject: sub1) }
-      let!(:sub2) { FactoryGirl.create(:subject) }
-      let!(:mes2) { FactoryGirl.create(:message, subject: sub2) }
+      let!(:sub1) { FactoryBot.create(:subject) }
+      let!(:mes1) { FactoryBot.create(:message, subject: sub1) }
+      let!(:sub2) { FactoryBot.create(:subject) }
+      let!(:mes2) { FactoryBot.create(:message, subject: sub2) }
       before do
         visit subject_path(sub2)
       end
@@ -421,7 +421,7 @@ describe "Subject pages" do
     end
     
     describe "creates a subject in relation with an exercise" do
-      let!(:question2) { FactoryGirl.create(:exercise, chapter: chapter, online: true, position: 2) }
+      let!(:question2) { FactoryBot.create(:exercise, chapter: chapter, online: true, position: 2) }
       before do
         visit new_subject_path
         wait_for_js_imports
@@ -448,7 +448,7 @@ describe "Subject pages" do
     end
     
     describe "creates a subject in relation with a problem" do
-      let!(:problem2) { FactoryGirl.create(:problem, section: section, online: true) }
+      let!(:problem2) { FactoryBot.create(:problem, section: section, online: true) }
       before do
         visit new_subject_path
         wait_for_js_imports
@@ -533,7 +533,7 @@ describe "Subject pages" do
     end
     
     describe "creates a subject when problems of a section filter is used" do
-    let!(:problem2) { FactoryGirl.create(:problem, section: section, online: true) }
+    let!(:problem2) { FactoryBot.create(:problem, section: section, online: true) }
       before do
         visit new_subject_path(:q => "pro-" + section.id.to_s)
         wait_for_js_imports
@@ -556,7 +556,7 @@ describe "Subject pages" do
     end
     
     describe "creates a subject when chapter filter is used" do
-    let!(:question2) { FactoryGirl.create(:exercise, chapter: chapter, online: true, position: 2) }
+    let!(:question2) { FactoryBot.create(:exercise, chapter: chapter, online: true, position: 2) }
       before do
         visit new_subject_path(:q => "cha-" + chapter.id.to_s)
         wait_for_js_imports
@@ -582,10 +582,10 @@ describe "Subject pages" do
   describe "root", :js => true do
     before { sign_in root }
     
-    let!(:other_section) { FactoryGirl.create(:section) }
-    let!(:other_chapter) { FactoryGirl.create(:chapter, section: section, online: true) }
-    let!(:other_question) { FactoryGirl.create(:question, chapter: other_chapter, online: true) }
-    let!(:other_problem) { FactoryGirl.create(:problem, section: section, online: true) }
+    let!(:other_section) { FactoryBot.create(:section) }
+    let!(:other_chapter) { FactoryBot.create(:chapter, section: section, online: true) }
+    let!(:other_question) { FactoryBot.create(:question, chapter: other_chapter, online: true) }
+    let!(:other_problem) { FactoryBot.create(:problem, section: section, online: true) }
     
     describe "updates a subject, from a question to a section" do
       before do

@@ -5,17 +5,17 @@ describe "chapters/stats.html.erb", type: :view, chapter: true do
 
   subject { rendered }
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:user) { FactoryGirl.create(:user) }
-  let(:user_bad) { FactoryGirl.create(:user) }
-  let!(:section) { FactoryGirl.create(:section) }
-  let!(:chapter1) { FactoryGirl.create(:chapter, section: section, online: true, level: 1, position: 1, nb_tries: 9, nb_completions: 2) }
-  let!(:chapter2) { FactoryGirl.create(:chapter, section: section, online: true, level: 1, position: 2, nb_tries: 8, nb_completions: 2) }
-  let!(:chapter3) { FactoryGirl.create(:chapter, section: section, online: false, level: 2, position: 1, nb_tries: 0, nb_completions: 0) }
-  let!(:question11_offline) { FactoryGirl.create(:exercise, chapter: chapter1, online: false, position: 1, nb_wrong: 0, nb_correct: 0, nb_first_guesses: 0) }
-  let!(:question12) { FactoryGirl.create(:exercise_decimal, chapter: chapter1, online: true, position: 2, nb_wrong: 1, nb_correct: 2, nb_first_guesses: 2) }
-  let!(:question21) { FactoryGirl.create(:qcm, chapter: chapter2, online: true, position: 1, nb_wrong: 0, nb_correct: 7, nb_first_guesses: 1) }
-  let!(:question22) { FactoryGirl.create(:qcm_multiple, chapter: chapter2, online: true, position: 2, nb_wrong: 0, nb_correct: 0, nb_first_guesses: 0) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:user) { FactoryBot.create(:user) }
+  let(:user_bad) { FactoryBot.create(:user) }
+  let!(:section) { FactoryBot.create(:section) }
+  let!(:chapter1) { FactoryBot.create(:chapter, section: section, online: true, level: 1, position: 1, nb_tries: 9, nb_completions: 2) }
+  let!(:chapter2) { FactoryBot.create(:chapter, section: section, online: true, level: 1, position: 2, nb_tries: 8, nb_completions: 2) }
+  let!(:chapter3) { FactoryBot.create(:chapter, section: section, online: false, level: 2, position: 1, nb_tries: 0, nb_completions: 0) }
+  let!(:question11_offline) { FactoryBot.create(:exercise, chapter: chapter1, online: false, position: 1, nb_wrong: 0, nb_correct: 0, nb_first_guesses: 0) }
+  let!(:question12) { FactoryBot.create(:exercise_decimal, chapter: chapter1, online: true, position: 2, nb_wrong: 1, nb_correct: 2, nb_first_guesses: 2) }
+  let!(:question21) { FactoryBot.create(:qcm, chapter: chapter2, online: true, position: 1, nb_wrong: 0, nb_correct: 7, nb_first_guesses: 1) }
+  let!(:question22) { FactoryBot.create(:qcm_multiple, chapter: chapter2, online: true, position: 2, nb_wrong: 0, nb_correct: 0, nb_first_guesses: 0) }
   
   before do
     chapter2.prerequisites << chapter1

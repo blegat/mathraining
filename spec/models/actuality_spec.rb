@@ -10,7 +10,7 @@
 require "spec_helper"
 
 describe Actuality, actuality: true do
-  let!(:actuality) { FactoryGirl.create(:actuality) }
+  let!(:actuality) { FactoryBot.create(:actuality) }
 
   subject { actuality }
   

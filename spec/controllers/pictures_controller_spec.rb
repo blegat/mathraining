@@ -3,10 +3,10 @@ require "spec_helper"
 
 describe PicturesController, type: :controller, picture: true do
 
-  let(:root) { FactoryGirl.create(:root) }
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:user) { FactoryGirl.create(:user) }
-  let(:picture) { FactoryGirl.create(:picture, user: root) }
+  let(:root) { FactoryBot.create(:root) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:user) { FactoryBot.create(:user) }
+  let(:picture) { FactoryBot.create(:picture, user: root) }
   
   context "if the user is not signed in" do
     it { expect(response).to have_controller_get_path_behavior('image', picture, :access_refused) } # Without key

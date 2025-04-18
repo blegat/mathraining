@@ -5,18 +5,18 @@ describe "User pages" do
 
   subject { page }
 
-  let!(:country) { FactoryGirl.create(:country) }
-  let!(:other_country) { FactoryGirl.create(:country) }
-  let!(:zero_user) { FactoryGirl.create(:user, country: country, rating: 0) }
-  let!(:other_zero_user) { FactoryGirl.create(:user, country: other_country, rating: 0) }
-  let!(:ranked_user) { FactoryGirl.create(:user, country: country, rating: 157) }
-  let!(:other_ranked_user) { FactoryGirl.create(:user, country: other_country, rating: 210) }
-  let!(:other_ranked_user2) { FactoryGirl.create(:user, country: country, rating: 225) }
-  let!(:other_ranked_user3) { FactoryGirl.create(:user, country: country, rating: 225) } # To have two users at first place (score 225)
-  let!(:root) { FactoryGirl.create(:root, country: country) }
-  let!(:other_root) { FactoryGirl.create(:root, country: other_country) }
-  let!(:admin) { FactoryGirl.create(:admin, country: country) }
-  let(:color) { FactoryGirl.create(:color, pt: 200) }
+  let!(:country) { FactoryBot.create(:country) }
+  let!(:other_country) { FactoryBot.create(:country) }
+  let!(:zero_user) { FactoryBot.create(:user, country: country, rating: 0) }
+  let!(:other_zero_user) { FactoryBot.create(:user, country: other_country, rating: 0) }
+  let!(:ranked_user) { FactoryBot.create(:user, country: country, rating: 157) }
+  let!(:other_ranked_user) { FactoryBot.create(:user, country: other_country, rating: 210) }
+  let!(:other_ranked_user2) { FactoryBot.create(:user, country: country, rating: 225) }
+  let!(:other_ranked_user3) { FactoryBot.create(:user, country: country, rating: 225) } # To have two users at first place (score 225)
+  let!(:root) { FactoryBot.create(:root, country: country) }
+  let!(:other_root) { FactoryBot.create(:root, country: other_country) }
+  let!(:admin) { FactoryBot.create(:admin, country: country) }
+  let(:color) { FactoryBot.create(:color, pt: 200) }
   let(:new_first_name)  { "New First Name" }
   let(:new_last_name)  { "New Last Name" }
   let(:new_name)  { "#{new_first_name} #{new_last_name}" }
@@ -351,11 +351,11 @@ describe "User pages" do
     end
     
     describe "wants to search for a user" do
-      let!(:marcel_proust) { FactoryGirl.create(:admin, first_name: "Marcel", last_name: "Proust") }
-      let!(:marcel_pinot) { FactoryGirl.create(:user, first_name: "Marcel", last_name: "Pinot", rating: 200) }
-      let!(:lionel_p) { FactoryGirl.create(:user, first_name: "L'ionel", last_name: "Proust", see_name: 0, rating: 100) }
-      let!(:lionel_pinot) { FactoryGirl.create(:user, first_name: "L'ionel", last_name: "Pinot", rating: 0) }
-      let!(:diesel_proust_deleted) { FactoryGirl.create(:user, first_name: "Diesel", last_name: "Proust", role: :deleted) }
+      let!(:marcel_proust) { FactoryBot.create(:admin, first_name: "Marcel", last_name: "Proust") }
+      let!(:marcel_pinot) { FactoryBot.create(:user, first_name: "Marcel", last_name: "Pinot", rating: 200) }
+      let!(:lionel_p) { FactoryBot.create(:user, first_name: "L'ionel", last_name: "Proust", see_name: 0, rating: 100) }
+      let!(:lionel_pinot) { FactoryBot.create(:user, first_name: "L'ionel", last_name: "Pinot", rating: 0) }
+      let!(:diesel_proust_deleted) { FactoryBot.create(:user, first_name: "Diesel", last_name: "Proust", role: :deleted) }
       
       before { visit search_users_path }
       it do
@@ -489,7 +489,7 @@ describe "User pages" do
       describe "and follows him but it is too much" do
         before do
           (1..30).each do |i|
-            u = FactoryGirl.create(:user)
+            u = FactoryBot.create(:user)
             zero_user.followed_users << u
           end
           click_link("Suivre")
@@ -622,8 +622,8 @@ describe "User pages" do
     end
     
     describe "deletes data of a student" do
-      let!(:sub) { FactoryGirl.create(:subject) }
-      let!(:contest) { FactoryGirl.create(:contest) }
+      let!(:sub) { FactoryBot.create(:subject) }
+      let!(:contest) { FactoryBot.create(:contest) }
       let!(:old_remember_token) { zero_user.remember_token }
       before do
         other_root.update_attribute(:skin, zero_user.id) # We have a root with his skin
@@ -649,7 +649,7 @@ describe "User pages" do
     end
     
     describe "tries to delete a student with some created stuffs that cannot be deleted" do
-      let!(:mes) { FactoryGirl.create(:message, user: zero_user) }
+      let!(:mes) { FactoryBot.create(:message, user: zero_user) }
       let!(:old_user_count) { User.count }
       before do
         visit user_path(zero_user)
@@ -818,7 +818,7 @@ describe "User pages" do
     end
     
     describe "deletes user that never came for one month" do
-      let!(:other_zero_user2) { FactoryGirl.create(:user, country: other_country, rating: 0) }
+      let!(:other_zero_user2) { FactoryBot.create(:user, country: other_country, rating: 0) }
       before do
         zero_user.update(:created_at => DateTime.now - 40.days,
                          :last_connexion_date => "2009-01-01")
@@ -832,22 +832,22 @@ describe "User pages" do
   end
   
   describe "command line" do
-    let!(:user) { FactoryGirl.create(:user) }
-    let!(:section) { FactoryGirl.create(:section, :fondation => false) }
-    let!(:section2) { FactoryGirl.create(:section, :fondation => false) }
-    let!(:section_fondation) { FactoryGirl.create(:section, :fondation => true) }
-    let!(:chapter) { FactoryGirl.create(:chapter, :section => section, :online => true) }
-    let!(:chapter_fondation) { FactoryGirl.create(:chapter, :section => section_fondation, :online => true) }
-    let!(:question) { FactoryGirl.create(:exercise, :chapter => chapter, :level => 2, :online => true) }
-    let!(:question2) { FactoryGirl.create(:exercise, :chapter => chapter, :level => 3, :online => true) }
-    let!(:question_fondation) { FactoryGirl.create(:exercise, :chapter => chapter_fondation, :level => 4, :online => true) }
-    let!(:problem) { FactoryGirl.create(:problem, :section => section2, :level => 4, :online => true) }
-    let!(:problem_offline) { FactoryGirl.create(:problem, :section => section, :level => 5, :online => false) }
-    let!(:submission) { FactoryGirl.create(:submission, :problem => problem, :user => user, :status => "correct") }
-    let!(:solvedproblem) { FactoryGirl.create(:solvedproblem, :problem => problem, :user => user, :submission => submission) }
-    let!(:solvedquestion) { FactoryGirl.create(:solvedquestion, :question => question, :user => user) }
-    let!(:unsolvedquestion) { FactoryGirl.create(:unsolvedquestion, :question => question2, :user => user) }
-    let!(:solvedquestion_fondation) { FactoryGirl.create(:solvedquestion, :question => question_fondation, :user => user) }
+    let!(:user) { FactoryBot.create(:user) }
+    let!(:section) { FactoryBot.create(:section, :fondation => false) }
+    let!(:section2) { FactoryBot.create(:section, :fondation => false) }
+    let!(:section_fondation) { FactoryBot.create(:section, :fondation => true) }
+    let!(:chapter) { FactoryBot.create(:chapter, :section => section, :online => true) }
+    let!(:chapter_fondation) { FactoryBot.create(:chapter, :section => section_fondation, :online => true) }
+    let!(:question) { FactoryBot.create(:exercise, :chapter => chapter, :level => 2, :online => true) }
+    let!(:question2) { FactoryBot.create(:exercise, :chapter => chapter, :level => 3, :online => true) }
+    let!(:question_fondation) { FactoryBot.create(:exercise, :chapter => chapter_fondation, :level => 4, :online => true) }
+    let!(:problem) { FactoryBot.create(:problem, :section => section2, :level => 4, :online => true) }
+    let!(:problem_offline) { FactoryBot.create(:problem, :section => section, :level => 5, :online => false) }
+    let!(:submission) { FactoryBot.create(:submission, :problem => problem, :user => user, :status => "correct") }
+    let!(:solvedproblem) { FactoryBot.create(:solvedproblem, :problem => problem, :user => user, :submission => submission) }
+    let!(:solvedquestion) { FactoryBot.create(:solvedquestion, :question => question, :user => user) }
+    let!(:unsolvedquestion) { FactoryBot.create(:unsolvedquestion, :question => question2, :user => user) }
+    let!(:solvedquestion_fondation) { FactoryBot.create(:solvedquestion, :question => question_fondation, :user => user) }
     let!(:pointspersection) { Pointspersection.create(:user => user, :section => section, :points => 0) }
     let!(:pointspersection2) { Pointspersection.create(:user => user, :section => section2, :points => 0) }
     
@@ -929,10 +929,10 @@ describe "User pages" do
     before { sign_in root }
     
     describe "wants to validate the names" do
-      let!(:user0) { FactoryGirl.create(:user, first_name: "Nicolas", last_name: "Benoit",      valid_name: true) }
-      let!(:user1) { FactoryGirl.create(:user, first_name: "Hector",  last_name: "Dupont",      valid_name: false) }
-      let!(:user2) { FactoryGirl.create(:user, first_name: "jeaN",    last_name: "boulanger",   valid_name: false) }
-      let!(:user3) { FactoryGirl.create(:user, first_name: "vIcToR",  last_name: "de la Terre", valid_name: false) }
+      let!(:user0) { FactoryBot.create(:user, first_name: "Nicolas", last_name: "Benoit",      valid_name: true) }
+      let!(:user1) { FactoryBot.create(:user, first_name: "Hector",  last_name: "Dupont",      valid_name: false) }
+      let!(:user2) { FactoryBot.create(:user, first_name: "jeaN",    last_name: "boulanger",   valid_name: false) }
+      let!(:user3) { FactoryBot.create(:user, first_name: "vIcToR",  last_name: "de la Terre", valid_name: false) }
       
       before { visit validate_names_users_path }
       it do

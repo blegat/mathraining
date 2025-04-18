@@ -3,8 +3,8 @@ require "spec_helper"
 
 describe ColorsController, type: :controller, color: true do
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:color) { FactoryGirl.create(:color) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:color) { FactoryBot.create(:color) }
   
   context "if the user is not signed in" do
     it { expect(response).to have_controller_index_behavior(:must_be_connected) }

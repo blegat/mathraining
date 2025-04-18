@@ -3,8 +3,8 @@ require "spec_helper"
 
 describe CategoriesController, type: :controller, category: true do
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:category) { FactoryGirl.create(:category) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:category) { FactoryBot.create(:category) }
   
   context "if the user is not signed in" do
     it { expect(response).to have_controller_index_behavior(:must_be_connected) }

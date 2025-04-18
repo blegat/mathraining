@@ -3,9 +3,9 @@ require "spec_helper"
 
 describe ExtractsController, type: :controller, extract: true do
 
-  let(:user) { FactoryGirl.create(:user) }
-  let(:externalsolution) { FactoryGirl.create(:externalsolution) }
-  let(:extract) { FactoryGirl.create(:extract) }
+  let(:user) { FactoryBot.create(:user) }
+  let(:externalsolution) { FactoryBot.create(:externalsolution) }
+  let(:extract) { FactoryBot.create(:extract) }
   
   context "if the user is not an signed in" do 
     it { expect(response).to have_controller_create_behavior('extract', :access_refused, {:externalsolution_id => externalsolution.id}) }

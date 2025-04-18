@@ -3,10 +3,10 @@ require "spec_helper"
 
 describe ContestcorrectionsController, type: :controller, contestcorrection: true do
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:user) { FactoryGirl.create(:user) }
-  let(:contestproblem) { FactoryGirl.create(:contestproblem) }
-  let(:contestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, official: false) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:user) { FactoryBot.create(:user) }
+  let(:contestproblem) { FactoryBot.create(:contestproblem) }
+  let(:contestsolution) { FactoryBot.create(:contestsolution, contestproblem: contestproblem, official: false) }
   let(:contestcorrection) { contestsolution.contestcorrection }
   let(:contestsolution_official) { contestproblem.contestsolutions.where(:official => true).first }
   

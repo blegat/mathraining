@@ -5,12 +5,12 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
 
   subject { rendered }
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:user_bad) { FactoryGirl.create(:user, rating: 0) }
-  let(:user) { FactoryGirl.create(:advanced_user) }
-  let(:user_organizer) { FactoryGirl.create(:user) }
-  let(:contest) { FactoryGirl.create(:contest) }
-  let(:contestproblem) { FactoryGirl.create(:contestproblem, contest: contest) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:user_bad) { FactoryBot.create(:user, rating: 0) }
+  let(:user) { FactoryBot.create(:advanced_user) }
+  let(:user_organizer) { FactoryBot.create(:user) }
+  let(:contest) { FactoryBot.create(:contest) }
+  let(:contestproblem) { FactoryBot.create(:contestproblem, contest: contest) }
   let(:contestsolution_official) { contestproblem.contestsolutions.where(:official => true).first }
   
   before do
@@ -115,7 +115,7 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
       end
       
       context "and already sent a solution" do
-        let!(:contestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, user: user) }
+        let!(:contestsolution) { FactoryBot.create(:contestsolution, contestproblem: contestproblem, user: user) }
         
         before {assign(:contestsolution, contestsolution) }
         
@@ -165,8 +165,8 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
     end
     
     context "if the user participated" do
-      let!(:contestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, user: user) }
-      let!(:contestsolution_other) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem) }
+      let!(:contestsolution) { FactoryBot.create(:contestsolution, contestproblem: contestproblem, user: user) }
+      let!(:contestsolution_other) { FactoryBot.create(:contestsolution, contestproblem: contestproblem) }
       
       before { sign_in_view(user) }    
         
@@ -215,9 +215,9 @@ describe "contestproblems/show.html.erb", type: :view, contestproblem: true do
     end
     
     context "if the user participated" do
-      let!(:contestsolution) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, user: user, score: 2) }
-      let!(:contestsolution_other_good) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, score: 7) }
-      let!(:contestsolution_other_bad) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem, score: 6) }
+      let!(:contestsolution) { FactoryBot.create(:contestsolution, contestproblem: contestproblem, user: user, score: 2) }
+      let!(:contestsolution_other_good) { FactoryBot.create(:contestsolution, contestproblem: contestproblem, score: 7) }
+      let!(:contestsolution_other_bad) { FactoryBot.create(:contestsolution, contestproblem: contestproblem, score: 6) }
       
       before { sign_in_view(user) }      
         

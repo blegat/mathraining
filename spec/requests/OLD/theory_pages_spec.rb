@@ -5,13 +5,13 @@ describe "Theory pages" do
 
   subject { page }
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:user) { FactoryGirl.create(:user) }
-  let!(:chapter) { FactoryGirl.create(:chapter, online: true) }
-  let!(:empty_chapter) { FactoryGirl.create(:chapter, online: true) }
-  let!(:online_theory) { FactoryGirl.create(:theory, chapter: chapter, online: true, position: 1) }
-  let!(:online_theory2) { FactoryGirl.create(:theory, chapter: chapter, online: true, title: "Autre titre", content: "Autre contenu", position: 2) }
-  let!(:offline_theory) { FactoryGirl.create(:theory, chapter: chapter, online: false, position: 3) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:user) { FactoryBot.create(:user) }
+  let!(:chapter) { FactoryBot.create(:chapter, online: true) }
+  let!(:empty_chapter) { FactoryBot.create(:chapter, online: true) }
+  let!(:online_theory) { FactoryBot.create(:theory, chapter: chapter, online: true, position: 1) }
+  let!(:online_theory2) { FactoryBot.create(:theory, chapter: chapter, online: true, title: "Autre titre", content: "Autre contenu", position: 2) }
+  let!(:offline_theory) { FactoryBot.create(:theory, chapter: chapter, online: false, position: 3) }
   let(:newtitle) { "Mon nouveau titre de point théorique" }
   let(:newcontent) { "Mon nouveau point théorique" }
   let(:newtitle2) { "Mon nouveau titre de point théorique 2" }

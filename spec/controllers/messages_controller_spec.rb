@@ -3,11 +3,11 @@ require "spec_helper"
 
 describe MessagesController, type: :controller, message: true do
 
-  let(:user) { FactoryGirl.create(:user) }
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:root) { FactoryGirl.create(:root) }
-  let(:subject) { FactoryGirl.create(:subject) }
-  let(:message) { FactoryGirl.create(:message, subject: subject) }
+  let(:user) { FactoryBot.create(:user) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:root) { FactoryBot.create(:root) }
+  let(:subject) { FactoryBot.create(:subject) }
+  let(:message) { FactoryBot.create(:message, subject: subject) }
   
   context "if the user is not an admin" do
     before { sign_in_controller(user) }

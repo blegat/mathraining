@@ -5,20 +5,20 @@ describe "contests/_results.html.erb", type: :view, contest: true do
 
   subject { rendered }
 
-  let!(:user1) { FactoryGirl.create(:advanced_user) }
-  let!(:user2) { FactoryGirl.create(:advanced_user) }
-  let!(:user3) { FactoryGirl.create(:advanced_user) }
-  let!(:user_organizer) { FactoryGirl.create(:user) }
-  let!(:contest) { FactoryGirl.create(:contest) }
-  let!(:contestproblem1) { FactoryGirl.create(:contestproblem, contest: contest, number: 1) }
-  let!(:contestproblem2) { FactoryGirl.create(:contestproblem, contest: contest, number: 2) }
-  let!(:contestproblem3) { FactoryGirl.create(:contestproblem, contest: contest, number: 3) }
-  let!(:contestsolution11) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem1, user: user1, corrected: true, score: 7) }
-  let!(:contestsolution12) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem1, user: user2, corrected: true, score: 4) }
-  let!(:contestsolution13) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem1, user: user3, corrected: true, score: 0) }
-  let!(:contestsolution21) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem2, user: user1, corrected: true, score: 0) }
-  let!(:contestsolution31) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem3, user: user1, corrected: true, score: 7, star: true) }
-  let!(:contestsolution32) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem3, user: user2, corrected: true, score: -1) }
+  let!(:user1) { FactoryBot.create(:advanced_user) }
+  let!(:user2) { FactoryBot.create(:advanced_user) }
+  let!(:user3) { FactoryBot.create(:advanced_user) }
+  let!(:user_organizer) { FactoryBot.create(:user) }
+  let!(:contest) { FactoryBot.create(:contest) }
+  let!(:contestproblem1) { FactoryBot.create(:contestproblem, contest: contest, number: 1) }
+  let!(:contestproblem2) { FactoryBot.create(:contestproblem, contest: contest, number: 2) }
+  let!(:contestproblem3) { FactoryBot.create(:contestproblem, contest: contest, number: 3) }
+  let!(:contestsolution11) { FactoryBot.create(:contestsolution, contestproblem: contestproblem1, user: user1, corrected: true, score: 7) }
+  let!(:contestsolution12) { FactoryBot.create(:contestsolution, contestproblem: contestproblem1, user: user2, corrected: true, score: 4) }
+  let!(:contestsolution13) { FactoryBot.create(:contestsolution, contestproblem: contestproblem1, user: user3, corrected: true, score: 0) }
+  let!(:contestsolution21) { FactoryBot.create(:contestsolution, contestproblem: contestproblem2, user: user1, corrected: true, score: 0) }
+  let!(:contestsolution31) { FactoryBot.create(:contestsolution, contestproblem: contestproblem3, user: user1, corrected: true, score: 7, star: true) }
+  let!(:contestsolution32) { FactoryBot.create(:contestsolution, contestproblem: contestproblem3, user: user2, corrected: true, score: -1) }
   
   before do
     contest.organizers << user_organizer
@@ -45,8 +45,8 @@ describe "contests/_results.html.erb", type: :view, contest: true do
   end
   
   context "if some contestproblems are corrected" do
-    let!(:contestscore1) { FactoryGirl.create(:contestscore, contest: contest, user: user1, rank: 2, score: 7) }
-    let!(:contestscore2) { FactoryGirl.create(:contestscore, contest: contest, user: user2, rank: 1, score: 11) }
+    let!(:contestscore1) { FactoryBot.create(:contestscore, contest: contest, user: user1, rank: 2, score: 7) }
+    let!(:contestscore2) { FactoryBot.create(:contestscore, contest: contest, user: user2, rank: 1, score: 11) }
       
     before do
       contest.in_correction!

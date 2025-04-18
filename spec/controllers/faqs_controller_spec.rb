@@ -3,8 +3,8 @@ require "spec_helper"
 
 describe FaqsController, type: :controller, faq: true do
 
-  let(:user) { FactoryGirl.create(:user) }
-  let(:faq) { FactoryGirl.create(:faq) }
+  let(:user) { FactoryBot.create(:user) }
+  let(:faq) { FactoryBot.create(:faq) }
   
   context "if the user is not an admin" do
     before { sign_in_controller(user) }

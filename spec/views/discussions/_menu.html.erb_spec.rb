@@ -5,7 +5,7 @@ describe "discussions/_menu.html.erb", type: :view, discussion: true do
 
   subject { rendered }
 
-  let(:user) { FactoryGirl.create(:user) }
+  let(:user) { FactoryBot.create(:user) }
   
   before { sign_in_view(user) }
   
@@ -18,8 +18,8 @@ describe "discussions/_menu.html.erb", type: :view, discussion: true do
   end
   
   context "if the user has two discussions" do
-    let!(:user2) { FactoryGirl.create(:user) }
-    let!(:user3) { FactoryGirl.create(:user) }
+    let!(:user2) { FactoryBot.create(:user) }
+    let!(:user3) { FactoryBot.create(:user) }
     let!(:discussion12) { Discussion.create(last_message_time: DateTime.now) }
     let!(:discussion23) { Discussion.create(last_message_time: DateTime.now - 2.days) } # does not involve current user
     let!(:discussion31) { Discussion.create(last_message_time: DateTime.now - 4.days) }

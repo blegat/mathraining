@@ -5,9 +5,9 @@ describe "Color pages", color: true do
 
   subject { page }
 
-  let(:root) { FactoryGirl.create(:root) }
-  let(:admin) { FactoryGirl.create(:admin) }
-  let!(:color) { FactoryGirl.create(:color) }
+  let(:root) { FactoryBot.create(:root) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let!(:color) { FactoryBot.create(:color) }
   let(:newtitle) { "Nouveau titre" }
   let(:newcontent) { "Nouveau contenu" }
 

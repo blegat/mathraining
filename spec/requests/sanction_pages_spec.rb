@@ -5,9 +5,9 @@ describe "Sanction pages", sanction: true do
 
   subject { page }
 
-  let(:root) { FactoryGirl.create(:root) }
-  let!(:user) { FactoryGirl.create(:user) }
-  let!(:sanction) { FactoryGirl.create(:sanction, user: user) }
+  let(:root) { FactoryBot.create(:root) }
+  let!(:user) { FactoryBot.create(:user) }
+  let!(:sanction) { FactoryBot.create(:sanction, user: user) }
   let(:newreason) { "Vous êtes finalement banni jusqu'au [DATE] pour telle raison." }
 
   describe "root" do

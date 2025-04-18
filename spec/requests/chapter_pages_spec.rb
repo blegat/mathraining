@@ -5,25 +5,25 @@ describe "Chapter pages", chapter: true do
 
   subject { page }
 
-  let(:root) { FactoryGirl.create(:root) }
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:user) { FactoryGirl.create(:user) }
-  let(:section) { FactoryGirl.create(:section) }
-  let(:section_fondation) { FactoryGirl.create(:fondation_section) }
-  let!(:online_chapter) { FactoryGirl.create(:chapter, section: section, online: true, level: 1, position: 1) }
-  let!(:online_theory) { FactoryGirl.create(:theory, chapter: online_chapter, online: true) }
-  let!(:online_exercise) { FactoryGirl.create(:exercise, chapter: online_chapter, online: true) }
-  let!(:offline_chapter) { FactoryGirl.create(:chapter, section: section, online: false, name: "Chapitre hors-ligne", level: 1, position: 2) }
-  let!(:offline_exercise) { FactoryGirl.create(:exercise, chapter: offline_chapter, online: false) }
-  let!(:offline_qcm) { FactoryGirl.create(:qcm, chapter: offline_chapter, online: false) }
-  let!(:offline_item) { FactoryGirl.create(:item, question: offline_qcm) }
-  let!(:offline_theory) { FactoryGirl.create(:theory, chapter: offline_chapter, online: false) }
-  let!(:offline_chapter_2) { FactoryGirl.create(:chapter, section: section, online: false, name: "Autre chapitre hors-ligne", level: 3, position: 1) }
-  let!(:offline_exercise_2) { FactoryGirl.create(:exercise, chapter: offline_chapter_2, online: false) }
-  let!(:prerequisite_link_1) { FactoryGirl.create(:prerequisite, chapter: offline_chapter, prerequisite: online_chapter) }
-  let!(:prerequisite_link_2) { FactoryGirl.create(:prerequisite, chapter: offline_chapter_2, prerequisite: offline_chapter) }
-  let(:offline_chapter_3) { FactoryGirl.create(:chapter, section: section, online: false, name: "Chapitre sans exercice", level: 3, position: 2) }
-  let(:chapter_fondation) { FactoryGirl.create(:chapter, section: section_fondation, online: true, name: "Chapitre fondamental en ligne") }
+  let(:root) { FactoryBot.create(:root) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:user) { FactoryBot.create(:user) }
+  let(:section) { FactoryBot.create(:section) }
+  let(:section_fondation) { FactoryBot.create(:fondation_section) }
+  let!(:online_chapter) { FactoryBot.create(:chapter, section: section, online: true, level: 1, position: 1) }
+  let!(:online_theory) { FactoryBot.create(:theory, chapter: online_chapter, online: true) }
+  let!(:online_exercise) { FactoryBot.create(:exercise, chapter: online_chapter, online: true) }
+  let!(:offline_chapter) { FactoryBot.create(:chapter, section: section, online: false, name: "Chapitre hors-ligne", level: 1, position: 2) }
+  let!(:offline_exercise) { FactoryBot.create(:exercise, chapter: offline_chapter, online: false) }
+  let!(:offline_qcm) { FactoryBot.create(:qcm, chapter: offline_chapter, online: false) }
+  let!(:offline_item) { FactoryBot.create(:item, question: offline_qcm) }
+  let!(:offline_theory) { FactoryBot.create(:theory, chapter: offline_chapter, online: false) }
+  let!(:offline_chapter_2) { FactoryBot.create(:chapter, section: section, online: false, name: "Autre chapitre hors-ligne", level: 3, position: 1) }
+  let!(:offline_exercise_2) { FactoryBot.create(:exercise, chapter: offline_chapter_2, online: false) }
+  let!(:prerequisite_link_1) { FactoryBot.create(:prerequisite, chapter: offline_chapter, prerequisite: online_chapter) }
+  let!(:prerequisite_link_2) { FactoryBot.create(:prerequisite, chapter: offline_chapter_2, prerequisite: offline_chapter) }
+  let(:offline_chapter_3) { FactoryBot.create(:chapter, section: section, online: false, name: "Chapitre sans exercice", level: 3, position: 2) }
+  let(:chapter_fondation) { FactoryBot.create(:chapter, section: section_fondation, online: true, name: "Chapitre fondamental en ligne") }
   let(:title) { "Mon titre de chapitre" }
   let(:description) { "Ma description de chapitre" }
   let(:level) { 2 }

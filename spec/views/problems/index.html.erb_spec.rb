@@ -5,21 +5,21 @@ describe "problems/index.html.erb", type: :view, problem: true do
 
   subject { rendered }
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:user_with_rating_199) { FactoryGirl.create(:user, rating: 199) }
-  let(:user) { FactoryGirl.create(:advanced_user) }
-  let!(:section) { FactoryGirl.create(:section) }
-  let!(:chapter1) { FactoryGirl.create(:chapter, section: section, online: true, name: "Mon chapitre prérequis") }
-  let!(:chapter2) { FactoryGirl.create(:chapter, section: section, online: true, name: "Mon autre chapitre prérequis") }
-  let!(:online_problem) { FactoryGirl.create(:problem, section: section, online: true, level: 1, number: 1123) }
-  let!(:online_problem_with_one_prerequisite) { FactoryGirl.create(:problem, section: section, online: true, level: 2, number: 1124) }
-  let!(:online_problem_with_two_prerequisites) { FactoryGirl.create(:problem, section: section, online: true, level: 5, number: 1578) }
-  let!(:offline_problem) { FactoryGirl.create(:problem, section: section, online: false, level: 1, number: 1134) }
-  let!(:online_virtualtest) { FactoryGirl.create(:virtualtest, online: true, number: 42, duration: 10) }
-  let!(:problem_in_online_virtualtest) { FactoryGirl.create(:problem, section: section, online: true, level: 2, number: 1256, position: 1, virtualtest: online_virtualtest) }
-  let!(:problem_with_prerequisite_in_online_virtualtest) { FactoryGirl.create(:problem, section: section, online: true, level: 4, number: 1456, position: 2, virtualtest: online_virtualtest) }
-  let!(:offline_virtualtest) { FactoryGirl.create(:virtualtest, online: false, number: 23, duration: 15) }
-  let!(:problem_in_offline_virtualtest) { FactoryGirl.create(:problem, section: section, online: true, level: 3, number: 1341, position: 1, virtualtest: offline_virtualtest) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:user_with_rating_199) { FactoryBot.create(:user, rating: 199) }
+  let(:user) { FactoryBot.create(:advanced_user) }
+  let!(:section) { FactoryBot.create(:section) }
+  let!(:chapter1) { FactoryBot.create(:chapter, section: section, online: true, name: "Mon chapitre prérequis") }
+  let!(:chapter2) { FactoryBot.create(:chapter, section: section, online: true, name: "Mon autre chapitre prérequis") }
+  let!(:online_problem) { FactoryBot.create(:problem, section: section, online: true, level: 1, number: 1123) }
+  let!(:online_problem_with_one_prerequisite) { FactoryBot.create(:problem, section: section, online: true, level: 2, number: 1124) }
+  let!(:online_problem_with_two_prerequisites) { FactoryBot.create(:problem, section: section, online: true, level: 5, number: 1578) }
+  let!(:offline_problem) { FactoryBot.create(:problem, section: section, online: false, level: 1, number: 1134) }
+  let!(:online_virtualtest) { FactoryBot.create(:virtualtest, online: true, number: 42, duration: 10) }
+  let!(:problem_in_online_virtualtest) { FactoryBot.create(:problem, section: section, online: true, level: 2, number: 1256, position: 1, virtualtest: online_virtualtest) }
+  let!(:problem_with_prerequisite_in_online_virtualtest) { FactoryBot.create(:problem, section: section, online: true, level: 4, number: 1456, position: 2, virtualtest: online_virtualtest) }
+  let!(:offline_virtualtest) { FactoryBot.create(:virtualtest, online: false, number: 23, duration: 15) }
+  let!(:problem_in_offline_virtualtest) { FactoryBot.create(:problem, section: section, online: true, level: 3, number: 1341, position: 1, virtualtest: offline_virtualtest) }
   
   before do
     assign(:section, section)
@@ -276,17 +276,17 @@ describe "problems/index.html.erb", type: :view, problem: true do
     end
     
     describe "with many submissions" do
-      let!(:sub1) { FactoryGirl.create(:submission, problem: online_problem, user: user, status: :correct) }
-      let!(:sp1) { FactoryGirl.create(:solvedproblem, problem: online_problem, user: user, submission: sub1) }
-      let!(:sub2) { FactoryGirl.create(:submission, problem: online_problem_with_one_prerequisite, user: user, status: :wrong) }
-      let!(:sub3) { FactoryGirl.create(:submission, problem: online_problem_with_one_prerequisite, user: user, status: :wrong_to_read) }
-      let!(:sub4) { FactoryGirl.create(:submission, problem: online_problem_with_two_prerequisites, user: user, status: :wrong) }
-      let!(:sub5) { FactoryGirl.create(:submission, problem: online_problem_with_two_prerequisites, user: user, status: :waiting) }
-      let!(:sub6) { FactoryGirl.create(:submission, problem: problem_in_online_virtualtest, user: user, status: :draft) }
-      let!(:sub7) { FactoryGirl.create(:submission, problem: problem_with_prerequisite_in_online_virtualtest, user: user, status: :wrong_to_read) }
-      let!(:sub8) { FactoryGirl.create(:submission, problem: problem_with_prerequisite_in_online_virtualtest, user: user, status: :waiting) }
-      let!(:sub9) { FactoryGirl.create(:submission, problem: problem_with_prerequisite_in_online_virtualtest, user: user, status: :correct) }
-      let!(:sp9) { FactoryGirl.create(:solvedproblem, problem: problem_with_prerequisite_in_online_virtualtest, user: user, submission: sub9) }
+      let!(:sub1) { FactoryBot.create(:submission, problem: online_problem, user: user, status: :correct) }
+      let!(:sp1) { FactoryBot.create(:solvedproblem, problem: online_problem, user: user, submission: sub1) }
+      let!(:sub2) { FactoryBot.create(:submission, problem: online_problem_with_one_prerequisite, user: user, status: :wrong) }
+      let!(:sub3) { FactoryBot.create(:submission, problem: online_problem_with_one_prerequisite, user: user, status: :wrong_to_read) }
+      let!(:sub4) { FactoryBot.create(:submission, problem: online_problem_with_two_prerequisites, user: user, status: :wrong) }
+      let!(:sub5) { FactoryBot.create(:submission, problem: online_problem_with_two_prerequisites, user: user, status: :waiting) }
+      let!(:sub6) { FactoryBot.create(:submission, problem: problem_in_online_virtualtest, user: user, status: :draft) }
+      let!(:sub7) { FactoryBot.create(:submission, problem: problem_with_prerequisite_in_online_virtualtest, user: user, status: :wrong_to_read) }
+      let!(:sub8) { FactoryBot.create(:submission, problem: problem_with_prerequisite_in_online_virtualtest, user: user, status: :waiting) }
+      let!(:sub9) { FactoryBot.create(:submission, problem: problem_with_prerequisite_in_online_virtualtest, user: user, status: :correct) }
+      let!(:sp9) { FactoryBot.create(:solvedproblem, problem: problem_with_prerequisite_in_online_virtualtest, user: user, submission: sub9) }
       
       before do
         user.chapters << chapter1
@@ -334,17 +334,17 @@ describe "problems/index.html.erb", type: :view, problem: true do
     end
     
     describe "with many submissions (2)" do
-      let!(:sub1) { FactoryGirl.create(:submission, problem: online_problem, user: user, status: :correct) }
-      let!(:sub2) { FactoryGirl.create(:submission, problem: online_problem, user: user, status: :correct) }
-      let!(:sp1) { FactoryGirl.create(:solvedproblem, problem: online_problem, user: user, submission: sub2) }
-      let!(:sub2) { FactoryGirl.create(:submission, problem: online_problem_with_one_prerequisite, user: user, status: :plagiarized) }
-      let!(:sub3) { FactoryGirl.create(:submission, problem: online_problem_with_two_prerequisites, user: user, status: :wrong_to_read) }
-      let!(:sub4) { FactoryGirl.create(:submission, problem: online_problem_with_two_prerequisites, user: user, status: :wrong) }
-      let!(:sub5) { FactoryGirl.create(:submission, problem: online_problem_with_two_prerequisites, user: user, status: :draft) }
-      let!(:sub6) { FactoryGirl.create(:submission, problem: problem_in_online_virtualtest, user: user, status: :waiting) }
-      let!(:sub7) { FactoryGirl.create(:submission, problem: problem_with_prerequisite_in_online_virtualtest, user: user, status: :wrong_to_read) }
-      let!(:sub8) { FactoryGirl.create(:submission, problem: problem_with_prerequisite_in_online_virtualtest, user: user, status: :wrong_to_read) }
-      let!(:sub9) { FactoryGirl.create(:submission, problem: problem_with_prerequisite_in_online_virtualtest, user: user, status: :plagiarized) }
+      let!(:sub1) { FactoryBot.create(:submission, problem: online_problem, user: user, status: :correct) }
+      let!(:sub2) { FactoryBot.create(:submission, problem: online_problem, user: user, status: :correct) }
+      let!(:sp1) { FactoryBot.create(:solvedproblem, problem: online_problem, user: user, submission: sub2) }
+      let!(:sub2) { FactoryBot.create(:submission, problem: online_problem_with_one_prerequisite, user: user, status: :plagiarized) }
+      let!(:sub3) { FactoryBot.create(:submission, problem: online_problem_with_two_prerequisites, user: user, status: :wrong_to_read) }
+      let!(:sub4) { FactoryBot.create(:submission, problem: online_problem_with_two_prerequisites, user: user, status: :wrong) }
+      let!(:sub5) { FactoryBot.create(:submission, problem: online_problem_with_two_prerequisites, user: user, status: :draft) }
+      let!(:sub6) { FactoryBot.create(:submission, problem: problem_in_online_virtualtest, user: user, status: :waiting) }
+      let!(:sub7) { FactoryBot.create(:submission, problem: problem_with_prerequisite_in_online_virtualtest, user: user, status: :wrong_to_read) }
+      let!(:sub8) { FactoryBot.create(:submission, problem: problem_with_prerequisite_in_online_virtualtest, user: user, status: :wrong_to_read) }
+      let!(:sub9) { FactoryBot.create(:submission, problem: problem_with_prerequisite_in_online_virtualtest, user: user, status: :plagiarized) }
       
       before do
         user.chapters << chapter1

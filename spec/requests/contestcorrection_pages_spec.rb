@@ -10,19 +10,19 @@ describe "Contestcorrection pages", contestcorrection: true do
   let(:datetime_after) { DateTime.now + 1.hour }
   let(:datetime_after2) { DateTime.now + 2.hours }
 
-  let(:root) { FactoryGirl.create(:root) }
-  let(:user_participating) { FactoryGirl.create(:advanced_user) }
-  let(:user2_participating) { FactoryGirl.create(:advanced_user) }
-  let!(:user_organizer) { FactoryGirl.create(:advanced_user) }
+  let(:root) { FactoryBot.create(:root) }
+  let(:user_participating) { FactoryBot.create(:advanced_user) }
+  let(:user2_participating) { FactoryBot.create(:advanced_user) }
+  let!(:user_organizer) { FactoryBot.create(:advanced_user) }
   
-  let!(:contest) { FactoryGirl.create(:contest, status: :in_progress) }
-  let!(:contestsubject) { FactoryGirl.create(:subject, contest: contest) }
+  let!(:contest) { FactoryBot.create(:contest, status: :in_progress) }
+  let!(:contestsubject) { FactoryBot.create(:subject, contest: contest) }
   
-  let!(:contestproblem_finished) { FactoryGirl.create(:contestproblem, contest: contest, number: 1, start_time: datetime_before, end_time: datetime_before2, status: :in_correction) }
+  let!(:contestproblem_finished) { FactoryBot.create(:contestproblem, contest: contest, number: 1, start_time: datetime_before, end_time: datetime_before2, status: :in_correction) }
   
   let(:officialsol_finished) { contestproblem_finished.contestsolutions.where(:official => true).first }
-  let!(:usersol_finished) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem_finished, user: user_participating, corrected: false) }
-  let!(:usersol2_finished) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem_finished, user: user2_participating, corrected: true, score: 3) }
+  let!(:usersol_finished) { FactoryBot.create(:contestsolution, contestproblem: contestproblem_finished, user: user_participating, corrected: false) }
+  let!(:usersol2_finished) { FactoryBot.create(:contestsolution, contestproblem: contestproblem_finished, user: user2_participating, corrected: true, score: 3) }
   
   let!(:newcorrection) { "Voici une correction spontanée." }
   let!(:newcorrection2) { "Voici une nouvelle correction." }

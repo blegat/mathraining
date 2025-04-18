@@ -11,7 +11,7 @@
 require "spec_helper"
 
 describe Item, item: true do
-  let!(:item) { FactoryGirl.build(:item) }
+  let!(:item) { FactoryBot.build(:item) }
 
   subject { item }
 

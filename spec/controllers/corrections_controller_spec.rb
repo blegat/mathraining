@@ -3,10 +3,10 @@ require "spec_helper"
 
 describe CorrectionsController, type: :controller, correction: true do
 
-  let(:admin) { FactoryGirl.create(:admin) }
-  let(:user) { FactoryGirl.create(:user) }
-  let(:other_user) { FactoryGirl.create(:user) }
-  let(:submission) { FactoryGirl.create(:submission, user: user) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let(:user) { FactoryBot.create(:user) }
+  let(:other_user) { FactoryBot.create(:user) }
+  let(:submission) { FactoryBot.create(:submission, user: user) }
   
   context "if the user is not involved in submission" do
     before { sign_in_controller(other_user) }

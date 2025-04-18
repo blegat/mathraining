@@ -5,18 +5,18 @@ describe "contests/_statistics.html.erb", type: :view, contest: true do
 
   subject { rendered }
 
-  let!(:user1) { FactoryGirl.create(:advanced_user) }
-  let!(:user2) { FactoryGirl.create(:advanced_user) }
-  let!(:user3) { FactoryGirl.create(:advanced_user) }
-  let!(:contest) { FactoryGirl.create(:contest, status: :completed) }
-  let!(:contestproblem1) { FactoryGirl.create(:contestproblem, contest: contest, number: 1, status: :corrected) }
-  let!(:contestproblem2) { FactoryGirl.create(:contestproblem, contest: contest, number: 2, status: :corrected) }
-  let!(:contestsolution11) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem1, user: user1, corrected: true, score: 7) }
-  let!(:contestsolution12) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem1, user: user2, corrected: true, score: 4) }
-  let!(:contestsolution13) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem1, user: user3, corrected: true, score: 0) }
-  let!(:contestsolution21) { FactoryGirl.create(:contestsolution, contestproblem: contestproblem2, user: user1, corrected: true, score: 0) }
-  let!(:contestscore1) { FactoryGirl.create(:contestscore, contest: contest, user: user1, rank: 1, score: 7) }
-  let!(:contestscore2) { FactoryGirl.create(:contestscore, contest: contest, user: user2, rank: 2, score: 4) }
+  let!(:user1) { FactoryBot.create(:advanced_user) }
+  let!(:user2) { FactoryBot.create(:advanced_user) }
+  let!(:user3) { FactoryBot.create(:advanced_user) }
+  let!(:contest) { FactoryBot.create(:contest, status: :completed) }
+  let!(:contestproblem1) { FactoryBot.create(:contestproblem, contest: contest, number: 1, status: :corrected) }
+  let!(:contestproblem2) { FactoryBot.create(:contestproblem, contest: contest, number: 2, status: :corrected) }
+  let!(:contestsolution11) { FactoryBot.create(:contestsolution, contestproblem: contestproblem1, user: user1, corrected: true, score: 7) }
+  let!(:contestsolution12) { FactoryBot.create(:contestsolution, contestproblem: contestproblem1, user: user2, corrected: true, score: 4) }
+  let!(:contestsolution13) { FactoryBot.create(:contestsolution, contestproblem: contestproblem1, user: user3, corrected: true, score: 0) }
+  let!(:contestsolution21) { FactoryBot.create(:contestsolution, contestproblem: contestproblem2, user: user1, corrected: true, score: 0) }
+  let!(:contestscore1) { FactoryBot.create(:contestscore, contest: contest, user: user1, rank: 1, score: 7) }
+  let!(:contestscore2) { FactoryBot.create(:contestscore, contest: contest, user: user2, rank: 2, score: 4) }
   
   before { assign(:contest, contest) }
     
