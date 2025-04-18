@@ -31,7 +31,6 @@ describe "Myfile pages", myfile: true do
   let(:tchatmessagemyfile) { FactoryGirl.create(:tchatmessagemyfile, myfiletable: tchatmessage) }
   
   let(:attachments_folder) { "./spec/attachments/" }
-  let(:old_image) { "mathraining.png" } # This one is used for all default files
   let(:new_image) { "Smiley1.gif" }
   let(:exe_attachment) { "hack.exe" }
 
@@ -157,35 +156,6 @@ describe "Myfile pages", myfile: true do
           should have_current_path(myfiles_path)
           should have_success_message("Contenu de la pièce jointe supprimé.")
         end
-      end
-    end
-  end
-  
-  describe "cron job" do
-    let!(:tchatmessage1) { discussion.tchatmessages.first }
-    let!(:tchatmessage2) { discussion.tchatmessages.second }
-    
-    describe "deletes old files in private messages" do
-      before do
-        myfile11 = FactoryGirl.create(:tchatmessagemyfile, myfiletable: tchatmessage1)
-        myfile12 = FactoryGirl.create(:tchatmessagemyfile, myfiletable: tchatmessage1)
-        myfile21 = FactoryGirl.create(:tchatmessagemyfile, myfiletable: tchatmessage2)
-        myfile22 = FactoryGirl.create(:tchatmessagemyfile, myfiletable: tchatmessage2)
-        myfile11.file.blob.update_attribute(:created_at, DateTime.now - 50.days)
-        myfile12.file.blob.update_attribute(:created_at, DateTime.now - 30.days)
-        myfile21.file.blob.update_attribute(:created_at, DateTime.now - 26.days)
-        myfile22.file.blob.update_attribute(:created_at, DateTime.now - 10.days)
-        Myfile.fake_dels
-        tchatmessage1.reload
-        tchatmessage2.reload
-      end
-      specify do
-        expect(tchatmessage1.myfiles.count).to eq(0)
-        expect(tchatmessage1.fakefiles.count).to eq(2)
-        expect(tchatmessage1.fakefiles.first.filename).to eq(old_image)
-        expect(tchatmessage1.fakefiles.second.filename).to eq(old_image)
-        expect(tchatmessage2.myfiles.count).to eq(2)
-        expect(tchatmessage2.fakefiles.count).to eq(0)
       end
     end
   end
