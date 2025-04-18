@@ -23,6 +23,7 @@ class Solvedquestion < ActiveRecord::Base
 
   validates :question_id, uniqueness: { scope: :user_id }
   validates :nb_guess, presence: true, numericality: { greater_than_or_equal_to: 1 }
+  validates :resolution_time, presence: true
   
   # Find users having solved many questions in a very short amount of time
   def self.detect_suspicious_users
