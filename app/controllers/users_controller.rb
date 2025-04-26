@@ -430,6 +430,9 @@ class UsersController < ApplicationController
                    :valid_name     => true,
                    :follow_message => false,
                    :rating         => 0)
+      @user.pointspersections.each do |pps|
+        pps.update_attribute(:points, 0)
+      end
       @user.followed_subjects.clear
       @user.followed_contests.clear
       @user.followed_users.clear

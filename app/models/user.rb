@@ -543,7 +543,7 @@ class User < ActiveRecord::Base
       end
     end
     
-    Pointspersection.joins(:section).each do |pps|
+    Pointspersection.joins(:user).where("users.role = ?", User.roles[:student]).each do |pps|
       current_score = pps.points
       problem_score = problem_scores_by_section[pps.section_id][pps.user_id]
       problem_score = 0 if problem_score.nil?
