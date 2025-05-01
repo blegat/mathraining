@@ -26,14 +26,14 @@
 <% end %>
 
 <% levels_int = 31 %>
-<% levels = [1, 2, 3, 4, 5] %>
 <% if(params.has_key?:levels) %>
-  <% levels = [] %>
   <% levels_int = params[:levels].to_i %>
-  <% for l in [1, 2, 3, 4, 5] %>
-    <% if (levels_int & (1 << (l-1)) != 0) %>
-      <% levels.push(l) %>
-    <% end %>
+<% end %>
+
+<% levels = [] %>
+<% for l in [1, 2, 3, 4, 5] %>
+  <% if (levels_int & (1 << (l-1)) != 0) %>
+    <% levels.push(l) %>
   <% end %>
 <% end %>
 
@@ -42,13 +42,24 @@
   <% levels_choices.push(["Niveau #{x}", 1 << (x-1)]) %>
 <% end %>
 
+<% fav_int = 0 %>
+<% favorite_condition = "" %>
+<% if(params.has_key?:fav) && params[:fav].to_i == 1 %>
+  <% fav_int = 1 %>
+  <% favorite_condition = "problems.id IN (SELECT favoriteproblems.problem_id FROM favoriteproblems WHERE favoriteproblems.user_id = #{current_user.id})" %>
+<% end %>
+<% fav_choices = [["Tout", 0], ["Favoris", 1]] %>
+
 <%= form_tag "", :method => "get", :name => "search_section_and_levels", :class => "mb-3" do %>
   <div class="grid" style="--bs-columns:12; --bs-gap:10px;">
-    <div class="g-col-12 g-start-md-6 g-col-md-4 g-start-lg-8 g-col-lg-3">
+    <div class="g-col-12 g-start-md-4 g-col-md-4 g-start-lg-5 g-col-lg-3 g-start-xl-6 g-col-xl-3 g-start-xxl-8 g-col-xxl-2">
       <%= select_tag :section, options_for_select(section_choices, section), :class =>"form-select", :onchange => ("javascript: document.search_section_and_levels.submit();") %>
     </div>
-    <div class="g-col-12 g-col-md-3 g-col-lg-2">
+    <div class="g-col-12 g-col-md-3 g-col-lg-3 g-col-xl-2 g-col-xxl-2">
       <%= select_tag :levels, options_for_select(levels_choices, levels_int), :class =>"form-select", :onchange => ("javascript: document.search_section_and_levels.submit();") %>
+    </div>
+    <div class="g-col-12 g-col-md-2 g-col-lg-2 g-col-xl-2 g-col-xxl-1">
+      <%= select_tag :fav, options_for_select(fav_choices, fav_int), :class =>"form-select", :onchange => ("javascript: document.search_section_and_levels.submit();") %>
     </div>
   </div>
 <% end %>
@@ -75,13 +86,13 @@
 <% end %>
 
 <!-- Go through all recent submissions to compute new_sub[0] -->
-<% Submission.joins(:problem).select(:created_at, :problem_id).where.not(:status => [:draft, :waiting_forever]).where("created_at > ?", date_begin).where(section_condition).where("problems.level in (?)", levels).each do |s| %>
+<% Submission.joins(:problem).select(:created_at, :problem_id).where.not(:status => [:draft, :waiting_forever]).where("created_at > ?", date_begin).where(section_condition).where("problems.level in (?)", levels).where(favorite_condition).each do |s| %>
   <% interval_id = [((s.created_at - date_begin) / time_interval).floor, num_intervals-1].min %>
   <% new_sub[0][interval_id] += 1 %>
 <% end %>
 
 <!-- Go through recent waiting submissions to compute new_sub[1] and new_sub[2] for them -->
-<% Submission.joins(:problem).select(:created_at, :problem_id).where("created_at > ?", date_begin - (shifts.max).days).where(:status => :waiting).where(section_condition).where("problems.level in (?)", levels).each do |s| %>
+<% Submission.joins(:problem).select(:created_at, :problem_id).where("created_at > ?", date_begin - (shifts.max).days).where(:status => :waiting).where(section_condition).where("problems.level in (?)", levels).where(favorite_condition).each do |s| %>
   <% (1..2).each do |i| %>
     <% threshold_date = s.created_at.in_time_zone.to_date + shifts[i] %>
     <% threshold_time = threshold_date.in_time_zone.to_time + 1.second %>
@@ -95,7 +106,7 @@
 <% end %>
 
 <!-- Go through recently corrected submissions to compute new_sub[1] and new_sub[2] for them, as well as new_cor[0], new_cor[1], new_cor[2] -->
-<% Following.joins(submission: :problem).select("followings.created_at, submissions.created_at AS sub_created_at").where(:kind => :first_corrector).where("followings.created_at > ?", date_begin).where(section_condition).where("problems.level in (?)", levels).each do |f| %>
+<% Following.joins(submission: :problem).select("followings.created_at, submissions.created_at AS sub_created_at").where(:kind => :first_corrector).where("followings.created_at > ?", date_begin).where(section_condition).where("problems.level in (?)", levels).where(favorite_condition).each do |f| %>
   <% interval_id = [((f.created_at - date_begin) / time_interval).floor, num_intervals-1].min %>
   <% new_cor[0][interval_id] += 1 %>
   <% (1..2).each do |i| %>
@@ -114,7 +125,7 @@
 <% end %>
 
 <% Groupdate.time_zone = false unless Rails.env.production? %>
-<% num_waiting_now_by_date = Submission.joins(:problem).where(:status => :waiting).where(section_condition).where("problems.level in (?)", levels).group_by_day(:created_at).count %>
+<% num_waiting_now_by_date = Submission.joins(:problem).where(:status => :waiting).where(section_condition).where("problems.level in (?)", levels).where(favorite_condition).group_by_day(:created_at).count %>
 
 <% r = (num_intervals-1)..0 %>
 

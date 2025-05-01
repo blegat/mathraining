@@ -271,8 +271,9 @@ class SubmissionsController < ApplicationController
         end
       end
     end
-    section_condition = ((params.has_key?:section) and params[:section].to_i > 0) ? "problems.section_id = #{params[:section].to_i}" : ""
-    @submissions = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions(true)).includes(:user, followings: :user).where(:status => :waiting).where(section_condition).where("problems.level in (?)", levels).order("submissions.created_at").to_a
+    section_condition = ((params.has_key?:section) && params[:section].to_i > 0) ? "problems.section_id = #{params[:section].to_i}" : ""
+    favorite_condition = ((params.has_key?:fav) && params[:fav].to_i == 1) ? "problems.id IN (SELECT favoriteproblems.problem_id FROM favoriteproblems WHERE favoriteproblems.user_id = #{current_user.id})" : ""
+    @submissions = Submission.joins(:problem).joins(problem: :section).select(needed_columns_for_submissions(true)).includes(:user, followings: :user).where(:status => :waiting).where(section_condition).where("problems.level in (?)", levels).where(favorite_condition).order("submissions.created_at").to_a
   end
 
   # Show all new comments to submissions in which we took part

@@ -73,6 +73,8 @@ Rails.application.routes.draw do
       patch :update_markscheme
       post :add_virtualtest
       get :manage_externalsolutions
+      get :mark_favorite # only via JS
+      get :unmark_favorite # only via JS
     end
     resources :submissions, only: [:create] do
       collection do

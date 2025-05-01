@@ -1,0 +1,5 @@
+var favorite_img = document.getElementById("heart-<%= @problem.id %>")
+var favorite_img_filled = document.getElementById("heart-filled-<%= @problem.id %>")
+
+favorite_img.style.display = "none";
+favorite_img_filled.style.display = "inline";

@@ -182,14 +182,31 @@
   --bs-btn-bg: #ffff33; // ok
   --bs-btn-border-color: #ffff33; // ok
   --bs-btn-hover-color: #000; // ok
-  --bs-btn-hover-bg: #ffff77; // ok
-  --bs-btn-hover-border-color: #ffff77; // ok
+  --bs-btn-hover-bg: #ffff55; // ok
+  --bs-btn-hover-border-color: #ffff55; // ok
   --bs-btn-focus-shadow-rgb: 217, 217, 81; // -38 to each color compared to hover, but not sure it really works
   --bs-btn-active-color: #000; // ok
-  --bs-btn-active-bg: #ffff33; // not used
-  --bs-btn-active-border-color: #ffff33; // not used
+  --bs-btn-active-bg: #ffff77; // ok
+  --bs-btn-active-border-color: #ffff77; // ok
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125); // not used
   --bs-btn-disabled-color: #000; // not used
   --bs-btn-disabled-bg: #ffff33; // not used
+  --bs-btn-disabled-border-color: #ffc107; // not used
+}
+
+.btn-pink {
+  --bs-btn-color: #000; // ok
+  --bs-btn-bg: #ff9090; // ok
+  --bs-btn-border-color: #ff9090; // ok
+  --bs-btn-hover-color: #000; // ok
+  --bs-btn-hover-bg: #ffa0a0; // ok
+  --bs-btn-hover-border-color: #ffa0a0; // ok
+  --bs-btn-focus-shadow-rgb: 217, 122, 122; // -38 to each color compared to hover, but not sure it really works
+  --bs-btn-active-color: #000; // ok
+  --bs-btn-active-bg: #ffa5a5; // ok
+  --bs-btn-active-border-color: #ffa5a5; // ok
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125); // not used
+  --bs-btn-disabled-color: #000; // not used
+  --bs-btn-disabled-bg: #ffa0a0; // not used
   --bs-btn-disabled-border-color: #ffc107; // not used
 }

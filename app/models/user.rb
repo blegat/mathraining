@@ -140,6 +140,7 @@ class User < ActiveRecord::Base
   has_and_belongs_to_many :creating_chapters, -> { distinct }, class_name: "Chapter", join_table: :chaptercreations
   has_and_belongs_to_many :organized_contests, -> { distinct }, class_name: "Contest", join_table: :contestorganizations
   has_and_belongs_to_many :notified_submissions, -> { distinct }, class_name: "Submission", join_table: :notifs
+  has_and_belongs_to_many :favorite_problems, -> { distinct }, class_name: "Problem", join_table: :favoriteproblems
   
   # BEFORE, AFTER
 
@@ -248,14 +249,11 @@ class User < ActiveRecord::Base
   end
 
   # Returns [n, d], saying there are n submissions that the user can correct + all submissions of last d days
-  def num_notifications_new(levels, show_all = false)
+  def num_notifications_new(levels, show_all = false, favorite_only = false)
     Groupdate.time_zone = false unless Rails.env.production?
-    x = {}
-    if self.admin?
-      x = Submission.joins(:problem).where(:status => :waiting).where("problems.level in (?)", levels).group_by_day(:created_at).count
-    elsif self.corrector?
-      x = Submission.joins(:problem).where("problem_id IN (SELECT solvedproblems.problem_id FROM solvedproblems WHERE solvedproblems.user_id = #{self.id})").where(:status => :waiting).where("problems.level in (?)", levels).group_by_day(:created_at).count
-    end
+    visible_condition = favorite_only || self.admin? ? "" : "problem_id IN (SELECT solvedproblems.problem_id FROM solvedproblems WHERE solvedproblems.user_id = #{self.id})"
+    fav_condition = favorite_only ? "problem_id IN (SELECT favoriteproblems.problem_id FROM favoriteproblems WHERE favoriteproblems.user_id = #{self.id})" : ""
+    x = Submission.joins(:problem).where(visible_condition).where(fav_condition).where(:status => :waiting).where("problems.level in (?)", levels).group_by_day(:created_at).count
     y = x.sort_by(&:first)
     n = 0
     y.each do |a|

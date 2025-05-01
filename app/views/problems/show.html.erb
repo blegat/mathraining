@@ -13,6 +13,11 @@
     <% if @problem.online %>
       <span class="badge rounded-pill py-2 px-3 fs-5 bg-primary">Résolu <%= @problem.nb_solves %> fois</span>
     <% end %>
+     <% if current_user.admin? || (current_user.corrector? && problem_solved) %>
+      <% is_favorite = current_user.favorite_problems.exists?(@problem.id)%>
+      <%= image_tag "heart-fill.svg", :id => "heart-filled-#{@problem.id}", :class => "svg-black-white ms-1", :width => "26", :style => "cursor:pointer; display:#{is_favorite ? 'inline' : 'none'};", :onclick => "$.getScript('#{unmark_favorite_problem_url(@problem)}')" %>
+      <%= image_tag "heart.svg", :id => "heart-#{@problem.id}", :class => "svg-black-white ms-1", :width => "26", :style => "cursor:pointer; display:#{is_favorite ? 'none' : 'inline'};", :onclick => "$.getScript('#{mark_favorite_problem_url(@problem)}')" %>
+    <% end %>
   </div>
 </div>
 
