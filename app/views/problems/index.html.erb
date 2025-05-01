@@ -84,7 +84,7 @@
       <% end %>
       <%= "(en construction)" if !p.online %>
       
-      <% if current_user.admin? || classe == "greeny" %>
+      <% if current_user.admin? || (current_user.corrector? && classe == "greeny") %>
         <% is_favorite = favorite_problems.include?(p.id) %>
         <%= image_tag "heart-fill.svg", :id => "heart-filled-#{p.id}", :class => "svg-black-white ms-1", :width => "22", :style => "margin-top:2px; float:right; cursor:pointer; display:#{is_favorite ? 'inline' : 'none'};", :onclick => "$.getScript('#{unmark_favorite_problem_url(p)}')" %>
         <%= image_tag "heart.svg", :id => "heart-#{p.id}", :class => "svg-black-white ms-1", :width => "22", :style => "margin-top:2px; float:right; cursor:pointer; display:#{is_favorite ? 'none' : 'inline'};", :onclick => "$.getScript('#{mark_favorite_problem_url(p)}')" %>
