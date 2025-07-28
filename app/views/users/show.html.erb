@@ -740,7 +740,7 @@
     <div class="container_title">Corrections</div>
     <div class="pe-2 pb-2" style="padding-left:20px;"><%= @user.name %> a participé à la correction de <span class="fw-bold <%= @user.color_class %>"><%= write_readable_big_number(nb_corrections) %></span> soumission<%= "s" if nb_corrections > 1 %> sur le site.
     
-    <% show_puzzle = Puzzle.started_or_root(current_user) && (!Rails.env.production? || @user.id == 38) %>
+    <% show_puzzle = signed_in? && Puzzle.started_or_root(current_user) && (!Rails.env.production? || @user.id == 38) %>
     
     <% if (@user.admin? || @user.corrector?) && @user.correction_level > 0 %>
       <%= "Il" if @user.sex == 0 %><%= "Elle" if @user.sex == 1 %> est Chevalier de rang
@@ -753,7 +753,9 @@
     <% end %>
     
     Merci à <%= "lui" if @user.sex == 0 %><%= "elle" if @user.sex == 1 %> !
-    </div>    
+    </div>
+    
+    <% if signed_in? %>
     <div style="width:100%;">
     <% Groupdate.time_zone = false unless Rails.env.production? %>
     <% count_by_month_str = @user.followings.where(:kind => [:first_corrector, :other_corrector]).group_by_month(:created_at).count %>
@@ -951,6 +953,7 @@
     <% end %>
     
     </div>
+    <% end %>
   </div>
 <% end %>
 

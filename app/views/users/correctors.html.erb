@@ -210,6 +210,7 @@ Votre navigateur ne supporte pas les canvas.
   respondCanvas();
 </script>
 
+<% if signed_in? %>
 
 <h3>Dernières corrections</h3>
 
@@ -337,3 +338,5 @@ const hideInactiveCorrectors = () => {
   <a id="link_show_inactive" href="javascript:showInactiveCorrectors()">Montrer les correcteurs moins actifs récemment</a>
   <a id="link_hide_inactive" href="javascript:hideInactiveCorrectors()" style="display: none;">Cacher les correcteurs moins actifs récemment</a>
 </p>
+
+<% end %>
