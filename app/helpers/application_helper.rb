@@ -35,7 +35,7 @@ module ApplicationHelper
 
   private
 
-  # To read bbcode on user side (should be similar to previewsafe.js)
+  # To read bbcode on user side (should be similar to preview.js)
   def bbcode(m)
     return (h m).
     gsub(/\\\][ \r]*\n/,'\] ').
@@ -43,8 +43,9 @@ module ApplicationHelper
     gsub(/\[b\](.*?)\[\/b\]/mi, '<b>\1</b>').
     gsub(/\[u\](.*?)\[\/u\]/mi, '<u>\1</u>').
     gsub(/\[i\](.*?)\[\/i\]/mi, '<i>\1</i>').
-    gsub(/\[url=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/url\]/mi, '<a target=\'blank\' href=\'\1\'>\2</a>').
-    gsub(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\][ \r\n]*(.*?)[ \r\n]*\[\/hide\]/mi, '[hide=\1]\2[/hide]').
+    gsub(/\[url=(.*?)\](.*?)\[\/url\]/mi, '<a target=\'blank\' href=\'\1\'>\2</a>').
+    gsub(/\[hide=(.*?)\][ \r\n]*/mi, '[hide=\1]').
+    gsub(/[ \r\n]*\[\/hide\]/mi, '[/hide]').
     gsub(/\:\-\)/,    image_tag("Smiley1.png", alt: ":-)", width: "20px")).
     gsub(/\:\-\(/,    image_tag("Smiley2.png", alt: ":-(", width: "20px")).
     gsub(/\:\-[D]/,   image_tag("Smiley3.png", alt: ":-D", width: "20px")).
@@ -123,13 +124,50 @@ module ApplicationHelper
     if replace_indice
       m2 = m2.
       gsub(/&lt;indice&gt;(.*?)&lt;\/indice&gt;/mi, '<indice>\1</indice>').
-      gsub(/<\/indice>[ \r]*<br\/>/, "</indice>")
-    
-      while m2.sub!(/<indice>(.*?)<\/indice>/mi) {"<div class='clue-bis'><div><button onclick='return Clue.toggle(0);' class='btn btn-ld-light-dark'>Indice</button></div><div id='indice0' class='clue-hide'><div class='clue-content'>#{$1}</div></div></div>"}
-      end
+      gsub(/<\/indice>[ \r]*<br\/>/, '</indice>').
+      gsub(/<indice>(.*?)<\/indice>/mi, '<div class=\'clue-bis\'><div><button onclick=\'return Clue.toggle(0);\' class=\'btn btn-ld-light-dark\'>Indice</button></div><div id=\'indice0\' class=\'clue-hide\'><div class=\'clue-content\'>\1</div></div></div>')
     end
     
     return m2.html_safe
+  end
+  
+  # Replace hidden text in m, where "[hide=" is in position a, "]" in position b, and "[/hide]" in position c
+  def replace_hidden_text_impl(m, a, b, c, i)
+    return (a > 0 ? m[0..(a-1)] : "") \
+            + (Rails.env.test? ? "(X#{i})" : "<div class='clue'><div><button onclick='return Clue.toggle(#{i})' class='btn btn-ld-light-dark'>".html_safe) \
+            + m[(a+6)..(b-1)] \
+            + (Rails.env.test? ? "(Y#{i})" : "</button></div><div id='indice#{i}' class='clue-hide'><div class='clue-content'>".html_safe) \
+            + m[(b+1)..(c-1)] \
+            + (Rails.env.test? ? "(Z#{i})" :  "</div></div></div>".html_safe) \
+            + m[(c+7)..]
+  end
+  
+  # Return [new_m, c, new_i] if [/hide] was found in position c (with c = nil if no [/hide] found)
+  def process_hidden_text_rec(m, cur, i)
+    a = m.index("[hide=", cur)
+    c = m.index("[/hide]", cur)
+    if (!a.nil? && (c.nil? || a < c)) # Next is [hide=...
+      b = m.index("]", a+6)
+      return [m, nil, i] if b.nil? # The ] was not found
+      res = process_hidden_text_rec(m, b+1, i+1)
+      if !res[1].nil? # Found matching [/hide] in position res[1]
+        new_m = replace_hidden_text_impl(res[0], a, b, res[1], i)
+        return process_hidden_text_rec(new_m, (new_m.size-res[0].size) + res[1]+7, res[2])
+      else
+        return res
+      end
+    end
+    return [m, c, i] # With c possibly nil
+  end
+  
+  # Process the [hide=Texte caché]Indice[/hide], and return [new_m, new_i]
+  def process_hidden_text(m, i)
+    res = [m, -1, i]
+    loop do
+      res = process_hidden_text_rec(res[0], res[1]+1, res[2])
+      break if res[1].nil?
+    end
+    return [res[0], res[2]]
   end
 
   # Write 21h50
