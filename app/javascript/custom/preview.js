@@ -85,54 +85,6 @@ var Preview = {
     }
     this.timeout = setTimeout(this.callback,this.delay);
   },
-  
-  //
-  // Replace hidden text in m, where "[hide=" is in position a, "]" in position b, and "[/hide]" in position c
-  //
-  ReplaceHiddenTextImpl: function (m, a, b, c) {
-    return m.substring(0, a) +
-           "<div class='clue'><div><button onclick='return false;' class='btn btn-ld-light-dark'>" +
-           m.substring(a+6, b) +
-           "</button></div><div class='clue-hide' style='height:auto;!important;'><div class='clue-content'>" +
-           m.substring(b+1, c) +
-           "</div></div></div>" +
-           m.substring(c+7)
-  },
-  
-  //
-  // Return [newM, c] if [/hide] was found in position c (with c = nil if no [/hide] found)
-  //
-  ProcessHiddenTextRec: function (m, cur) {
-    var a = m.indexOf("[hide=", cur)
-    var c = m.indexOf("[/hide]", cur)
-    if (a >= 0 && (c < 0 || a < c)) // Next is [hide=...
-    {
-      var b = m.indexOf("]", a+6)
-      if (b < 0)
-        return [m, -1] // The ] was not found
-      var res = this.ProcessHiddenTextRec(m, b+1)
-      if (res[1] >= 0) // Found matching [/hide] in position res[1]
-      {
-        var newM = this.ReplaceHiddenTextImpl(res[0], a, b, res[1])
-        return this.ProcessHiddenTextRec(newM, (newM.length-res[0].length) + res[1]+7)
-      }
-      else
-        return res
-    }
-    return [m, c] // With c possibly -1
-  },
-  
-  //
-  // Process the [hide=Texte caché]Indice[/hide] in m
-  //
-  ProcessHiddenText: function (m) {
-    var res = [m, -1]
-    do
-    {
-      res = this.ProcessHiddenTextRec(res[0], res[1]+1)
-    } while (res[1] >= 0)
-    return res[0]
-  },
 
   //
   //  Creates the preview and runs MathJax on it.
@@ -165,13 +117,13 @@ var Preview = {
         replace(/\[b\]((.|\n)*?)\[\/b\]/gmi, '<b>$1</b>').
         replace(/\[u\]((.|\n)*?)\[\/u\]/gmi, '<u>$1</u>').
         replace(/\[i\]((.|\n)*?)\[\/i\]/gmi, '<i>$1</i>').
-        replace(/\[url=(.*?)\](.*?)\[\/url\]/gmi, '<a target=\'blank\' href=\'$1\'>$2</a>');
+        replace(/\[url=(?:&quot;)?(.*?)(?:&quot;)?\](.*?)\[\/url\]/gmi, '<a target=\'blank\' href=\'$1\'>$2</a>');
         
         if (this.hiddentext) { // Only true for messages in Forum (no such variable in method bbcode because people could use <hide> in submissions before)
-          text = text.
-          replace(/\[hide=((.|n)*?)\][ \r\n]*/gmi, '[hide=$1]').
-          replace(/[ \r\n]*\[\/hide\]/gmi, '[/hide]');
-          text = this.ProcessHiddenText(text)
+          var reg = /\[hide=(?:&quot;)?(.*?)(?:&quot;)?\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/hide\]/gmi;
+          while (reg.test(text)) {
+            text = text.replace(/\[hide=(?:&quot;)?(.*?)(?:&quot;)?\][ \r\n]*((.|\n)*?)[ \r\n]*\[\/hide\]/gmi, "<div class='clue'><div><button onclick='return false;' class='btn btn-ld-light-dark'>$1</button></div><div class='clue-hide' style='height:auto;!important;'><div class='clue-content'>$2</div></div></div>");
+          }
         }
         
         var smileys = [];
