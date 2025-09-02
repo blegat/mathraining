@@ -172,6 +172,7 @@ class Submission < ActiveRecord::Base
       self.status = :wrong
       self.star = false
       self.save
+      self.starproposals.destroy_all
       nb_corr = Submission.where(:problem => pb, :user => u, :status => :correct).count
       if nb_corr == 0
         # Si c'était la seule soumission correcte, alors il faut agir et baisser le score

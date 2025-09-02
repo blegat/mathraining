@@ -210,7 +210,6 @@ class SubmissionsController < ApplicationController
   # Mark a correct solution as incorrect (only in case of mistake)
   def mark_wrong
     @submission.mark_incorrect
-    @submission.starproposals.destroy_all
     flash[:success] = "Soumission marquée comme erronée."
     redirect_to problem_path(@problem, :sub => @submission)
   end
