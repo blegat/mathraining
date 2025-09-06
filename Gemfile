@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '3.0.0'                           # Ruby
+ruby '3.2.8'                           # Ruby
 
 gem 'rails', '7.1.4.1'                 # Ruby on Rails
 
