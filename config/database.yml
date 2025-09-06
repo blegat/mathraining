@@ -27,4 +27,4 @@ production:
   database: pg_production
   pool: 5
   username: mathraining
-  password: password1
+  password: <%= Rails.application.credentials.dig(:pg_production_pwd) %>
