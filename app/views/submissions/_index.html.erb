@@ -4,14 +4,14 @@
 var showCorrect = function() {
   document.getElementById("btn_correct").style.display = 'none';
   document.getElementById("loading_correct").style.display = 'block';
-  $.getScript("<%= problem_submissions_url(problem, :what => 0) %>").done(function(script, textStatus) {
+  $.getScript("<%= submissions_url(:problem_id => problem, :what => 0) %>").done(function(script, textStatus) {
     fixLastCellWidthOfTableHeader("all_correct");
   });
 }
 var showFalse = function() {
   document.getElementById("btn_false").style.display = 'none';
   document.getElementById("loading_false").style.display = 'block';
-  $.getScript("<%= problem_submissions_url(problem, :what => 1) %>").done(function(script, textStatus) {
+  $.getScript("<%= submissions_url(:problem_id => problem, :what => 1) %>").done(function(script, textStatus) {
     fixLastCellWidthOfTableHeader("all_false");
   });
 }

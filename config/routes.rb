@@ -76,7 +76,7 @@ Rails.application.routes.draw do
       get :mark_favorite # only via JS
       get :unmark_favorite # only via JS
     end
-    resources :submissions, only: [:create, :index] do # 'index' only via JS
+    resources :submissions, only: [:create] do
       collection do
         post :create_intest
       end
@@ -87,7 +87,7 @@ Rails.application.routes.draw do
   resources :solvedproblems, only: [:index]
 
   # Submissions
-  resources :submissions, only: [:destroy] do
+  resources :submissions, only: [:index, :destroy] do # 'index' only via JS
     member do
       patch :update_intest
       patch :update_draft

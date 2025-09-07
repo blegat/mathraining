@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby '3.2.8'                           # Ruby
 
-gem 'rails', '7.1.5.2'                 # Ruby on Rails
+gem 'rails', '7.1.4.1'                 # Ruby on Rails
 
 gem 'bootstrap', '5.3'                 # Responsive design
 
@@ -56,8 +56,6 @@ gem 'bootstrap3-datetimepicker-rails', # Pick dates (for constests)
   '~> 4.14.30'
 
 gem 'rack-canonical-host'              # Redirect to www (?)
-
-gem 'rack', '~> 2.2'                   # Passenger not compatible with rack 3
 
 gem 'lograge'                          # Better logs
 
