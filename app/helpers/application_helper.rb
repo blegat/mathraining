@@ -33,6 +33,8 @@ module ApplicationHelper
     return errors_to_list(object.errors.full_messages)
   end
 
+  private
+
   # To read bbcode on user side (should be similar to preview.js)
   def bbcode(m)
     return (h m).
@@ -402,27 +404,28 @@ module ApplicationHelper
     return 'x-circle.svg'
   end
   
-  def ruby_to_javascript(arr)
-    t = "["
-    prems = true
-    arr.each do |a|
-      t << "," if !prems
-      prems = false
-      t << a.to_s
-    end
-    t << "]"
-    return t.html_safe
+def ruby_to_javascript(arr)
+  t = "["
+  prems = true
+  arr.each do |a|
+    t << "," if !prems
+    prems = false
+    t << a.to_s
   end
+  t << "]"
+  return t.html_safe
+end
 
-  def ruby_to_javascript_string(arr)
-    t = "["
-    prems = true
-    arr.each do |a|
-      t << "," if !prems
-      prems = false
-      t << "'" << a << "'"
-    end
-    t << "]"
-    return t.html_safe
+def ruby_to_javascript_string(arr)
+  t = "["
+  prems = true
+  arr.each do |a|
+    t << "," if !prems
+    prems = false
+    t << "'" << a << "'"
   end
+  t << "]"
+  return t.html_safe
+end
+
 end

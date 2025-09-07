@@ -16,8 +16,6 @@
 #  star              :boolean          default(FALSE)
 #  old_created_at    :datetime
 #
-include ApplicationHelper
-
 class Submission < ActiveRecord::Base
   
   enum status: {:draft           => -1, # draft (only for the student)
