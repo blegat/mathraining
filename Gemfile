@@ -58,7 +58,7 @@ gem 'bootstrap3-datetimepicker-rails', # Pick dates (for constests)
 gem 'rack-canonical-host'              # Redirect to www (?)
 
 group :production do
-  gem 'passenger'                      # Only needed in production
+  gem 'passenger', '6.0.27'            # Force 6.0.27 that is set up with Apache on the server
 end
 
 gem 'lograge'                          # Better logs

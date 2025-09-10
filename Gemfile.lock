@@ -383,7 +383,7 @@ DEPENDENCIES
   importmap-rails (~> 1.2)
   jquery-rails
   lograge
-  passenger
+  passenger (= 6.0.27)
   pg (~> 1.1)
   puma
   rack-canonical-host
