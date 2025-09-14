@@ -7,7 +7,7 @@ class UsersController < ApplicationController
   before_action :admin_user, only: [:set_wepion, :unset_wepion, :change_group]
   before_action :root_user, only: [:take_skin, :set_administrator, :destroy, :destroydata, :set_corrector, :unset_corrector, :validate_names, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name]
   before_action :signed_out_user, only: [:new, :create, :forgot_password, :password_forgotten]
-  before_action :group_user, only: [:groups]
+  before_action :wepion_user, only: [:groups]
   
   before_action :get_user, only: [:edit, :update, :show, :destroy, :activate, :destroydata, :change_password, :take_skin, :set_administrator, :set_wepion, :unset_wepion, :set_corrector, :unset_corrector, :change_group, :recup_password, :follow, :unfollow, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name]
   
@@ -549,9 +549,9 @@ class UsersController < ApplicationController
   
   ########## CHECK METHODS ##########
   
-  # Check that current user is in some Wépion group
-  def group_user
-    if !current_user.admin? && current_user.group == ""
+  # Check that current user is/was in Wépion (or admin)
+  def wepion_user
+    if !current_user.admin? && !current_user.wepion?
       render 'errors/access_refused'
     end
   end

@@ -2,11 +2,13 @@
 
 <h1><%= title_1("Groupes Wépion") %></h1>
 
-<p>À titre informatif, voici les élèves constituant les groupes A et B cette année. Ces listes ne sont visibles que par les étudiants desdits groupes et les professeurs.</p>
+<p>À titre informatif, voici les élèves constituant les groupes A et B aux stages de préparation pour les olympiades internationales.</p>
+
+<p><u>Note</u> : "Wépion" fait référence à ces stages, car ceux-ci étaient organisés à Wépion jusqu'en 2024. Nous retournerons certainement à Wépion lorsque <a target="_blank" href="https://lamarlagne.cfwb.be/">le centre culturel La Marlagne</a> aura fini sa rénovation.</p>
 
 <!-- On parcourt les deux groupes -->
 
-<% if current_user.admin? %>
+<% if current_user.root? %>
   <p class="text-center">
   <% if (!params.has_key?:details) %>
     <%= link_to "Afficher les détails", groups_users_path(:details => 1) %>
@@ -16,10 +18,10 @@
   </p>
 <% end %>
 
-<% if (params.has_key?:details) && current_user.admin? %>
+<% for g in ["A", "B"] do %>
+  <h3>Groupe <%= g %></h3>
 
-  <% for g in ["A", "B"] do %>
-    <h3>Groupe <%= g %></h3>
+  <% if (params.has_key?:details) && current_user.root? %>
     <table class="table table-bordered">
     <tr class="table-ld-header"><th>Nom</th><th>Score</th><th>Email</th><th>Dernière connexion</th></tr>
     <% User.where(:group => g).order("rating DESC").each do |u| %>
@@ -38,17 +40,11 @@
       </tr>
     <% end %>
     </table>
-  <% end %>
-
-<% else %>
-
-  <% for g in ["A", "B"] do %>
-    <h3>Groupe <%= g %></h3>
+  <% else %>
     <ul>
     <% User.where(:group => g).order(:first_name).each do |u| %>
       <li><%= u.linked_name %></li>
     <% end %>
     </ul>
   <% end %>
-  
 <% end %>

@@ -184,7 +184,7 @@
             <% end %>
             <li><%= link_to "Profil", current_user, :class => "dropdown-item" %></li>
             <li><%= link_to "Compte", edit_user_path(current_user), :class => "dropdown-item" %></li>
-            <% if signed_in? && (current_user.admin? || (current_user.wepion? && current_user.group != "")) %>
+            <% if signed_in? && (current_user.admin? || current_user.wepion?) %>
               <li><%= link_to "Groupes Wépion", groups_users_path, :class => "dropdown-item" %></li>
             <% end %>
             <li><%= link_to "Messages#{' (' + nonlu.to_s + ')' if nonlu > 0 }", new_discussion_path, :class => "dropdown-item" %></li>
