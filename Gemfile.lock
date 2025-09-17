@@ -288,7 +288,7 @@ GEM
     resque_mailer (2.4.3)
       actionmailer (>= 3.0)
       activesupport (>= 3.0)
-    rexml (3.3.9)
+    rexml (3.4.2)
     rspec-core (3.13.1)
       rspec-support (~> 3.13.0)
     rspec-expectations (3.13.3)
