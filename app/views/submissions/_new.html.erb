@@ -26,7 +26,7 @@
       <%= check_box_tag "consent", 1, false, :class => "form-check-input", :disabled => @no_new_submission, :onchange => "javascript:checkChecked();" %>
       Je comprends que les correcteurs sont bénévoles et vont corriger cette solution pendant leur temps libre pour me faire progresser.
       Je certifie donc que cette solution est le fruit de mon travail et qu'elle ne provient pas d'une source extérieure.
-      Je garantis également que cette solution n'a pas déjà été soumise via un autre compte Mathraining.<sup>1</sup>
+      Je garantis également ne pas avoir utilisé d'intelligence artificielle pour rédiger cette solution.<sup>1</sup>
     </label>
     </div>
   <% end %>
@@ -43,5 +43,5 @@
 <% end %>
 
 <% unless limit_reached %>
-  <p style="font-size:12px;"><sup>1</sup> Les administrateurs se réservent le droit de bloquer l'accès au site aux personnes qui ne sont pas à l'origine de leur solution ou qui renvoient une solution déjà envoyée sur un précédent compte.</p>
+  <p style="font-size:12px;"><sup>1</sup> Les administrateurs se réservent le droit de bloquer l'accès au site aux personnes qui ne sont pas à l'origine de leur solution ou qui utilisent l'intelligence artificielle pour la rédiger.</p>
 <% end %>
