@@ -90,7 +90,7 @@
         <%= image_tag "heart.svg", :id => "heart-#{p.id}", :class => "svg-black-white ms-1", :width => "22", :style => "margin-top:2px; float:right; cursor:pointer; display:#{is_favorite ? 'none' : 'inline'};", :onclick => "$.getScript('#{mark_favorite_problem_url(p)}')" %>
       <% end %>
       <% if current_user.root? && p.reviewed? %>
-        <%= image_tag "check-lg", :class => "svg-black-white", :height => "22", :style => "margin-top:2px; margin-right:8px; float:right;" %>
+        <%= image_tag v_icon, :class => "svg-black-white", :height => "22", :style => "margin-top:2px; margin-right:8px; float:right;" %>
       <% end %>
       </h4>
       </td></tr>
