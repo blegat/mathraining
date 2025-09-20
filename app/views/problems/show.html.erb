@@ -209,7 +209,7 @@
   <div class="clue-bis mb-3">
     <div class="text-center">
       <button onclick="return Clue.toggle(0)" class="btn btn-ld-light-dark">Éléments de solution
-      <% if current_user.root? && @problem.reviewed? %>
+      <% if @problem.reviewed? %>
         <%= image_tag v_icon, :class => "svg-black-white" %>
       <% end %>
       </button>
