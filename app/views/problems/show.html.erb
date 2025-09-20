@@ -144,6 +144,13 @@
       <% if !@problem.virtualtest.nil? %>
         | <%= link_to "Modifier le marking scheme", edit_markscheme_problem_path(@problem) %>
       <% end %>
+      <% if @problem.online && current_user.root? %>
+        <% if @problem.reviewed? %>
+          | <%= link_to "Marquer comme non-révisé", unmark_reviewed_problem_path(@problem), :method => :put %>
+        <% else %>
+          | <%= link_to "Marquer comme révisé", mark_reviewed_problem_path(@problem), :method => :put %>
+        <% end %>
+      <% end %>
       <% unless @problem.online %>
         | <%= link_to "Supprimer ce problème", @problem, method: :delete, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer ce problème ?" } %>
       <% end %>
@@ -201,7 +208,11 @@
   <!-- Explication -->
   <div class="clue-bis mb-3">
     <div class="text-center">
-      <button onclick="return Clue.toggle(0)" class="btn btn-ld-light-dark">Éléments de solution</button>
+      <button onclick="return Clue.toggle(0)" class="btn btn-ld-light-dark">Éléments de solution
+      <% if current_user.root? && @problem.reviewed? %>
+        <%= image_tag "check-lg", :class => "svg-black-white" %>
+      <% end %>
+      </button>
     </div>
     <div id="indice0" class="clue-hide">
       <div class="clue-content">

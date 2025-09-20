@@ -18,6 +18,7 @@
 #  nb_solves        :integer          default(0)
 #  first_solve_time :datetime
 #  last_solve_time  :datetime
+#  reviewed         :boolean
 #
 include ApplicationHelper
 

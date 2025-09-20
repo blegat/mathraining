@@ -3,11 +3,12 @@ class ProblemsController < ApplicationController
   include ProblemConcern
   
   before_action :signed_in_user, only: [:show, :new, :edit, :edit_explanation, :edit_markscheme, :manage_externalsolutions]
-  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :order, :put_online, :update_explanation, :update_markscheme, :add_prerequisite, :delete_prerequisite, :add_virtualtest, :mark_favorite, :unmark_favorite]
+  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :order, :put_online, :update_explanation, :update_markscheme, :add_prerequisite, :delete_prerequisite, :add_virtualtest, :mark_favorite, :unmark_favorite, :mark_reviewed, :unmark_reviewed]
   before_action :admin_user, only: [:new, :create, :edit, :update, :destroy, :order, :put_online, :edit_explanation, :update_explanation, :edit_markscheme, :update_markscheme, :add_prerequisite, :delete_prerequisite, :add_virtualtest, :manage_externalsolutions]
   before_action :corrector_user, only: [:mark_favorite, :unmark_favorite]
+  before_action :root_user, only: [:mark_reviewed, :unmark_reviewed]
   
-  before_action :get_problem, only: [:show, :edit, :update, :destroy, :edit_explanation, :update_explanation, :edit_markscheme, :update_markscheme, :order, :add_prerequisite, :delete_prerequisite, :add_virtualtest, :put_online, :manage_externalsolutions, :mark_favorite, :unmark_favorite]
+  before_action :get_problem, only: [:show, :edit, :update, :destroy, :edit_explanation, :update_explanation, :edit_markscheme, :update_markscheme, :order, :add_prerequisite, :delete_prerequisite, :add_virtualtest, :put_online, :manage_externalsolutions, :mark_favorite, :unmark_favorite, :mark_reviewed, :unmark_reviewed]
   before_action :get_section, only: [:index, :new, :create]
   
   before_action :offline_problem, only: [:destroy, :put_online, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
@@ -210,6 +211,18 @@ class ProblemsController < ApplicationController
   def unmark_favorite
     current_user.favorite_problems.destroy(@problem)
     respond_to :js
+  end
+  
+  # Mark problem as reviewed
+  def mark_reviewed
+    @problem.update_attribute(:reviewed, true)
+    redirect_to @problem
+  end
+  
+  # Unmark problem as favorite for corrections
+  def unmark_reviewed
+    @problem.update_attribute(:reviewed, false)
+    redirect_to @problem
   end
 
   private

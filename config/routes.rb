@@ -75,6 +75,8 @@ Rails.application.routes.draw do
       get :manage_externalsolutions
       get :mark_favorite # only via JS
       get :unmark_favorite # only via JS
+      put :mark_reviewed
+      put :unmark_reviewed
     end
     resources :submissions, only: [:create, :index] do # 'index' only via JS
       collection do

@@ -5,6 +5,7 @@ describe "Problem pages", problem: true do
 
   subject { page }
 
+  let(:root) { FactoryBot.create(:root) }
   let(:admin) { FactoryBot.create(:admin) }
   let(:user_with_rating_199) { FactoryBot.create(:user, rating: 199) }
   let(:user_with_rating_200) { FactoryBot.create(:user, rating: 200) }
@@ -359,6 +360,38 @@ describe "Problem pages", problem: true do
           expect(page).to have_error_message("erreur")
           expect(page).to have_selector("h1", text: "Modifier")
           expect(offline_problem.origin).to_not eq(neworigin)
+        end
+      end
+    end
+  end
+  
+  describe "root" do
+    before { sign_in root }
+
+    describe "visits online problem" do
+      before { visit problem_path(online_problem) }
+      it do
+        should have_link("Marquer comme révisé", href: mark_reviewed_problem_path(online_problem))
+        should have_no_link("Marquer comme non-révisé", href: unmark_reviewed_problem_path(online_problem))
+      end
+      
+      describe "and mark as reviewed" do
+        before do
+          click_link("Marquer comme révisé")
+          online_problem.reload
+        end
+        specify do
+          expect(online_problem.reviewed).to eq(true)
+          expect(page).to have_no_link("Marquer comme révisé", href: mark_reviewed_problem_path(online_problem))
+          expect(page).to have_link("Marquer comme non-révisé", href: unmark_reviewed_problem_path(online_problem))
+        end
+        
+        describe "and mark as non-reviewed" do
+          before do
+            click_link("Marquer comme non-révisé")
+            online_problem.reload
+          end
+          specify { expect(online_problem.reviewed).to eq(false) }
         end
       end
     end

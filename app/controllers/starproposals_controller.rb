@@ -17,14 +17,14 @@ class StarproposalsController < ApplicationController
     if current_user.root?
       if params.has_key?:show_all
         # Show all star proposals
-        @starproposals = Starproposal.joins(:submission).joins(submission: [{ problem: :section }]).select("starproposals.*, problems.level AS problem_level, sections.short_abbreviation AS section_short_abbreviation").includes(:user, submission: :user).all.order("created_at DESC").paginate(:page => params[:page], :per_page => 50)
+        @starproposals = Starproposal.joins(:submission).joins(submission: [{ problem: :section }]).select("starproposals.*, problems.level AS problem_level, problems.reviewed AS problem_reviewed, sections.short_abbreviation AS section_short_abbreviation").includes(:user, submission: :user).all.order("created_at DESC").paginate(:page => params[:page], :per_page => 50)
       else
         # Show star proposals waiting for confirmation
-        @starproposals = Starproposal.joins(:submission).joins(submission: [{ problem: :section }]).select("starproposals.*, problems.level AS problem_level, sections.short_abbreviation AS section_short_abbreviation").includes(:user, submission: :user).where(:status => :waiting_treatment).order("created_at DESC").paginate(:page => params[:page], :per_page => 50)
+        @starproposals = Starproposal.joins(:submission).joins(submission: [{ problem: :section }]).select("starproposals.*, problems.level AS problem_level, problems.reviewed AS problem_reviewed, sections.short_abbreviation AS section_short_abbreviation").includes(:user, submission: :user).where(:status => :waiting_treatment).order("created_at DESC").paginate(:page => params[:page], :per_page => 50)
       end
     else
       # Show all my star proposals
-      @starproposals = current_user.starproposals.joins(:submission).joins(submission: [{ problem: :section }]).select("starproposals.*, problems.level AS problem_level, sections.short_abbreviation AS section_short_abbreviation").includes(:user, submission: :user).order("created_at DESC").paginate(:page => params[:page], :per_page => 50)
+      @starproposals = current_user.starproposals.joins(:submission).joins(submission: [{ problem: :section }]).select("starproposals.*, problems.level AS problem_level, problems.reviewed AS problem_reviewed, sections.short_abbreviation AS section_short_abbreviation").includes(:user, submission: :user).order("created_at DESC").paginate(:page => params[:page], :per_page => 50)
     end
   end
   

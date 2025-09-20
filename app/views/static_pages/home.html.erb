@@ -15,6 +15,21 @@
   </div>
 <% end %>
 
+<% if signed_in? && current_user.root? %>
+  <% num_problems = Problem.where(:online => true).count %>
+  <% num_reviewed_problems = Problem.where(:online => true, :reviewed => true).count %>
+  <% pct = 100 * (num_reviewed_problems / num_problems.to_f) %>
+  <% if num_problems > 0 %>
+    <div class="progress" style="margin-top:8px;">
+      <div class="progress-bar bg-danger" role="progressbar" style="width: <%= pct %>%" aria-valuenow="<%= pct %>" aria-valuemin="0" aria-valuemax="100">
+        <% if pct >= 30 %>
+          <%= num_reviewed_problems %> / <%= num_problems %> &nbsp;&nbsp;-&nbsp;&nbsp; <%= pct.floor %>%
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+<% end %>
+
 <!-- Gros titre Mathraining -->
 
 <div class="home">
