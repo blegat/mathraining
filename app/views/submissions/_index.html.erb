@@ -92,7 +92,7 @@ var showFalse = function() {
   <% if current_user.pb_solved?(problem) %>
   
     <h3>Autres soumissions, étoilées</h3>
-    <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where.not(:user => current_user).where(:status => :correct, :star => true).order('created_at DESC') %>
+    <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where.not(:user => current_user).where(:status => :correct, :star => true).order('created_at') %>
 
     <% if !submissions.empty? %>
       <table class="table table-bordered" style="width:auto;">
