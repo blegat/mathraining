@@ -62,6 +62,7 @@ describe "Solvedquestion pages", solvedquestion: true do
         before do
           fill_in "ans", with: exercise_answer
           click_button "Soumettre"
+          wait_for_ajax # Before reloading user to have correct rating
           user.reload
         end
         specify do
@@ -79,6 +80,7 @@ describe "Solvedquestion pages", solvedquestion: true do
         before do
           fill_in "ans", with: "4.6"
           click_button "Soumettre"
+          wait_for_ajax # Before reloading user to have correct rating
           user.reload
         end
         specify do
@@ -96,6 +98,7 @@ describe "Solvedquestion pages", solvedquestion: true do
         before do
           fill_in "ans", with: exercise_answer + 1
           click_button "Soumettre"
+          wait_for_ajax # Before reloading user to have correct rating
           user.reload
         end
         specify do
@@ -112,6 +115,7 @@ describe "Solvedquestion pages", solvedquestion: true do
           before do
             fill_in "ans", with: exercise_answer
             click_button "Soumettre"
+            wait_for_ajax # Before reloading user to have correct rating
             user.reload
           end
           specify do
@@ -128,6 +132,7 @@ describe "Solvedquestion pages", solvedquestion: true do
         describe "and makes the same mistake" do
           before do
             click_button "Soumettre"
+            wait_for_ajax # Before reloading user to have correct rating
             user.reload
           end
           specify do
@@ -200,6 +205,7 @@ describe "Solvedquestion pages", solvedquestion: true do
         before do
           choose "ans_#{item_correct.id}"
           click_button "Soumettre"
+          wait_for_ajax # Before reloading user to have correct rating
           user.reload
         end
         specify do
@@ -216,6 +222,7 @@ describe "Solvedquestion pages", solvedquestion: true do
             visit chapter_question_path(chapter, qcm)
             choose "ans_#{item_correct.id}"
             click_button "Soumettre"
+            wait_for_ajax # Before reloading user to have correct rating
             user.reload
           end
           
@@ -234,6 +241,7 @@ describe "Solvedquestion pages", solvedquestion: true do
             visit chapter_question_path(chapter, qcm)
             choose "ans_#{item_incorrect.id}"
             click_button "Soumettre"
+            wait_for_ajax # Before reloading user to have correct rating
             user.reload
           end
           
@@ -250,6 +258,7 @@ describe "Solvedquestion pages", solvedquestion: true do
         before do
           choose "ans_#{item_incorrect.id}"
           click_button "Soumettre"
+          wait_for_ajax # Before reloading user to have correct rating
           user.reload
         end
         specify do
@@ -264,6 +273,7 @@ describe "Solvedquestion pages", solvedquestion: true do
       describe "and does not check any answer" do
         before do
           click_button "Soumettre"
+          wait_for_ajax # Before reloading user to have correct rating
           user.reload
         end
         specify do
@@ -282,6 +292,7 @@ describe "Solvedquestion pages", solvedquestion: true do
           check "ans_#{item_multiple_correct.id}"
           uncheck "ans_#{item_multiple_incorrect.id}"
           click_button "Soumettre"
+          wait_for_ajax # Before reloading user to have correct rating
           user.reload
         end
         specify do
@@ -299,6 +310,7 @@ describe "Solvedquestion pages", solvedquestion: true do
           check "ans_#{item_multiple_correct.id}"
           check "ans_#{item_multiple_incorrect.id}"
           click_button "Soumettre"
+          wait_for_ajax # Before reloading user to have correct rating
           user.reload
         end
         specify do
