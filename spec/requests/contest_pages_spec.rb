@@ -43,7 +43,7 @@ describe "Contest pages", contest: true do
   let!(:offline_contest) { FactoryBot.create(:contest, status: :in_construction) }
   let!(:offline_contestproblem) { FactoryBot.create(:contestproblem, contest: offline_contest, status: :in_construction, start_time: DateTime.now + 1.day, end_time: DateTime.now + 2.days) }
   
-  let(:newnumber) { 42 }
+  let(:newnumber) { 42167 } # Should be large enough, otherwise it could be the number of another contest by bad luck
   let(:newdescription) { "Voici une toute nouvelle description" }
   let(:bronze_cutoff) { 11 }
   let(:silver_cutoff) { 13 }
@@ -191,17 +191,17 @@ describe "Contest pages", contest: true do
        
       describe "and creates a new contest" do
         before do
-          fill_in "Numéro", with: newnumber
+          fill_in "Numéro", with: newnumber+1
           fill_in "MathInput", with: newdescription
           check "Attribuer des médailles au terme de ce concours"
           click_button "Créer"
         end
         specify do
-          expect(Contest.order(:id).last.number).to eq(newnumber)
+          expect(Contest.order(:id).last.number).to eq(newnumber+1)
           expect(Contest.order(:id).last.description).to eq(newdescription)
           expect(Contest.order(:id).last.medal).to eq(true)
           expect(page).to have_success_message("Concours ajouté.")
-          expect(page).to have_selector("h1", text: "Concours ##{newnumber}")
+          expect(page).to have_selector("h1", text: "Concours ##{newnumber+1}")
           expect(page).to have_content(newdescription)
         end
         
