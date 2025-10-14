@@ -111,7 +111,7 @@ var hideStatement = function () {
 <% end %>
 
 <% if @submission.plagiarized? && current_user == @submission.user %>
-  Vous ne pouvez plus voir cette solution.
+  <p>Vous ne pouvez plus voir cette solution.</p>
 <% else %>
 
   <!-- Rappel de l'énoncé -->
