@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "Star proposal pages" do
+describe "Star proposal pages", starproposal: true do
 
   subject { page }
 

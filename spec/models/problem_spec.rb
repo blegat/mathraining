@@ -16,7 +16,7 @@
 #  nb_solves        :integer          default(0)
 #  first_solve_time :datetime
 #  last_solve_time  :datetime
-#  reviewed         :boolean
+#  reviewed         :boolean          default(FALSE)
 #
 require "spec_helper"
 

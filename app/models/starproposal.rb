@@ -11,7 +11,6 @@
 #  answer        :string
 #  status        :integer          default("waiting_treatment")
 #  created_at    :datetime         not null
-#  updated_at    :datetime         not null
 #
 class Starproposal < ActiveRecord::Base
   
