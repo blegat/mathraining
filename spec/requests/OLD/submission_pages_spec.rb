@@ -54,25 +54,26 @@ describe "Submission pages" do
       it do
         should have_selector("h3", text: "Énoncé")
         should have_selector("h3", text: "Nouvelle soumission")
-        should have_button("Soumettre cette solution")
-        should have_button("Enregistrer comme brouillon")
+        should have_button("Enregistrer cette solution")
+        should have_no_button("Annuler") # Only shown inside a test
       end
       
       describe "and sends new empty submission" do
         before do
           fill_in "MathInput", with: ""
-          click_button "Soumettre cette solution"
+          click_button "Enregistrer cette solution"
         end
-        it { should have_error_message("Soumission doit être rempli") }
+        it { should have_error_message("Solution doit être rempli") }
       end
       
       describe "and sends new submission" do
         before do
           fill_in "MathInput", with: newsubmission
+          click_button "Enregistrer cette solution"
           click_button "Soumettre cette solution"
         end
         specify do
-          expect(page).to have_success_message("Votre solution a bien été soumise.")
+          expect(page).to have_success_message("Votre solution a bien été soumise pour être corrigée.")
           expect(page).to have_selector("h3", text: "Soumission (en attente de correction)")
           expect(page).to have_selector("div", text: newsubmission)
           expect(problem.submissions.order(:id).last.content).to eq(newsubmission)
@@ -97,12 +98,12 @@ describe "Submission pages" do
         end
       end
       
-      describe "and sends new submission with expired session (or invalid CSRF token)" do
+      describe "and writes new draft with expired session (or invalid CSRF token)" do
         before do
           ActionController::Base.allow_forgery_protection = true # Don't know why but this is enough to have an invalid CSRF in testing
           #Capybara.current_session.driver.browser.set_cookie("_session_id=wrongValue")
           fill_in "MathInput", with: newsubmission
-          click_button "Soumettre cette solution"
+          click_button "Enregistrer cette solution"
         end
         it do
           should have_error_message("Votre session a expiré")
@@ -111,20 +112,20 @@ describe "Submission pages" do
         after { ActionController::Base.allow_forgery_protection = false }
       end
       
-      describe "and sends new submission while they are forbidden" do
+      describe "and writes new draft while submissions are forbidden" do
         before do
           Globalvariable.create(:key => "no_new_submission", :value => 1, :message => "On ne soumet plus pour l'instant !")
           fill_in "MathInput", with: newsubmission
-          click_button "Soumettre cette solution"
+          click_button "Enregistrer cette solution"
         end
         specify { expect(problem.submissions.count).to eq(0) }
       end
       
-      describe "and sends new submission while one is already waiting" do # Can only be done with several tabs
+      describe "and writes new draft while a submission is already waiting" do # Can only be done with several tabs
         before do
           FactoryBot.create(:submission, problem: problem, user: user, status: :waiting)
           fill_in "MathInput", with: newsubmission
-          click_button "Soumettre cette solution"
+          click_button "Enregistrer cette solution"
         end
         specify do
           expect(page).to have_selector("h1", text: "Problème ##{problem.number}")
@@ -134,12 +135,12 @@ describe "Submission pages" do
         end
       end
       
-      describe "and sends new submission while another one was recently plagiarized" do # Can only be done with several tabs
+      describe "and writes new draft while another submission was recently plagiarized" do
         before do
           plagiarism = FactoryBot.create(:submission, problem: problem, user: user, status: :plagiarized)
           plagiarism.update_attribute(:last_comment_time, DateTime.now - 3.months)
           fill_in "MathInput", with: newsubmission
-          click_button "Soumettre cette solution"
+          click_button "Enregistrer cette solution"
         end
         specify do
           expect(page).to have_selector("h1", text: "Problème ##{problem.number}")
@@ -150,28 +151,28 @@ describe "Submission pages" do
         end
       end
         
-      describe "and sends new submission while another one was plagiarized long ago" do
+      describe "and sends new draft while another submission was plagiarized long ago" do
         before do
           plagiarism = FactoryBot.create(:submission, problem: problem, user: user, status: :plagiarized)
           plagiarism.update_attribute(:last_comment_time, DateTime.now - 2.years)
           fill_in "MathInput", with: newsubmission
-          click_button "Soumettre cette solution"
+          click_button "Enregistrer cette solution"
         end
         specify do
           expect(page).to have_selector("h1", text: "Problème ##{problem.number}")
           expect(page).to have_no_content("Vous avez soumis une solution plagiée à ce problème.") # not shown for old plagiarism
-          expect(page).to have_success_message("Votre solution a bien été soumise.")
-          expect(page).to have_selector("h3", text: "Soumission (en attente de correction)")
+          expect(page).to have_success_message("Votre solution a bien été enregistrée.")
+          expect(page).to have_selector("h3", text: "Nouvelle soumission")
           expect(page).to have_selector("div", text: newsubmission)
         end
       end
       
-      describe "and sends new submission while another one was recently closed" do # Can only be done with several tabs
+      describe "and sends new draft while another submission was recently closed" do
         before do
           closed = FactoryBot.create(:submission, problem: problem, user: user, status: :closed)
           closed.update_attribute(:last_comment_time, DateTime.now - 3.days)
           fill_in "MathInput", with: newsubmission
-          click_button "Soumettre cette solution"
+          click_button "Enregistrer cette solution"
         end
         specify do
           expect(page).to have_selector("h1", text: "Problème ##{problem.number}")
@@ -182,18 +183,18 @@ describe "Submission pages" do
         end
       end
       
-      describe "and sends new submission while another one was closed long ago" do
+      describe "and sends new draft while another submission was closed long ago" do
         before do
           closed = FactoryBot.create(:submission, problem: problem, user: user, status: :closed)
           closed.update_attribute(:last_comment_time, DateTime.now - 2.weeks)
           fill_in "MathInput", with: newsubmission
-          click_button "Soumettre cette solution"
+          click_button "Enregistrer cette solution"
         end
         specify do
           expect(page).to have_selector("h1", text: "Problème ##{problem.number}")
           expect(page).to have_no_content("Vous avez soumis une solution à ce problème qui a été clôturée par un correcteur.") # not shown for old closed submission
-          expect(page).to have_success_message("Votre solution a bien été soumise.")
-          expect(page).to have_selector("h3", text: "Soumission (en attente de correction)")
+          expect(page).to have_success_message("Votre solution a bien été enregistrée.")
+          expect(page).to have_selector("h3", text: "Nouvelle soumission")
           expect(page).to have_selector("div", text: newsubmission)
         end
       end
@@ -202,28 +203,11 @@ describe "Submission pages" do
         before do
           FactoryBot.create(:chapter, online: true, submission_prerequisite: true)
           fill_in "MathInput", with: newsubmission
-          click_button "Soumettre cette solution"
+          click_button "Enregistrer cette solution"
         end
         specify do
           expect(page).to have_content(error_access_refused)
           expect(problem.submissions.count).to eq(0)
-        end
-      end
-      
-      describe "and saves as draft" do
-        before do
-          fill_in "MathInput", with: newsubmission
-          click_button "Enregistrer comme brouillon"
-        end
-        let!(:submission) { problem.submissions.order(:id).last }
-        specify do
-          expect(page).to have_success_message("Votre brouillon a bien été enregistré.")
-          expect(page).to have_selector("h3", text: "Nouvelle soumission")
-          expect(page).to have_button("Soumettre cette solution")
-          expect(page).to have_button("Enregistrer le brouillon")
-          expect(page).to have_button("Supprimer ce brouillon")
-          expect(submission.content).to eq(newsubmission)
-          expect(submission.draft?).to eq(true)
         end
       end
     end
@@ -244,52 +228,63 @@ describe "Submission pages" do
       it do
         should have_selector("h3", text: "Énoncé")
         should have_selector("h3", text: "Nouvelle soumission")
-        should have_button("Soumettre cette solution")
-        should have_button("Enregistrer le brouillon")
+        should have_link("Modifier la solution")
+        should have_link("Supprimer la solution")
         should have_button("Soumettre cette solution")
       end
         
-      specify { expect { click_button "Supprimer ce brouillon" }.to change(Submission, :count).by(-1) }
+      specify { expect { click_link "Supprimer la solution" }.to change(Submission, :count).by(-1) }
         
       describe "and updates the draft" do
         before do
           fill_in "MathInput", with: newsubmission2
-          click_button "Enregistrer le brouillon"
+          click_button "Enregistrer cette solution"
           draft_submission.reload
         end
         specify do
-          expect(page).to have_success_message("Votre brouillon a bien été enregistré.")
+          expect(page).to have_success_message("Votre solution a bien été enregistrée.")
           expect(page).to have_selector("h3", text: "Nouvelle soumission")
           expect(draft_submission.content).to eq(newsubmission2)
-          expect(draft_submission.draft?).to eq(true)
         end
       end
       
       describe "and updates the draft for an empty draft" do
         before do
           fill_in "MathInput", with: ""
-          click_button "Enregistrer le brouillon"
+          click_button "Enregistrer cette solution"
           draft_submission.reload
         end
         specify do
-          expect(page).to have_error_message("Soumission doit être rempli")
+          expect(page).to have_error_message("Solution doit être rempli")
           expect(draft_submission.content).to eq(newsubmission)
-          expect(draft_submission.draft?).to eq(true)
         end
       end
       
       describe "and sends the draft as submission" do
         before do
-          fill_in "MathInput", with: newsubmission2
           click_button "Soumettre cette solution"
           draft_submission.reload
         end
         specify do
-          expect(page).to have_success_message("Votre solution a bien été soumise.")
+          expect(page).to have_success_message("Votre solution a bien été soumise pour être corrigée.")
           expect(page).to have_selector("h3", text: "Soumission (en attente de correction)")
-          expect(page).to have_selector("div", text: newsubmission2)
-          expect(draft_submission.content).to eq(newsubmission2)
+          expect(page).to have_selector("div", text: newsubmission)
+          expect(draft_submission.content).to eq(newsubmission)
           expect(draft_submission.waiting?).to eq(true)
+        end
+      end
+      
+      describe "and tries to send the draft while another submission was sent the same day" do
+        before do
+          Globalvariable.create(key: :limited_new_submissions, value: 1)
+          click_button "Soumettre cette solution"
+          draft_submission.reload
+        end
+        specify do
+          expect(page).not_to have_success_message("Votre solution a bien été soumise pour être corrigée.")
+          expect(page).to have_selector("h3", text: "Nouvelle soumission")
+          expect(page).to have_content("Vous avez déjà soumis")
+          expect(draft_submission.draft?).to eq(true)
         end
       end
       
@@ -297,7 +292,7 @@ describe "Submission pages" do
         before do
           draft_submission.update_attribute(:user, other_user)
           fill_in "MathInput", with: newsubmission2
-          click_button "Enregistrer le brouillon"
+          click_button "Enregistrer cette solution"
           draft_submission.reload
         end
         specify do
@@ -311,11 +306,11 @@ describe "Submission pages" do
         before do
           draft_submission.waiting!
           fill_in "MathInput", with: newsubmission2
-          click_button "Enregistrer le brouillon"
+          click_button "Enregistrer cette solution"
           draft_submission.reload
         end
         specify do
-          expect(page).to_not have_success_message("Votre brouillon a bien été enregistré.")
+          expect(page).to_not have_success_message("Votre solution a bien été enregistrée.")
           expect(page).to have_selector("h1", text: "Problème ##{problem.number}") # We simply redirect in this case (because it could happen)
           expect(draft_submission.content).to eq(newsubmission)
           expect(draft_submission.waiting?).to eq(true)
@@ -331,11 +326,13 @@ describe "Submission pages" do
         visit problem_path(problem)
         click_link("Nouvelle soumission")
         fill_in "MathInput", with: newsubmission
+        click_button "Enregistrer cette solution"
         click_button "Soumettre cette solution"
       end
       specify do
         expect(problem.submissions.order(:id).last.content).to eq(newsubmission)
         expect(problem.submissions.order(:id).last.waiting?).to eq(true)
+        expect(problem.submissions.order(:id).last.intest?).to eq(false)
         expect(page).to have_selector("h3", text: "Soumission (en attente de correction)")
         expect(page).to have_selector("div", text: newsubmission)
       end
@@ -878,8 +875,23 @@ describe "Submission pages" do
     describe "visits wrong submission" do
       before { visit problem_path(problem_with_submissions, :sub => wrong_submission) }
       specify do
+        expect(page).to have_link("Modifier la solution")
         expect(page).to have_link("Supprimer cette soumission")
         expect { click_link("Supprimer cette soumission") }.to change{problem_with_submissions.submissions.count}.by(-1)
+      end
+      
+      describe "and updates it" do
+        before do
+          fill_in "MathInputSubmission", with: newsubmission2
+          click_button "Enregistrer cette solution"
+          wrong_submission.reload
+        end
+        specify do
+          expect(page).to have_success_message("Solution modifiée.")
+          expect(page).to have_selector("h3", text: "Soumission (erronée)")
+          expect(page).to have_link("Modifier la solution")
+          expect(wrong_submission.content).to eq(newsubmission2)
+        end
       end
     end
     
@@ -1076,7 +1088,7 @@ describe "Submission pages" do
         click_button "Ajouter une pièce jointe"
         wait_for_ajax
         attach_file("file_2", File.absolute_path(attachments_folder + image1))
-        click_button "Enregistrer comme brouillon"
+        click_button "Enregistrer cette solution"
       end
       let!(:newsub) { problem.submissions.order(:id).last }
       specify do
@@ -1087,12 +1099,14 @@ describe "Submission pages" do
       
       describe "and updates it with a wrong file" do
         before do
+          click_link "Modifier la solution"
+          wait_for_ajax
           fill_in "MathInput", with: newsubmission2
           wait_for_js_imports
           click_button "Ajouter une pièce jointe"
           wait_for_ajax
           attach_file("file_1", File.absolute_path(attachments_folder + exe_attachment))
-          click_button "Enregistrer le brouillon"
+          click_button "Enregistrer cette solution"
           newsub.reload
         end
         specify do
@@ -1101,27 +1115,6 @@ describe "Submission pages" do
           expect(newsub.myfiles.count).to eq(1)
           expect(newsub.myfiles.first.file.filename.to_s).to eq(image1)
         end
-      end
-    end
-    
-    describe "creates a submission with a wrong file" do
-      before do
-        visit problem_path(problem, :sub => 0)
-        fill_in "MathInput", with: newsubmission
-        wait_for_js_imports
-        click_button "Ajouter une pièce jointe"
-        wait_for_ajax
-        attach_file("file_1", File.absolute_path(attachments_folder + image2))
-        click_button "Ajouter une pièce jointe"
-        wait_for_ajax
-        attach_file("file_2", File.absolute_path(attachments_folder + exe_attachment))
-        check "consent"
-        click_button "Soumettre cette solution"
-        # No dialog box to accept in test environment: it was deactivated because we had issues with testing
-      end
-      it do
-        should have_error_message("Votre pièce jointe '#{exe_attachment}' ne respecte pas les conditions")
-        should have_selector("textarea", text: newsubmission)
       end
     end
   end

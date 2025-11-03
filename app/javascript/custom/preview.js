@@ -1,64 +1,47 @@
-var Preview = {
-  delay: 150,        // delay after keystroke before updating
-
-  preview: null,     // filled in by Init below
-  buffer: null,      // filled in by Init below
-
-  timeout: null,     // store setTimout id
-  mjRunning: false,  // true when MathJax is processing
-  needUpdate: false, // true when MathJax needs to re-run
+class Preview {
 
   //
-  //  Get the preview and buffer DIV's
+  //  Constructor of Preview object
   //
-  Init: function (s) {
-    if (s == undefined) {
-      s = "";
+  constructor(key) {
+    this.key = key;
+    
+    this.delay = 150;        // delay after keystroke before updating
+
+    this.timeout = null;     // store setTimout id
+    this.mjRunning = false;  // true when MathJax is processing
+    this.needUpdate = false; // true when MathJax needs to re-run
+  }
+  
+  //
+  //  Initialize the members of this Preview
+  //
+  Init (safe, enableBBCode, enableHiddenText, enableIndice) {
+    this.preview = document.getElementById("MathPreview" + this.key);
+    this.buff = document.getElementById("MathBuffer" + this.key);
+    this.input = document.getElementById("MathInput" + this.key);
+    this.stop = document.getElementById("stop" + this.key);
+    this.safe = safe;
+    this.bbcode = enableBBCode;
+    this.hiddentext = enableHiddenText;
+    this.indice = enableIndice;
+    
+    this.input.oninput = () => PreviewHandler.UpdateFromUser(this.key);
+    if (this.stop) {
+      this.stop.onclick = () => PreviewHandler.UpdateFromUser(this.key);
     }
-    this.preview = document.getElementById("MathPreview" + s);
-    this.buff = document.getElementById("MathBuffer" + s);
-    this.input = document.getElementById("MathInput" + s);
-    this.stop = document.getElementById("stop" + s);
-    this.safe = true;
-    this.bbcode = true;
-    this.hiddentext = true;
-    this.indice = false;
-  },
-
-  //
-  //  Say if 'safe' preview (for users with bbcode) must be used or not
-  //
-  SetSafe: function (v) {
-    this.safe = v;
-  },
-
-  //
-  //  Say if bbcode must be processed or not (in LaTeX chapter we don't allow bbcode)
-  //
-  SetBBCode: function (v) {
-    this.bbcode = v;
-  },
+    
+    // Cache a callback to the CreatePreview action
+    this.callback = MathJax.Callback(["CreatePreview", this]);
+    this.callback.autoReset = true;  // make sure it can run more than once
+  }
   
-  //
-  //  Say if [hide="Texte caché"]...[/hide] must be processed or not
-  //
-  SetHiddenText: function (v) {
-    this.hiddentext = v;
-  },
-  
-  //
-  //  Say if 'indice' must be processed or not (only for questions)
-  //
-  SetIndice: function (v) {
-    this.indice = v;
-  },
-
   //
   //  Switch the buffer and preview, and display the right one.
   //  (We use visibility:hidden rather than display:none since
   //  the results of running MathJax are more accurate that way.)
   //
-  SwapBuffers: function () {
+  SwapBuffers () {
     var buffer = this.preview, preview = this.buff;
     this.buff = buffer; this.preview = preview;
     var oldHeight = buffer.offsetHeight;
@@ -69,7 +52,7 @@ var Preview = {
     if (Math.abs(newHeight - oldHeight) > 1) {
       window.scrollTo(0, oldScroll+newHeight-oldHeight);
     }
-  },
+  }
 
   //
   //  This gets called when a key is pressed in the textarea.
@@ -79,17 +62,17 @@ var Preview = {
   //    a pause in the typing).
   //  The callback function is set up below, after the Preview object is set up.
   //
-  Update: function () {
+  Update () {
     if (this.timeout) {
       clearTimeout(this.timeout)
     }
     this.timeout = setTimeout(this.callback,this.delay);
-  },
+  }
   
   //
   // Replace hidden text in m, where "[hide=" is in position a, "]" in position b, and "[/hide]" in position c
   //
-  ReplaceHiddenTextImpl: function (m, a, b, c) {
+  ReplaceHiddenTextImpl (m, a, b, c) {
     return m.substring(0, a) +
            "<div class='clue'><div><button onclick='return false;' class='btn btn-ld-light-dark'>" +
            m.substring(a+6, b) +
@@ -97,12 +80,12 @@ var Preview = {
            m.substring(b+1, c) +
            "</div></div></div>" +
            m.substring(c+7)
-  },
+  }
   
   //
   // Return [newM, c] if [/hide] was found in position c (with c = nil if no [/hide] found)
   //
-  ProcessHiddenTextRec: function (m, cur) {
+  ProcessHiddenTextRec (m, cur) {
     var a = m.indexOf("[hide=", cur)
     var c = m.indexOf("[/hide]", cur)
     if (a >= 0 && (c < 0 || a < c)) // Next is [hide=...
@@ -120,19 +103,19 @@ var Preview = {
         return res
     }
     return [m, c] // With c possibly -1
-  },
+  }
   
   //
   // Process the [hide=Texte caché]Indice[/hide] in m
   //
-  ProcessHiddenText: function (m) {
+  ProcessHiddenText (m) {
     var res = [m, -1]
     do
     {
       res = this.ProcessHiddenTextRec(res[0], res[1]+1)
     } while (res[1] >= 0)
     return res[0]
-  },
+  }
 
   //
   //  Creates the preview and runs MathJax on it.
@@ -141,8 +124,8 @@ var Preview = {
   //  Otherwise, indicate that MathJax is running, and start the
   //    typesetting.  After it is done, call PreviewDone.
   //
-  CreatePreview: function () {
-    Preview.timeout = null;
+  CreatePreview () {
+    this.timeout = null;
     if (this.mjRunning) {
       this.needUpdate = true;
       return;
@@ -276,33 +259,58 @@ var Preview = {
       ["Typeset",MathJax.Hub,this.buff],
       ["PreviewDone",this]
     );
-  },
+  }
 
   //
   //  Indicate that MathJax is no longer running,
   //  and swap the buffers to show the results.
   //
-  PreviewDone: function () {
+  PreviewDone () {
     this.mjRunning = false;
     this.SwapBuffers();
     if (this.needUpdate) {
       this.CreatePreview();
     }
-  },
-  
-  MyUpdate: function() {
-  LeavingForm.SetChangesDone();
-  if (this.stop.checked) {
-    this.Update();
   }
-}
-
+  
+  //
+  //  Method to call when text was updated by user.
+  //
+  UpdateFromUser () {
+    LeavingForm.SetChangesDone();
+    if (!this.stop || this.stop.checked) {
+      this.Update();
+    }
+  }
 };
 
 //
-//  Cache a callback to the CreatePreview action
+//  Object containing all the Preview objects for the current page
 //
-Preview.callback = MathJax.Callback(["CreatePreview", Preview]);
-Preview.callback.autoReset = true;  // make sure it can run more than once
+var PreviewHandler = {
+  previews: new Map(),
+  
+  //
+  //  Initialize one preview: each preview should have its own key
+  //
+  Init: function (key, safe, enableBBCode, enableHiddenText, enableIndice) {
+    this.previews.set(key, new Preview(key));
+    this.previews.get(key).Init(safe, enableBBCode, enableHiddenText, enableIndice);
+  },
+  
+  //
+  //  Update the preview with given key
+  //
+  Update: function (key) {
+    this.previews.get(key).Update();
+  },
+  
+  //
+  //  Update the preview with given key (when triggered by user)
+  //
+  UpdateFromUser: function (key) {
+    this.previews.get(key).UpdateFromUser();
+  }
+};
 
-export default Preview
+export default PreviewHandler

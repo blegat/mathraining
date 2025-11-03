@@ -1,0 +1,57 @@
+<% limit_reached = @limited_new_submissions && current_user.has_already_submitted_today? %>
+
+<h3>Nouvelle soumission</h3>
+
+<!-- Si un brouillon a déjà été enregistré -->
+<% if !@submission.new_record? %>
+  <div id="the" class="content-part">
+    <p>Cette solution n'a pas encore été envoyée aux correcteurs.</p>
+    <%= render 'shared/post', ms: @submission, kind: "submission", can_edit: true, postfix: "" %>
+    
+    <%= form_for @submission, url: send_draft_submission_path(@submission), :html => { :multipart => true } do |f| %>
+      <% if limit_reached %>
+        <p class="text-color-orange">Vous avez déjà soumis une nouvelle solution aujourd'hui. Afin de limiter la charge de travail des correcteurs, les nouvelles soumissions sont actuellement limitées à une par jour.</p>
+      <% else %>
+        <script type="text/javascript">
+          function checkChecked() {
+            var c = document.getElementById("consent").checked;
+            var bt = document.getElementById("send-button");
+            if (c && <%= !in_skin? && !@no_new_submission %>) { bt.disabled = false; }
+            else { bt.disabled = true; }
+          }
+        </script>
+      
+        <div class="form-check mb-2 ms-1">
+        <label class="form-check-label">
+          <%= check_box_tag "consent", 1, false, :class => "form-check-input", :disabled => @no_new_submission, :onchange => "javascript:checkChecked();" %>
+          Je comprends que les correcteurs sont bénévoles et vont corriger cette solution pendant leur temps libre pour me faire progresser.
+          Je certifie donc que cette solution est le fruit de mon travail et qu'elle ne provient pas d'une source extérieure.
+          Je garantis également ne pas avoir utilisé d'intelligence artificielle pour rédiger cette solution.<sup>1</sup>
+        </label>
+        </div>
+        
+        <div class="mb-2 text-center">
+        <%= f.submit "Soumettre cette solution", class: "btn btn-primary mb-1", id: "send-button", :disabled => !Rails.env.test?, data: (Rails.env.test? ? {} : { confirm: "Attention ! Votre solution va être lue par un correcteur bénévole.\n\nVeillez à ce que celle-ci soit suffisamment claire et bien rédigée. Avant de l'envoyer, nous vous encourageons à la relire entièrement, si possible plusieurs heures après l'avoir rédigée, pour vous assurer qu'elle est facilement compréhensible.\n\nÊtes-vous #{current_user.sure} de vouloir soumettre cette solution ?" }) %>
+        </div>
+        
+        <p style="font-size:12px;"><sup>1</sup> Les administrateurs se réservent le droit de bloquer l'accès au site aux personnes qui ne sont pas à l'origine de leur solution ou qui utilisent l'intelligence artificielle pour la rédiger.</p>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>
+
+<div id="form" class="form-part px-1" style="<%= 'height:0px;' if !@submission.new_record? %>">
+<% if @submission.new_record? %>
+  <%= render 'submissions/new', form_disabled: @no_new_submission %>
+<% else %>
+  <%= render 'submissions/edit', form_disabled: @no_new_submission %>
+<% end %>
+
+<p class="fst-italic">
+  Vous pourrez modifier cette solution tant que vous le voudrez avant de l'envoyer pour qu'elle soit corrigée.
+</p>
+</div>
+
+<% if @submission.errors.any? %>
+  <script>rollingDevelopQuickWhenPossible("")</script>
+<% end %>

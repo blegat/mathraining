@@ -183,8 +183,22 @@ describe "Virtualtest pages" do
               end
               specify do
                 expect(problem.submissions.order(:id).last.content).to eq(newsolution2)
-                expect(page).to have_success_message("Votre solution a bien été modifiée.")
+                expect(page).to have_success_message("Votre solution a bien été enregistrée.")
                 expect(page).to have_content(newsolution2)
+              end
+            end
+            
+            describe "and modifies the solution while the time stopped" do
+              let!(:takentest) { Takentest.where(:user => user_with_rating_200, :virtualtest => virtualtest).first }
+              before do
+                takentest.update_attribute(:taken_time, DateTime.now - (virtualtest.duration + 1).minutes)
+                fill_in "MathInput", with: newsolution2
+                click_button "Enregistrer cette solution"
+              end
+              specify do
+                expect(problem.submissions.order(:id).last.content).to eq(newsolution)
+                expect(page).not_to have_success_message("Votre solution a bien été enregistrée.")
+                expect(page).to have_selector("h1", text: "Tests virtuels")
               end
             end
             
@@ -211,7 +225,7 @@ describe "Virtualtest pages" do
               fill_in "MathInput", with: ""
               click_button "Enregistrer cette solution"
             end
-            it { should have_error_message("Soumission doit être rempli") }
+            it { should have_error_message("Solution doit être rempli") }
           end
           
           describe "and writes a new solution after having written another one in another tab" do
@@ -223,7 +237,7 @@ describe "Virtualtest pages" do
             end
             specify do
               expect(submission.content).to eq(newsolution2)
-              expect(page).to have_content("Votre solution a bien été modifiée.")
+              expect(page).to have_content("Votre solution a bien été enregistrée.")
             end
           end
         end

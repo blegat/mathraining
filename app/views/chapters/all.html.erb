@@ -11,11 +11,7 @@
     <h3><%= i %>. <%= t.title %></h3>
     <div class="mb-3">
       <% numLatexTest += 1 if t.content.include? "latextest" %>
-      <% if numLatexTest <= 1 %>
-        <%= htmlise(t.content).gsub(/\/latextest\//, '<div class="mb-2"><div class="card text-bg-ld-light-dark mb-2"><div class="card-body" id="MathPreview"></div><div class="card-body hidden-preview" id="MathBuffer"></div></div><textarea id="MathInput" class="form-control" style="height:120px;" oninput="Preview.Update()" placeholder="Rentrez ici le code $\LaTeX$ que vous souhaitez tester."></textarea></div><script>initAndUpdatePreviewSafeWhenPossible(false)</script>').html_safe %>
-      <% else %>
-        <%= htmlise(t.content).gsub(/\/latextest\//, '<center><i>Voir plus haut.</i></center>').html_safe %>
-      <% end %>
+      <%= process_latex_test(htmlise(t.content), numLatexTest) %>
     </div>
     <% i = i+1 %>
   <% end %>

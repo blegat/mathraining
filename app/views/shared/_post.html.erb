@@ -54,7 +54,7 @@
     <div class="modify">
       <% if kind == "message" && !ms.new_record? %>
         <% unless ms.erased? %>
-          <a href='#' onclick='return Rolling.develop("<%= postfix %>", true)' id='LinkEdit<%= postfix %>'>Modifier ce message</a>
+          <a href='#' onclick='return Rolling.develop("<%= postfix %>")' id='LinkEdit<%= postfix %>'>Modifier ce message</a>
           | <%= link_to "Supprimer ce message", soft_destroy_message_path(ms), method: :put, id: "LinkSoftDelete#{ postfix }", data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer ce message ?" } %>
         <% end %>
         <% if current_user.admin? %>
@@ -73,8 +73,11 @@
         <% end %>
         </a>
       <% elsif kind == "submission" %>
-        <a href='#' onclick='return Rolling.develop("")'>Modifier la solution</a>
-        | <%= link_to "Supprimer la solution", submission_path(@submission), method: :delete, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer cette solution ?" } %>
+        <a href='#' onclick='return Rolling.develop("<%= postfix %>")'>Modifier la solution</a>
+        <% unless current_user.root? %>
+          <!-- Supprimer (en test) -->
+          | <%= link_to "Supprimer la solution", submission_path(ms), method: :delete, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer cette solution ?" } %>
+        <% end %>
       <% end %>
     </div>
   <% end %>

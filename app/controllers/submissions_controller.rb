@@ -4,30 +4,30 @@ class SubmissionsController < ApplicationController
   include SubmissionConcern
   include FileConcern
   
-  skip_before_action :error_if_invalid_csrf_token, only: [:create, :create_intest, :update_draft, :update_intest] # Do not forget to check @invalid_csrf_token instead!
+  skip_before_action :error_if_invalid_csrf_token, only: [:create, :update] # Do not forget to check @invalid_csrf_token instead!
 
   before_action :signed_in_user, only: [:all, :allmy, :allnew, :allmynew, :allhidden, :next_good, :prev_good]
-  before_action :signed_in_user_danger, only: [:create, :create_intest, :update_draft, :update_intest, :read, :unread, :star, :unstar, :reserve, :unreserve, :destroy, :update_score, :mark_wrong, :mark_correct, :search_script]
-  before_action :non_admin_user, only: [:create, :create_intest, :update_draft, :update_intest]
+  before_action :signed_in_user_danger, only: [:create, :update, :read, :unread, :star, :unstar, :reserve, :unreserve, :destroy, :update_score, :mark_wrong, :mark_correct, :search_script]
+  before_action :non_admin_user, only: [:create]
   before_action :root_user, only: [:allhidden, :update_score, :star, :unstar, :next_good, :prev_good]
   before_action :corrector_user, only: [:all, :allmy, :allnew, :allmynew]
   
-  before_action :get_submission, only: [:destroy, :read, :unread, :reserve, :unreserve, :star, :unstar, :update_draft, :update_intest, :update_score, :mark_wrong, :mark_correct, :search_script, :next_good, :prev_good]
-  before_action :get_problem, only: [:index, :create, :create_intest]
+  before_action :get_submission, only: [:update, :destroy, :send_draft, :read, :unread, :reserve, :unreserve, :star, :unstar, :update_score, :mark_wrong, :mark_correct, :search_script, :next_good, :prev_good]
+  before_action :get_problem, only: [:index, :create]
+  before_action :get_virtualtest_if_any, only: [:create, :update, :destroy]
   
-  before_action :user_in_test_or_root, only: [:destroy]
-  before_action :user_can_correct_submission, only: [:read, :unread, :reserve, :unreserve, :search_script, :mark_wrong, :mark_correct]
-  before_action :online_problem, only: [:create, :create_intest]
+  before_action :user_can_see_problem_or_in_test, only: [:create]
   before_action :user_did_not_solve_problem, only: [:create]
-  before_action :new_submissions_allowed, only: [:create, :update_draft]
-  before_action :user_can_write_submission_to_problem, only: [:create]
-  before_action :user_has_no_recent_plagiarism_or_closure, only: [:create, :update_draft]
-  before_action :user_can_see_problem, only: [:create]
-  before_action :user_can_write_submission, only: [:create, :update_draft]
-  before_action :author_of_submission, only: [:update_intest, :update_draft]
-  before_action :user_in_test, only: [:create_intest, :update_intest]
-  before_action :draft_submission_not_in_test, only: [:update_draft]
+  before_action :user_can_write_submission_to_problem, only: [:create, :send_draft]
+  before_action :draft_submission_or_root, only: [:update, :destroy, :send_draft]
+  before_action :author_of_submission_or_root, only: [:update, :destroy, :send_draft]
+  before_action :new_submissions_allowed_or_in_test, only: [:create, :update, :send_draft]
+  before_action :user_has_no_recent_plagiarism_or_closure, only: [:create, :update, :send_draft]
+  before_action :user_can_write_submission_or_in_test, only: [:create, :update, :send_draft]
+  before_action :user_can_send_today, only: [:send_draft]
+  before_action :user_not_in_test, only: [:send_draft] 
   before_action :user_can_see_submissions, only: [:index]
+  before_action :user_can_correct_submission, only: [:read, :unread, :reserve, :unreserve, :search_script, :mark_wrong, :mark_correct]
   before_action :user_can_mark_submission_as_wrong, only: [:mark_wrong]
   before_action :user_can_mark_submission_as_correct, only: [:mark_correct]
 
@@ -41,93 +41,111 @@ class SubmissionsController < ApplicationController
 
     respond_to :js
   end
-
-  # Create a submission (send the form)
+  
+  # Create a submission (during a test or not)
   def create
-    params[:submission][:content].strip! if !params[:submission][:content].nil?
-
-    @submission = @problem.submissions.build(content: params[:submission][:content],
-                                             user:    current_user)
-    
-    # Invalid CSRF token
-    render_with_error('problems/show', @submission, get_csrf_error_message) and return if @invalid_csrf_token
-    
-    # Invalid submission
-    render_with_error('problems/show') and return if !@submission.valid?
-    
-    # Attached files
-    attach = create_files
-    render_with_error('problems/show', @submission, @file_error) and return if !@file_error.nil?
-
-    if params[:commit] == "Enregistrer comme brouillon" || (@limited_new_submissions && current_user.has_already_submitted_today?)
-      @submission.status = :draft
-    end
-
-    @submission.save
-    
-    attach_files(attach, @submission)
-
-    if @submission.draft?
-      flash[:success] = "Votre brouillon a bien été enregistré."
-      redirect_to problem_path(@problem, :sub => 0)
-    else
-      @submission.set_waiting_status
-      flash[:success] = "Votre solution a bien été soumise."
-      redirect_to problem_path(@problem, :sub => @submission.id)
-    end
-  end
-
-  # Create a submission during a test
-  def create_intest
-    oldsub = @problem.submissions.where(user_id: current_user.id, intest: true).first
+    oldsub = @problem.submissions.where(user_id: current_user.id, status: :draft).first
     if !oldsub.nil?
       @submission = oldsub
-      update_intest
+      update
       return
+    end
+    
+    intest = !@virtualtest.nil?
+    if intest
+      rendered_page_in_case_of_error = 'virtualtests/show'
+    else
+      rendered_page_in_case_of_error = 'problems/show'
     end
     params[:submission][:content].strip! if !params[:submission][:content].nil?
 
     @submission = @problem.submissions.build(:content => params[:submission][:content],
                                              :user    => current_user,
-                                             :intest  => true,
+                                             :intest  => intest,
                                              :status  => :draft)
     
     # Invalid CSRF token
-    render_with_error('virtualtests/show', @submission, get_csrf_error_message) and return if @invalid_csrf_token
+    render_with_error(rendered_page_in_case_of_error, @submission, get_csrf_error_message) and return if @invalid_csrf_token
     
     # Invalid submission
-    render_with_error('virtualtests/show') and return if !@submission.valid?
+    render_with_error(rendered_page_in_case_of_error) and return if !@submission.valid?
     
     # Attached files
     attach = create_files
-    render_with_error('virtualtests/show', @submission, @file_error) and return if !@file_error.nil?
+    render_with_error(rendered_page_in_case_of_error, @submission, @file_error) and return if !@file_error.nil?
 
     @submission.save
 
     attach_files(attach, @submission)
     flash[:success] = "Votre solution a bien été enregistrée."
-    redirect_to virtualtest_path(@virtualtest, :p => @problem.id)
-  end
-
-  # Update a draft and maybe send it (send the form)
-  def update_draft
-    if params[:commit] == "Supprimer ce brouillon"
-      @submission.destroy
-      flash[:success] = "Brouillon supprimé."
-      redirect_to @problem
-    elsif params[:commit] == "Enregistrer le brouillon" || (@limited_new_submissions && current_user.has_already_submitted_today?)
-      @context = 2
-      update_submission
+    if intest
+      redirect_to virtualtest_path(@virtualtest, :p => @problem.id)
     else
-      @context = 3
-      update_submission
+      redirect_to problem_path(@problem, :sub => 0)
     end
   end
+  
+  # Update a draft submission (in test or not), or any submission for a root
+  def update
+    intest = !@virtualtest.nil?
+    if intest
+      rendered_page_in_case_of_error = 'virtualtests/show' # Update a submission during a test
+    else
+      @correction = Correction.new unless @submission.draft?
+      rendered_page_in_case_of_error = 'problems/show' # Update a draft submission (not in test) or any submission (for a root)
+    end
+    
+    params[:submission][:content].strip! if !params[:submission][:content].nil?
+    @submission.content = params[:submission][:content]
+    
+    # Invalid CSRF token
+    render_with_error(rendered_page_in_case_of_error, @submission, get_csrf_error_message) and return if @invalid_csrf_token
+    
+    # Invalid submission
+    render_with_error(rendered_page_in_case_of_error) and return if !@submission.valid?
 
-  # Update a submission during a test
-  def update_intest
-    @context = 1
-    update_submission
+    # Attached files
+    update_files(@submission)
+    render_with_error(rendered_page_in_case_of_error, @submission, @file_error) and return if !@file_error.nil?
+    
+    @submission.save
+
+    if intest
+      flash[:success] = "Votre solution a bien été enregistrée."
+      redirect_to virtualtest_path(@virtualtest, :p => @problem.id)
+    elsif !current_user.root?
+      update_draft_dates
+      flash[:success] = "Votre solution a bien été enregistrée."
+      redirect_to problem_path(@problem, :sub => 0)
+    else
+      flash[:success] = "Solution modifiée."
+      redirect_to problem_path(@problem, :sub => @submission.id)
+    end
+  end
+  
+  # Delete a draft submission (in a test or not) or any (wrong) submission for a root
+  def destroy
+    intest = @submission.intest?
+    @submission.destroy
+    if intest
+      flash[:success] = "Votre solution a bien été supprimée."
+      redirect_to virtualtest_path(@virtualtest, :p => @problem.id)
+    else
+      if current_user.root?
+        flash[:success] = "Solution supprimée."
+      else
+        flash[:success] = "Votre solution a bien été supprimée."
+      end
+      redirect_to problem_path(@problem)
+    end
+  end
+  
+  # Send a draft for correction (not in a test)
+  def send_draft
+    update_draft_dates
+    @submission.set_waiting_status
+    flash[:success] = "Votre solution a bien été soumise pour être corrigée."
+    redirect_to problem_path(@problem, :sub => @submission)
   end
 
   # Mark a submission as read
@@ -184,19 +202,6 @@ class SubmissionsController < ApplicationController
       @what = 1
     end
     respond_to :js
-  end
-
-  # Delete a submission
-  def destroy
-    @submission.destroy
-    if current_user.root?
-      flash[:success] = "Soumission supprimée."
-      redirect_to problem_path(@problem)
-    else
-      # Student in a test
-      flash[:success] = "Solution supprimée."
-      redirect_to virtualtest_path(@virtualtest, :p => @problem.id)
-    end
   end
   
   # Update the score of a submission in a test
@@ -323,11 +328,26 @@ class SubmissionsController < ApplicationController
     return if check_nil_object(@problem)
   end
   
+  # Get the virtualtest, if user is currently doing a virtualtest
+  def get_virtualtest_if_any
+    return if current_user.admin?
+    virtualtest = @problem.virtualtest
+    return if virtualtest.nil?
+    if current_user.test_status(virtualtest) == "in_progress"
+      @virtualtest = virtualtest
+    end
+    if !@submission.nil? && @submission.intest? && @virtualtest.nil? # Try to update or destroy a submission in test, but too late
+      redirect_to virtualtests_path
+    end
+  end
+  
   ########## CHECK METHODS ##########
   
-  # Check that the problem is online
-  def online_problem
-    return if check_offline_object(@problem)
+  # Check that current user can see the problem or is in a virtualtest
+  def user_can_see_problem_or_in_test
+    if @virtualtest.nil?
+      user_can_see_problem # Defined in problem_concern.rb
+    end
   end
 
   # Check that current user did not already solve the problem
@@ -335,44 +355,51 @@ class SubmissionsController < ApplicationController
     redirect_to root_path if current_user.pb_solved?(@problem)
   end
   
-  # Check that new submissions are allowed
-  def new_submissions_allowed
-    redirect_to problem_path(@problem) if @no_new_submission
+  # Check that new submissions are allowed, or that the user is in a virtualtest
+  def new_submissions_allowed_or_in_test
+    if @virtualtest.nil?
+      redirect_to problem_path(@problem) if @no_new_submission
+    end
   end
 
   # Check that current user can create a new submission for the problem
   def user_can_write_submission_to_problem
-    if current_user.submissions.where(:problem => @problem, :status => [:draft, :waiting, :waiting_forever]).count > 0
+    if current_user.submissions.where(:problem => @problem, :status => [:waiting, :waiting_forever]).count > 0
       redirect_to problem_path(@problem)
     end
   end
   
-  # Check that current user is doing a test with this problem
-  def user_in_test
-    @virtualtest = @problem.virtualtest
-    return if check_nil_object(@virtualtest)
-    redirect_to virtualtests_path if current_user.test_status(@virtualtest) != "in_progress"
-  end
-  
-  # Check that current user is doing a test with this problem, or is a root
-  def user_in_test_or_root
-    if !current_user.root?
-      user_in_test
+  # Check that current user can write a submission, or is in a virtualtest
+  def user_can_write_submission_or_in_test
+    if @virtualtest.nil?
+      user_can_write_submission # Defined in application_controller.rb
     end
   end
   
-  # Check that current user is the author of the submission
-  def author_of_submission
-    if @submission.user != current_user
+  # Check that the submission is a draft, or current user is a root
+  def draft_submission_or_root
+    if !@submission.draft? && !current_user.root?
+      redirect_to @problem
+    end
+  end
+  
+  # Check that current user is the author of the submission, or a root
+  def author_of_submission_or_root
+    if @submission.user != current_user && !current_user.root?
       render 'errors/access_refused'
     end
   end
-
-  # Check that the submission is a draft
-  def draft_submission_not_in_test
-    unless @submission.draft? && !@submission.intest
-      redirect_to @problem
+  
+  # Check that current user can send a new submission today
+  def user_can_send_today
+    if @limited_new_submissions && current_user.has_already_submitted_today?
+      redirect_to problem_path(@problem, :sub => 0)
     end
+  end
+  
+  # Check that current user is not in a test (for this submission)
+  def user_not_in_test
+    render 'errors/access_refused' if !@virtualtest.nil?
   end
   
   # Check that current user can see the correct/incorrect submissions to the problem
@@ -415,44 +442,10 @@ class SubmissionsController < ApplicationController
   
   ########## HELPER METHODS ##########
   
-  # Helper method to update the submission
-  def update_submission
-    if @context == 1
-      rendered_page_in_case_of_error = 'virtualtests/show' # Update a submission during a test
-    elsif @context == 2
-      rendered_page_in_case_of_error = 'problems/show' # Update a draft
-    else
-      rendered_page_in_case_of_error = 'problems/show' # Update and send a draft
-    end
-    
-    params[:submission][:content].strip! if !params[:submission][:content].nil?
-    @submission.content = params[:submission][:content]
-    
-    # Invalid CSRF token
-    render_with_error(rendered_page_in_case_of_error, @submission, get_csrf_error_message) and return if @invalid_csrf_token
-    
-    # Invalid submission
-    render_with_error(rendered_page_in_case_of_error) and return if !@submission.valid?
-
-    # Attached files
-    update_files(@submission)
-    render_with_error(rendered_page_in_case_of_error, @submission, @file_error) and return if !@file_error.nil?
-    
-    @submission.save
-
-    if @context == 1
-      flash[:success] = "Votre solution a bien été modifiée."
-      redirect_to virtualtest_path(@virtualtest, :p => @problem.id)
-    elsif @context == 2
-      flash[:success] = "Votre brouillon a bien été enregistré."
-      redirect_to problem_path(@problem, :sub => 0)
-    else
-      date_now = DateTime.now
-      @submission.update(:created_at => date_now, :old_created_at => date_now, :last_comment_time => date_now)
-      @submission.set_waiting_status
-      flash[:success] = "Votre solution a bien été soumise."
-      redirect_to problem_path(@problem, :sub => @submission.id)
-    end
+  # Helper method to update the dates of a draft submission when updating or sending it
+  def update_draft_dates
+    date_now = DateTime.now
+    @submission.update(:created_at => date_now, :old_created_at => date_now, :last_comment_time => date_now)
   end
 
   # Helper method to mark as read/unread

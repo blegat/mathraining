@@ -9,44 +9,42 @@
   }
 
   // To initialize and update Preview when page is loaded and Preview is defined
-  var initAndUpdatePreviewDone = false;
+  var initAndUpdatePreviewDone = new Set();
   
-  function initAndUpdatePreviewIfPossible(safe, enableBBCode, enableHiddenText, enableIndice) {
-    if ("Preview" in window) {
-      if (!initAndUpdatePreviewDone) {
-        initAndUpdatePreviewDone = true;
-        Preview.Init();
-        Preview.SetSafe(safe);
-        Preview.SetBBCode(enableBBCode);
-        Preview.SetHiddenText(enableHiddenText);
-        Preview.SetIndice(enableIndice);
-        Preview.Update();
+  function initAndUpdatePreviewIfPossible(postfix, safe, enableBBCode, enableHiddenText, enableIndice, skipUpdate) {
+    if ("PreviewHandler" in window) {
+      if (!initAndUpdatePreviewDone.has(postfix)) {
+        initAndUpdatePreviewDone.add(postfix);
+        PreviewHandler.Init(postfix, safe, enableBBCode, enableHiddenText, enableIndice);
+        if (!skipUpdate) {
+          PreviewHandler.Update(postfix);
+        }
       }
     }
   }
 
-  function initAndUpdatePreviewWhenPossible(enableIndice = false) {
-    callMethodWhenPossible(() => initAndUpdatePreviewIfPossible(false, false, false, enableIndice));
+  function initAndUpdatePreviewWhenPossible(postfix = "", enableIndice = false) {
+    callMethodWhenPossible(() => initAndUpdatePreviewIfPossible(postfix, false, false, false, enableIndice, false));
   }
   
-  function initAndUpdatePreviewSafeWhenPossible(enableBBCode = true, enableHiddenText = false) {
-    callMethodWhenPossible(() => initAndUpdatePreviewIfPossible(true, enableBBCode, enableHiddenText, false));
+  function initAndUpdatePreviewSafeWhenPossible(postfix = "", enableBBCode = true, enableHiddenText = false, skipUpdate = false) {
+    callMethodWhenPossible(() => initAndUpdatePreviewIfPossible(postfix, true, enableBBCode, enableHiddenText, false, skipUpdate));
   }
   
   // To call Rolling.develop_quick when page is loaded and Rolling is defined
   var rollingDevelopQuickDone = false;
   
-  function rollingDevelopQuickIfPossible(m, enableHiddenText) {
+  function rollingDevelopQuickIfPossible(m) {
     if ("Rolling" in window) {
       if (!rollingDevelopQuickDone) {
         rollingDevelopQuickDone = true;
-        Rolling.develop_quick(m, enableHiddenText);
+        Rolling.develop_quick(m);
       }
     }
   }
 
-  function rollingDevelopQuickWhenPossible(m, enableHiddenText = false) {
-    callMethodWhenPossible(() => rollingDevelopQuickIfPossible(m, enableHiddenText));
+  function rollingDevelopQuickWhenPossible(m) {
+    callMethodWhenPossible(() => rollingDevelopQuickIfPossible(m));
   }
   
   // To call Rolling.showus when page is loaded and Rolling is defined

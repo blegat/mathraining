@@ -14,7 +14,7 @@ var Rolling = {
     return false;
   },
 
-  develop: function(m, enableHiddenText = false) {
+  develop: function(m) {
     this.hideActual();
     this.actual = m;
     $("#the" + m).animate({height:'0px'}, this.rollingTime);
@@ -26,15 +26,13 @@ var Rolling = {
       var yyy = document.getElementById("form" + m).offsetTop - 60;
       body.animate({scrollTop:yyy}, this.rollingTime/2);
       if (document.getElementById("MathInput" + m)) {
-        Preview.Init(m);
-        Preview.SetHiddenText(enableHiddenText);
-        Preview.Update();
+        PreviewHandler.Update(m);
       }
     });
     return false;
   },
 
-  develop_quick: function(m, enableHiddenText = false) {
+  develop_quick: function(m) {
     this.actual = m;
     $("#the" + m).height(0);
     $("#form" + m).height('auto');
@@ -43,9 +41,7 @@ var Rolling = {
       var yyy = document.getElementById("form" + m).offsetTop - 60;
       body.scrollTop(yyy);
       if (document.getElementById("MathInput" + m)) {
-        Preview.Init(m);
-        Preview.SetHiddenText(enableHiddenText);
-        Preview.Update();
+        PreviewHandler.Update(m);
       }
     });
   },

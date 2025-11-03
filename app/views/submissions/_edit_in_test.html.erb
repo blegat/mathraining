@@ -1,7 +1,0 @@
-<%= form_for @submission, url: update_intest_submission_path(@submission), :html => { :multipart => true, :class => "mb-3" } do |f| %>
-  <%= render 'submissions/form', f: f %>
-  <%= render 'shared/edit_files', s: @submission %>
-  
-  <%= f.submit "Enregistrer cette solution", class: "btn btn-primary mb-1", :disabled => in_skin? %>
-  <button class="btn btn-ld-light-dark mb-1" onclick="return Rolling.hideActual();">Annuler</button>
-<% end %>

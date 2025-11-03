@@ -78,21 +78,16 @@ Rails.application.routes.draw do
       put :mark_reviewed
       put :unmark_reviewed
     end
-    resources :submissions, only: [:create, :index] do # 'index' only via JS
-      collection do
-        post :create_intest
-      end
-    end
+    resources :submissions, only: [:create, :index] # 'index' only via JS
     resources :externalsolutions, only: [:create]
   end
   
   resources :solvedproblems, only: [:index]
 
   # Submissions
-  resources :submissions, only: [:destroy] do
+  resources :submissions, only: [:update, :destroy] do
     member do
-      patch :update_intest
-      patch :update_draft
+      patch :send_draft
       put :read
       put :unread
       put :star

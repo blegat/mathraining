@@ -11,7 +11,7 @@
 <div id="the" class="content-part">
 <!-- Si une soumission a déjà été faite -->
 <% if !@submission.new_record? %>
-  <%= render 'shared/post', ms: @submission, kind: "submission", can_edit: true %>
+  <%= render 'shared/post', ms: @submission, kind: "submission", can_edit: true, postfix: "" %>
 <!-- Si pas encore de soumission -->
 <% else %>
   <!-- On propose d'écrire une solution -->
@@ -23,10 +23,14 @@
 
 <div id="form" class="form-part px-1" style="height:0px;">
 <% if @submission.new_record? %>
-  <%= render 'submissions/new_in_test' %>
+  <%= render 'submissions/new', show_cancel_button: true %>
 <% else %>
-  <%= render 'submissions/edit_in_test' %>
+  <%= render 'submissions/edit' %>
 <% end %>
+
+<p class="fst-italic">
+  Vous pourrez modifier cette solution tant que vous le voudrez dans le temps imparti.
+</p>
 </div>
 
 <% if @submission.errors.any? %>

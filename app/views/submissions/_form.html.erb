@@ -2,15 +2,23 @@
   <% form_disabled = false %>
 <% end %>
 
+<% if !defined?(postfix) %>
+  <% postfix = "" %>
+<% end %>
+
+<% if !defined?(load_preview) %>
+  <% load_preview = true %>
+<% end %>
+
 <p>Merci d'écrire votre solution directement sur le site, en français, et en utilisant le $\LaTeX$ pour les formules mathématiques. <%= link_to "Ce chapitre", chapter_path(13), target: "blank" %> vous donne toutes les bases pour l'utiliser. Les solutions écrites à la main et scannées ne sont pas acceptées, les pièces jointes n'étant à utiliser que pour les figures ou schémas.</p>
 <p>L'utilisation d'une intelligence artificielle, <u>pour quelque raison que ce soit</u>, est strictement interdite et sera systématiquement sanctionnée.</p>
 
 <%= render 'shared/error_messages', object: f.object %>
 
 <div class="mb-2">
-  <%= render 'shared/preview' %>
-  <%= render 'shared/smiley' %>
-  <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :oninput => "Preview.MyUpdate()", :disabled => (in_skin? || form_disabled) %>
-  <script>initAndUpdatePreviewSafeWhenPossible()</script>
+  <%= render 'shared/preview', postfix: postfix %>
+  <%= render 'shared/smiley', postfix: postfix %>
+  <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput#{postfix}", :disabled => (in_skin? || form_disabled) %>
+  <script>initAndUpdatePreviewSafeWhenPossible("<%= postfix %>", /* enableBBCode = */ true, /* enableHiddenText = */ false, /* skipUpdate = */ <%= !load_preview %>)</script>
   <script>initLeavingFormWhenPossible()</script>
 </div>

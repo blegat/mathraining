@@ -5,7 +5,7 @@
   <%= f.label "Énoncé", :for => "MathInput", :class => "form-label" %>
   <%= render 'shared/preview' %>
   <%= render 'shared/font' %>
-  <%= f.text_area :statement, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :oninput => "Preview.MyUpdate()" %>
+  <%= f.text_area :statement, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput" %>
   <script>initAndUpdatePreviewWhenPossible()</script>
 </div>
   

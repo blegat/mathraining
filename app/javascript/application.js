@@ -9,7 +9,7 @@ import "select2_locale_fr"
 import Clue from "custom/clue"
 import Info from "custom/info"
 import Joint from "custom/join"
-import Preview from "custom/preview"
+import PreviewHandler from "custom/preview"
 import Rolling from "custom/rolling"
 import ShowHideCode from "custom/showcode"
 import Insert from "custom/tainsert"
@@ -21,7 +21,7 @@ import Switcher from "custom/switcher"
 window.Clue = Clue;
 window.Info = Info;
 window.Joint = Joint;
-window.Preview = Preview;
+window.PreviewHandler = PreviewHandler;
 window.Rolling = Rolling;
 window.ShowHideCode = ShowHideCode;
 window.Insert = Insert;

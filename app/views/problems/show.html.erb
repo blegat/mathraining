@@ -229,7 +229,7 @@
     <% if @cansendnewsub %>
       <hr>
       <% if current_user.can_write_submission? %>
-        <%= render 'submissions/new', problem: @problem, submission: @submission %>
+        <%= render 'submissions/show_before_send' %>
       <% else %>
         <p class="mb-2">Pour pouvoir rédiger une solution à un problème, vous devez d'abord compléter les chapitres suivants :</p>
         <%= render 'submissions/chapters_to_write_submission' %>

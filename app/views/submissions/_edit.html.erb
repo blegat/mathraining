@@ -1,0 +1,19 @@
+<% if !defined?(postfix) %>
+  <% postfix = "" %>
+<% end %>
+
+<% if !defined?(load_preview) %>
+  <% load_preview = true %>
+<% end %>
+
+<% if !defined?(form_disabled) %>
+  <% form_disabled = false %>
+<% end %>
+
+<%= form_for @submission, :html => { :multipart => true, :class => "mb-2" } do |f| %>
+  <%= render 'submissions/form', f: f, postfix: postfix, load_preview: load_preview, form_disabled: form_disabled %>
+  <%= render 'shared/edit_files', s: @submission, postfix: postfix %>
+  
+  <%= f.submit "Enregistrer cette solution", class: "btn btn-primary mb-1", :disabled => form_disabled || in_skin? %>
+  <button class="btn btn-ld-light-dark mb-1" onclick="return Rolling.hideActual();">Annuler</button>
+<% end %>

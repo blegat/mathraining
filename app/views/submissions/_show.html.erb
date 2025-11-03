@@ -127,7 +127,19 @@ var hideStatement = function () {
   <% end %>
 
   <!-- Affichage de la soumission -->
-  <%= render 'shared/post', ms: @submission, kind: "submission" %>
+  <div id="theSubmission" class="content-part">
+    <%= render 'shared/post', ms: @submission, kind: "submission", can_edit: current_user.root?, postfix: "Submission" %>
+  </div>
+  
+  <% if current_user.root? %>
+    <div id="formSubmission" class="form-part px-1" style="height:0px;">
+      <%= render 'submissions/edit', postfix: "Submission", load_preview: false %>
+    </div>
+    
+    <% if @submission.errors.any? %>
+      <script>rollingDevelopQuickWhenPossible("Submission")</script>
+    <% end %>
+  <% end %>
 
   <!-- Si soumission en test avec score, on affiche le score -->
   <% if @submission.intest && @submission.score != -1 && (can_current_user_correct || current_user == @submission.user) %>

@@ -23,12 +23,12 @@ describe "chapters/all.html.erb", type: :view, chapter: true do
       expect(rendered).to have_no_content(theory_offline.content)
       expect(rendered).to have_selector("h3", text: "2. " + theory2.title)
       expect(rendered).to have_content(theory2.content.gsub(/\/latextest\//, "")) # latextest replaced by textarea
-      expect(rendered).to have_no_content(theory2.content) # latextest replaced by textarea
-      expect(rendered).to have_selector("textarea", id: "MathInput")
+      expect(rendered).to have_no_content(theory2.content) # latextest replaced by textarea with key 1
+      expect(rendered).to have_selector("textarea", id: "MathInput1")
       expect(rendered).to have_selector("h3", text: "3. " + theory3.title)
       expect(rendered).to have_content(theory3.content.gsub(/\/latextest\//, "")) # latextest replaced by Voir plus haut
-      expect(rendered).to have_no_content(theory3.content) # latextest replaced by Voir plus haut
-      expect(rendered).to have_content("Voir plus haut")
+      expect(rendered).to have_no_content(theory3.content) # latextest replaced by textarea with key 2
+      expect(rendered).to have_selector("textarea", id: "MathInput2")
     end
   end
   

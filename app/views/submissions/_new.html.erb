@@ -1,47 +1,17 @@
-<% limit_reached = @limited_new_submissions && current_user.has_already_submitted_today? %>
-<% is_draft = !submission.new_record? %>
-
-<%= form_for submission, url: (is_draft ? update_draft_submission_path(submission) : problem_submissions_path(problem)), :html => { :multipart => true } do |f| %>
-
-  <!-- Nouvelle soumission -->
-  <h3>Nouvelle soumission</h3>
-  
-  <%= render 'submissions/form', f: f, form_disabled: @no_new_submission %>
-  <%= render 'shared/edit_files', s: submission, disable: @no_new_submission %>
-  
-  <script type="text/javascript">
-  function checkChecked() {
-      var c = document.getElementById("consent").checked;
-      var bt = document.getElementById("send-button");
-      if(c && <%= !in_skin? && !@no_new_submission && !limit_reached %>) { bt.disabled = false; }
-      else { bt.disabled = true; }
-  }
-  </script>
-  
-  <% if limit_reached %>
-    <p class="mb-2 text-color-red">Vous avez déjà soumis une nouvelle solution aujourd'hui. Afin de limiter la charge de travail des correcteurs, les nouvelles soumissions sont actuellement limitées à une par jour.</p>
-  <% else %>
-    <div class="form-check mb-2">
-    <label class="form-check-label">
-      <%= check_box_tag "consent", 1, false, :class => "form-check-input", :disabled => @no_new_submission, :onchange => "javascript:checkChecked();" %>
-      Je comprends que les correcteurs sont bénévoles et vont corriger cette solution pendant leur temps libre pour me faire progresser.
-      Je certifie donc que cette solution est le fruit de mon travail et qu'elle ne provient pas d'une source extérieure.
-      Je garantis également ne pas avoir utilisé d'intelligence artificielle pour rédiger cette solution.<sup>1</sup>
-    </label>
-    </div>
-  <% end %>
-
-  <div class="mb-2">
-    <%= f.submit "Soumettre cette solution", class: "btn btn-primary mb-1", id: "send-button", :disabled => !Rails.env.test?, data: (Rails.env.test? ? {} : { confirm: "Attention ! Votre solution va être lue par un correcteur bénévole.\n\nVeillez à ce que celle-ci soit suffisamment claire et bien rédigée. Avant de l'envoyer, nous vous encourageons à la relire entièrement, si possible plusieurs heures après l'avoir rédigée, pour vous assurer qu'elle est facilement compréhensible.\n\nÊtes-vous #{current_user.sure} de vouloir soumettre cette solution ?" }) %>
-    <% if is_draft %>
-      <%= f.submit "Enregistrer le brouillon", class: "btn btn-ld-light-dark mb-1", :disabled => (in_skin? || @no_new_submission) %>
-      <%= f.submit "Supprimer ce brouillon", class: "btn btn-danger mb-1", :disabled => (in_skin? || @no_new_submission), data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer ce brouillon ?" } %>
-    <% else %>
-      <%= f.submit "Enregistrer comme brouillon", class: "btn btn-ld-light-dark mb-1", :disabled => (in_skin? || @no_new_submission) %>
-    <% end %>
-  </div>
+<% if !defined?(show_cancel_button) %>
+  <% show_cancel_button = false %>
 <% end %>
 
-<% unless limit_reached %>
-  <p style="font-size:12px;"><sup>1</sup> Les administrateurs se réservent le droit de bloquer l'accès au site aux personnes qui ne sont pas à l'origine de leur solution ou qui utilisent l'intelligence artificielle pour la rédiger.</p>
+<% if !defined?(form_disabled) %>
+  <% form_disabled = false %>
+<% end %>
+
+<%= form_for @submission, url: problem_submissions_path(@problem), :html => { :multipart => true, :class => "mb-2" } do |f| %>
+  <%= render 'submissions/form', f: f, form_disabled: form_disabled %>
+  <%= render 'shared/edit_files' %>
+
+  <%= f.submit "Enregistrer cette solution", class: "btn btn-primary mb-1", :disabled => in_skin? || form_disabled %>
+  <% if show_cancel_button %>
+    <button class="btn btn-ld-light-dark mb-1" onclick="return Rolling.hideActual();">Annuler</button>
+  <% end %>
 <% end %>

@@ -22,8 +22,8 @@
   <%= f.label :content, :for => "MathInput#{postfix}", :class => "form-label" %>
   <%= render 'shared/preview', postfix: postfix %>
   <%= render 'shared/smiley', postfix: postfix, hiddentext: true %>
-  <%= f.text_area :content, :value => cont, :maxlength => "8000", :class => "form-control", :style => "height:200px;", :id => "MathInput#{postfix}", :oninput => "Preview.MyUpdate()" %>
-  <!-- Do not call initAndUpdatePreviewSafeWhenPossible: it will be done only after rolling to show the form -->
+  <%= f.text_area :content, :value => cont, :maxlength => "8000", :class => "form-control", :style => "height:200px;", :id => "MathInput#{postfix}" %>
+  <script>initAndUpdatePreviewSafeWhenPossible("<%= postfix %>", /* enableBBCode = */ true, /* enableHiddenText = */ true, /* skipUpdate = */ true)</script>
 </div>
 
 <!-- Case e-mails aux groupes A et/ou B -->
@@ -37,5 +37,5 @@
 <% end %>
 
 <% if erreur %>
-  <script>rollingDevelopQuickWhenPossible("<%= postfix %>", /* enableHiddenText = */ true)</script>
+  <script>rollingDevelopQuickWhenPossible("<%= postfix %>")</script>
 <% end %>

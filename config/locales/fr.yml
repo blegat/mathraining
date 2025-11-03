@@ -128,7 +128,7 @@ fr:
         question_id: "Exercice"
         problem_id: "Problème"
       submission:
-        content: "Soumission"
+        content: "Solution"
       suspicion:
         source: "Source"
       tchatmessage:

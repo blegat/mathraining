@@ -37,6 +37,7 @@ describe "Savedreply pages", savedreply: true do
       describe "and uses a saved reply", :js => true do
         before do
           click_button "Réserver cette soumission"
+          wait_for_ajax
           click_link "1 rép. gén."
           find("#savedreply-#{savedreply_generic.id}").click() # This registers in a hidden field that the saved reply has been used
           click_button "Poster et refuser la soumission"

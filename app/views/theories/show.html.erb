@@ -2,7 +2,7 @@
 
 <h3><%= @theory.title %></h3>
 <div class="mb-3">
-  <%= htmlise(@theory.content).gsub(/\/latextest\//, '<div class="mb-2"><div class="card text-bg-ld-light-dark mb-2"><div class="card-body" id="MathPreview"></div><div class="card-body hidden-preview" id="MathBuffer"></div></div><textarea id="MathInput" class="form-control" style="height:120px;" oninput="Preview.Update()" placeholder="Rentrez ici le code $\LaTeX$ que vous souhaitez tester."></textarea></div><script>initAndUpdatePreviewSafeWhenPossible(false)</script>').html_safe %>
+  <%= process_latex_test(htmlise(@theory.content), 0) %>
 </div>
 
 <div class="noprint">

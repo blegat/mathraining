@@ -92,7 +92,8 @@ describe "problems/show.html.erb", type: :view, problem: true do
       
       it "renders the form correctly" do
         render template: "problems/show"
-        expect(response).to render_template(:partial => "submissions/_new", :locals => {problem: problem, submission: new_submission})
+        expect(response).to render_template(:partial => "submissions/_show_before_send")
+        expect(response).to render_template(:partial => "submissions/_new")
         expect(response).not_to render_template(:partial => "submissions/_show")
       end
     end
@@ -103,7 +104,8 @@ describe "problems/show.html.erb", type: :view, problem: true do
       
       it "renders the form correctly" do
         render template: "problems/show"
-        expect(response).to render_template(:partial => "submissions/_new", :locals => {problem: problem, submission: draft_submission})
+        expect(response).to render_template(:partial => "submissions/_show_before_send")
+        expect(response).to render_template(:partial => "submissions/_edit")
         expect(response).not_to render_template(:partial => "submissions/_show")
       end
     end
@@ -115,7 +117,7 @@ describe "problems/show.html.erb", type: :view, problem: true do
       
       it "renders the message correctly" do
         render template: "problems/show"
-        expect(response).not_to render_template(:partial => "submissions/_new")
+        expect(response).not_to render_template(:partial => "submissions/_show_before_send")
         expect(response).to render_template(:partial => "submissions/_chapters_to_write_submission")
         expect(response).not_to render_template(:partial => "submissions/_show")
       end
@@ -130,7 +132,7 @@ describe "problems/show.html.erb", type: :view, problem: true do
       
       it "shows the submission" do
         render template: "problems/show"
-        expect(response).not_to render_template(:partial => "submissions/_new")
+        expect(response).not_to render_template(:partial => "submissions/_show_before_send")
         expect(response).to render_template(:partial => "submissions/_show")
       end
     end
@@ -157,7 +159,7 @@ describe "problems/show.html.erb", type: :view, problem: true do
       
       it "does not render the form" do
         render template: "problems/show"
-        expect(response).not_to render_template(:partial => "submissions/_new")
+        expect(response).not_to render_template(:partial => "submissions/_show_before_send")
         expect(response).not_to render_template(:partial => "submissions/_show")
       end
     end
@@ -170,7 +172,7 @@ describe "problems/show.html.erb", type: :view, problem: true do
       
       it "shows the submission" do
         render template: "problems/show"
-        expect(response).not_to render_template(:partial => "submissions/_new")
+        expect(response).not_to render_template(:partial => "submissions/_show_before_send")
         expect(response).to render_template(:partial => "submissions/_show")
       end
     end
@@ -180,7 +182,7 @@ describe "problems/show.html.erb", type: :view, problem: true do
       
       it "shows the submission" do
         render template: "problems/show"
-        expect(response).not_to render_template(:partial => "submissions/_new")
+        expect(response).not_to render_template(:partial => "submissions/_show_before_send")
         expect(response).to render_template(:partial => "submissions/_show")
       end
     end
@@ -203,7 +205,7 @@ describe "problems/show.html.erb", type: :view, problem: true do
       
       it "shows the submission" do
         render template: "problems/show"
-        expect(response).not_to render_template(:partial => "submissions/_new")
+        expect(response).not_to render_template(:partial => "submissions/_show_before_send")
         expect(response).to render_template(:partial => "submissions/_show")
       end
     end

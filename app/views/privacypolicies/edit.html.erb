@@ -10,7 +10,7 @@
     <%= f.label :content, :for => "MathInput", :class => "form-label" %>
     <%= render 'shared/preview' %>
     <%= render 'shared/font' %>
-    <%= f.text_area :content, :class => "form-control", :maxlength => "16000", :style => "height:200px;", :id => "MathInput", :oninput => "Preview.MyUpdate()" %>
+    <%= f.text_area :content, :class => "form-control", :maxlength => "16000", :style => "height:200px;", :id => "MathInput" %>
     <script>initAndUpdatePreviewWhenPossible()</script>
   </div>
   
