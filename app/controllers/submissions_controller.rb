@@ -23,7 +23,7 @@ class SubmissionsController < ApplicationController
   before_action :author_of_submission_or_root, only: [:update, :destroy, :send_draft]
   before_action :new_submissions_allowed_or_in_test, only: [:create, :update, :send_draft]
   before_action :user_has_no_recent_plagiarism_or_closure, only: [:create, :update, :send_draft]
-  before_action :user_can_write_submission_or_in_test, only: [:create, :update, :send_draft]
+  before_action :user_can_write_submission_or_in_test, only: [:create, :send_draft]
   before_action :user_can_send_today, only: [:send_draft]
   before_action :user_not_in_test, only: [:send_draft] 
   before_action :user_can_see_submissions, only: [:index]
