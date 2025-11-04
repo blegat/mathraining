@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-
 describe "Stats pages" do
 
   subject { page }

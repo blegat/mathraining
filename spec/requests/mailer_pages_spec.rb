@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-feature 'Emailer' do
+feature 'Emailer', mailer: true do
   describe "inscription emails" do
     let!(:country) { FactoryBot.create(:country) }
     
@@ -12,7 +12,7 @@ feature 'Emailer' do
       fill_in "Nom", with: "Biboux"
       select country.name, from: "Pays"
       select "1977", from: "Année de naissance"
-      # Il y a deux fois ces champs (pour la connexion et l"inscription)
+      # Il y a deux fois ces champs (pour la connexion et l'inscription)
       page.all(:fillable_field, "Adresse e-mail").last.set("jean@biboux.com")
       fill_in "Confirmation de l'adresse e-mail", with: "jean@biboux.com"
       page.all(:fillable_field, "Mot de passe").last.set("MotDePasse123")
@@ -39,7 +39,6 @@ feature 'Emailer' do
       visit forgot_password_path
       fill_in "user_email", with: user.email
       click_button "Envoyer l'e-mail"
-      
     end
      
     specify do
@@ -124,6 +123,7 @@ feature 'Emailer' do
     
     describe "new message" do
       let!(:sub) { FactoryBot.create(:subject, :for_wepion => true) }
+      
       before do
         clear_emails
         sign_in root
@@ -156,7 +156,6 @@ feature 'Emailer' do
     let!(:running_contestproblemcheck) { FactoryBot.create(:contestproblemcheck, contestproblem: running_contestproblem) }
     let!(:running_contestsubject) { FactoryBot.create(:subject, contest: running_contest, category: category, last_comment_time: DateTime.now - 2.days) }
     
-  
     before do
       user_following_contest.followed_contests << running_contest
       user_following_subject.followed_subjects << running_contestsubject

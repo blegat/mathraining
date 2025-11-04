@@ -150,9 +150,7 @@ describe "Authentication" do
   end
   
   describe "uses fast signin in test environment" do
-    before do
-      sign_in user
-    end
+    before { sign_in user }
     specify do
       expect(Capybara.current_session.driver.request.cookies.[]('remember_token')).to eq(user.remember_token)
     end

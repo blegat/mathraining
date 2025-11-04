@@ -173,7 +173,7 @@ describe "Question pages", question: true do
           fill_in "MathInput", with: newstatement
           fill_in "Réponse", with: newanswer
           if newdecimal
-            check "Cochez si la réponse n'est a priori pas entière"
+            check "La réponse n'est a priori pas entière"
           end
           fill_in "Niveau", with: newlevel
           click_button "Créer"
@@ -196,7 +196,7 @@ describe "Question pages", question: true do
             fill_in "MathInput", with: newstatement2
             fill_in "Réponse", with: newanswer2
             if newdecimal2
-              check "Cochez si la réponse n'est a priori pas entière "
+              check "La réponse n'est a priori pas entière "
             end
             fill_in "Niveau", with: newlevel2
             click_button "Créer"
@@ -237,7 +237,7 @@ describe "Question pages", question: true do
         before do
           fill_in "MathInput", with: newstatement
           fill_in "Réponse", with: "4,56" # A comma is also allowed
-          check "Cochez si la réponse n'est a priori pas entière"
+          check "La réponse n'est a priori pas entière"
           fill_in "Niveau", with: newlevel
           click_button "Modifier"
           offline_exercise.reload
@@ -255,7 +255,7 @@ describe "Question pages", question: true do
         before do
           fill_in "MathInput", with: newstatement
           fill_in "Réponse", with: "4.2"
-          uncheck "Cochez si la réponse n'est a priori pas entière"
+          uncheck "La réponse n'est a priori pas entière"
           fill_in "Niveau", with: newlevel
           click_button "Modifier"
           offline_exercise.reload
@@ -292,7 +292,7 @@ describe "Question pages", question: true do
       describe "and sends with good information" do
         before do
           fill_in "MathInput", with: newstatement3
-          check "Cochez si plusieurs réponses sont possibles"
+          check "Plusieurs réponses sont possibles"
           fill_in "Niveau", with: newlevel3
           click_button "Créer"
         end
@@ -314,7 +314,7 @@ describe "Question pages", question: true do
       describe "and modifies from one answers to many answers" do
         before do
           fill_in "MathInput", with: newstatement3
-          check "Cochez si plusieurs réponses sont possibles"
+          check "Plusieurs réponses sont possibles"
           fill_in "Niveau", with: newlevel3
           click_button "Modifier"
           offline_qcm.reload
@@ -336,7 +336,7 @@ describe "Question pages", question: true do
       describe "and modifies from many answers to one answer" do
         before do
           fill_in "MathInput", with: newstatement3
-          uncheck "Cochez si plusieurs réponses sont possibles"
+          uncheck "Plusieurs réponses sont possibles"
           fill_in "Niveau", with: newlevel3
           click_button "Modifier"
           offline_qcm.reload
@@ -362,7 +362,7 @@ describe "Question pages", question: true do
           offline_item_correct.update_attribute(:ok, false)
           offline_item_correct2.update_attribute(:ok, false)
           fill_in "MathInput", with: newstatement3
-          uncheck "Cochez si plusieurs réponses sont possibles"
+          uncheck "Plusieurs réponses sont possibles"
           fill_in "Niveau", with: newlevel3
           click_button "Modifier"
           offline_qcm.reload

@@ -46,7 +46,7 @@
     </div>
     
     <% if defined? @benchmark_start_time %>
-      <div class="mb-3 text-center">Temps total de chargement: <b><%= ((Time.now.to_f - @benchmark_start_time.to_f) * 1000).round(1) %> ms</b></div>
+      <div class="mb-3 text-center">Temps total de chargement : <b><%= ((Time.now.to_f - @benchmark_start_time.to_f) * 1000).round(1) %> ms</b></div>
     <% end %>
   </body>
 </html>
