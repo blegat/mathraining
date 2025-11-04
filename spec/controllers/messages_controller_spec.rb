@@ -5,7 +5,6 @@ describe MessagesController, type: :controller, message: true do
 
   let(:user) { FactoryBot.create(:user) }
   let(:admin) { FactoryBot.create(:admin) }
-  let(:root) { FactoryBot.create(:root) }
   let(:subject) { FactoryBot.create(:subject) }
   let(:message) { FactoryBot.create(:message, subject: subject) }
   

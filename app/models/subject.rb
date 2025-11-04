@@ -19,6 +19,15 @@
 #  last_comment_user_id :integer
 #  subject_type         :integer          default("normal")
 #
+
+class NoWepionCorrectorValidator < ActiveModel::Validator
+  def validate(record)
+    if record.for_wepion? && record.for_correctors?
+      record.errors.add(:base, "Un sujet ne peut pas être destiné à la fois aux correcteurs et aux étudiants de Wépion.")
+    end
+  end
+end
+
 class Subject < ActiveRecord::Base
 
   enum subject_type: {:normal           => 0, # all normal subjects
@@ -46,6 +55,7 @@ class Subject < ActiveRecord::Base
   validates :question_id, uniqueness: true, allow_nil: true
   validates :problem_id, uniqueness: true, allow_nil: true
   validates :contest_id, uniqueness: true, allow_nil: true
+  validates_with NoWepionCorrectorValidator
   
   # OTHER METHODS
   
@@ -60,14 +70,9 @@ class Subject < ActiveRecord::Base
     end
   end
   
-  # Gives the page containing the n-th message
-  def page_with_message_num(n)
-    return [0, ((n-1)/10).floor].max + 1
-  end
-  
   # Gives the last page number
   def last_page
-    return self.page_with_message_num(self.messages.count)
+    return Subject.page_with_message_num(self.messages.count)
   end
   
   # Update last_comment_time and last_comment_user_id
@@ -78,7 +83,13 @@ class Subject < ActiveRecord::Base
                   :last_comment_user_id => last_message.user_id)
     end
   end
+  
+  # Gives the page containing the n-th message
+  def self.page_with_message_num(n)
+    return [0, ((n-1)/10).floor].max + 1
+  end
 
+  # Create subject together with its first message
   def self.create_with_first_message(user_id:, title:, content:, created_at: Time.now, **options)
     subject = Subject.create(title: title, **options)
     Message.create(subject: subject, user_id: user_id, content: content, created_at: created_at)

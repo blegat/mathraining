@@ -310,7 +310,7 @@ function checkWepion() {
   <div class="form-check mb-1">
   <label class="form-check-label">
     <%= f.check_box :for_correctors, :class => "form-check-input", :checked => checked %>
-    Cochez si ce sujet est réservé aux correcteurs.
+    Ce sujet est réservé aux correcteurs.
   </label>
   </div>
 <% end %>
@@ -328,7 +328,7 @@ function checkWepion() {
   <div class="form-check mb-1">
    <label class="form-check-label">
     <%= f.check_box :important, :class => "form-check-input", :checked => checked %>
-    Cochez si ce sujet doit toujours apparaître en premier lieu.
+    Ce sujet doit toujours apparaître en premier lieu.
   </label>
   </div>
   <% someCheckBox = true %>
@@ -345,7 +345,7 @@ function checkWepion() {
   <div class="form-check mb-1">
   <label class="form-check-label">
     <%= f.check_box :for_wepion, :class => "form-check-input", :checked => wepion_checked, :onchange => ("javascript: checkWepion();") %>
-    Cochez si ce sujet est destiné aux étudiants de Wépion.
+    Ce sujet est destiné aux étudiants de Wépion.
   </label>
   </div>
   <% someCheckBox = true %>

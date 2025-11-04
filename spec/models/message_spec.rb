@@ -43,7 +43,6 @@ describe Message, message: true do
   
   # can_be_udpated_by
   describe "can_be_updated_by should work" do
-    let!(:user) { FactoryBot.create(:user) }
     let!(:user2) { FactoryBot.create(:user) }
     let!(:admin) { FactoryBot.create(:admin) }
     let!(:root) { FactoryBot.create(:root) }
@@ -77,5 +76,32 @@ describe Message, message: true do
       expect(message_auto.can_be_updated_by(root)).to eq(true)
     end
   end
-
+  
+  # page
+  describe "page should be correct for 1 message" do
+    let!(:message_user) { FactoryBot.create(:message, user: user) }
+    specify { expect(message_user.page).to eq(1) }
+  end
+  
+  describe "page should be correct for 10 messages before and 10 messages after" do
+    let!(:message_user) { FactoryBot.create(:message, user: user) }
+    before do
+      (1..9).each do |i|
+        FactoryBot.create(:message, user: user, subject: message_user.subject, created_at: message_user.created_at - i.days)
+        FactoryBot.create(:message, user: user, subject: message_user.subject, created_at: message_user.created_at + i.days)
+      end 
+    end
+    specify { expect(message_user.page).to eq(1) }
+  end
+  
+  describe "page should be correct for 21 messages before and 21 messages after" do
+    let!(:message_user) { FactoryBot.create(:message, user: user) }
+    before do
+      (1..20).each do |i|
+        FactoryBot.create(:message, user: user, subject: message_user.subject, created_at: message_user.created_at - i.hours)
+        FactoryBot.create(:message, user: user, subject: message_user.subject, created_at: message_user.created_at + i.hours)
+      end 
+    end
+    specify { expect(message_user.page).to eq(3) }
+  end
 end

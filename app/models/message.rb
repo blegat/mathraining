@@ -50,6 +50,6 @@ class Message < ActiveRecord::Base
   def page
     subject = self.subject
     n = subject.messages.where("created_at <= ? OR id = ?", self.created_at, self.id).count # Also compare the id in case <= does not work well for some reason
-    return subject.page_with_message_num(n)
+    return Subject.page_with_message_num(n)
   end
 end

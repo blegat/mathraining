@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "Subject pages" do
+describe "Subject pages", subject: true do
 
   subject { page }
 
@@ -35,23 +35,6 @@ describe "Subject pages" do
   let(:image1) { "mathraining.png" } # default image used in factory
   let(:image2) { "Smiley1.gif" }
   let(:exe_attachment) { "hack.exe" }
-  
-  describe "visitor" do
-    describe "tries to visit subjects page" do
-      before { visit subjects_path }
-      it { should have_content(error_must_be_connected) }
-    end
-    
-    describe "tries to create a subject" do
-      before { visit new_subject_path }
-      it { should have_content(error_must_be_connected) }
-    end
-    
-    describe "tries to visit a subject" do
-      before { visit subject_path(sub) }
-      it { should have_content(error_must_be_connected) }
-    end
-  end
   
   describe "user" do
     before do
@@ -134,7 +117,12 @@ describe "Subject pages" do
     
     describe "visits subject creation page" do
       before { visit new_subject_path }
-      it { should have_selector("h1", text: "Créer un sujet") }
+      it do 
+        should have_selector("h1", text: "Créer un sujet")
+        should have_no_content("Ce sujet est réservé aux correcteurs")
+        should have_no_content("Ce sujet doit toujours apparaître en premier lieu")
+        should have_no_content("Ce sujet est destiné aux étudiants de Wépion")
+      end
 
       describe "and creates a subject" do
         before do
@@ -171,6 +159,7 @@ describe "Subject pages" do
       it do
         should have_content(sub.title)
         should have_no_link("Modifier ce sujet")
+        should have_no_link("Supprimer ce sujet")
         should have_button("Répondre")
       end
       
@@ -193,42 +182,22 @@ describe "Subject pages" do
       end
     end
     
-    describe "tries to visit a wepion subject" do
-      before { sub.update_attribute(:for_wepion, true) }
-      
-      describe "while not in wepion" do
-        before { visit subject_path(sub) }
-        it { should have_content(error_access_refused) }
+    describe "tries to visit a wepion subject while in wepion" do
+      before do
+        sub.update_attribute(:for_wepion, true)
+        user.update_attribute(:wepion, true)
+        visit subject_path(sub)
       end
-      
-      describe "while in wepion" do
-        before do
-          user.update_attribute(:wepion, true)
-          visit subject_path(sub)
-        end
-        it do
-          should have_content(sub.title)
-        end
-      end
+      it { should have_content(sub.title) }
     end
     
-    describe "tries to visit a corrector subject" do
-      before { sub.update_attribute(:for_correctors, true) }
-      
-      describe "while not coorrector" do
-        before { visit subject_path(sub) }
-        it { should have_content(error_access_refused) }
+    describe "tries to visit a corrector subject while corrector" do
+      before do
+        sub.update_attribute(:for_correctors, true)
+        user.update_attribute(:corrector, true)
+        visit subject_path(sub)
       end
-      
-      describe "while corrector" do
-        before do
-          user.update_attribute(:corrector, true)
-          visit subject_path(sub)
-        end
-        it do
-          should have_content(sub.title)
-        end
-      end
+      it { should have_content(sub.title) }
     end
   end
 
@@ -264,24 +233,114 @@ describe "Subject pages" do
       before { visit subject_path(sub) }
       specify {	expect { click_link("Supprimer ce sujet") }.to change(Message, :count).by(-1) }
     end
-    
-    describe "visits a wepion subject" do
-      before do
-        sub.update_attribute(:for_wepion, true)
-        visit subject_path(sub)
-      end
-      it do
-        should have_content(sub.title)
-      end
+  end
+  
+  describe "wepion user" do
+    before do
+      user.update_attribute(:wepion, true)
+      sign_in user
     end
     
-    describe "visits a corrector subject" do
-      before do
-        sub.update_attribute(:for_correctors, true)
-        visit subject_path(sub)
+    describe "visits subject creation page" do
+      before { visit new_subject_path }
+      it do 
+        should have_selector("h1", text: "Créer un sujet")
+        should have_no_content("Ce sujet est réservé aux correcteurs")
+        should have_no_content("Ce sujet doit toujours apparaître en premier lieu")
+        should have_content("Ce sujet est destiné aux étudiants de Wépion")
       end
-      it do
-        should have_content(sub.title)
+
+      describe "and creates a wepion subject" do
+        before do
+          check "Ce sujet est destiné aux étudiants de Wépion"
+          fill_in "Titre", with: title
+          fill_in "MathInput", with: content
+          click_button "Créer"
+        end
+        specify do
+          expect(page).to have_success_message("Votre sujet a bien été posté.")
+          expect(page).to have_content(title)
+          expect(page).to have_selector("div", text: content)
+          expect(Subject.order(:id).last.for_wepion).to eq(true)
+        end
+      end
+    end
+  end
+  
+  describe "corrector" do
+    before do
+      user.update_attribute(:corrector, true)
+      sign_in user
+    end
+    
+    describe "visits subject creation page" do
+      before { visit new_subject_path }
+      it do 
+        should have_selector("h1", text: "Créer un sujet")
+        should have_content("Ce sujet est réservé aux correcteurs")
+        should have_no_content("Ce sujet doit toujours apparaître en premier lieu")
+        should have_no_content("Ce sujet est destiné aux étudiants de Wépion")
+      end
+
+      describe "and creates a corrector subject" do
+        before do
+          check "Ce sujet est réservé aux correcteurs"
+          fill_in "Titre", with: title
+          fill_in "MathInput", with: content
+          click_button "Créer"
+        end
+        specify do
+          expect(page).to have_success_message("Votre sujet a bien été posté.")
+          expect(page).to have_content(title)
+          expect(page).to have_selector("div", text: content)
+          expect(Subject.order(:id).last.for_correctors).to eq(true)
+        end
+      end
+    end
+  end
+  
+  describe "admin" do
+    before { sign_in admin }
+    
+    describe "visits subject creation page" do
+      before { visit new_subject_path }
+      it do 
+        should have_selector("h1", text: "Créer un sujet")
+        should have_content("Ce sujet est réservé aux correcteurs")
+        should have_content("Ce sujet doit toujours apparaître en premier lieu")
+        should have_content("Ce sujet est destiné aux étudiants de Wépion")
+      end
+
+      describe "and tries to create a corrector-wepion subject" do
+        before do
+          check "Ce sujet est réservé aux correcteurs"
+          check "Ce sujet est destiné aux étudiants de Wépion"
+          fill_in "Titre", with: title
+          fill_in "MathInput", with: content
+          click_button "Créer"
+        end
+        specify do
+          expect(page).to have_error_message("Un sujet ne peut pas être destiné à la fois aux correcteurs et aux étudiants de Wépion.")
+          should have_selector("h1", text: "Créer un sujet")
+        end
+      end
+      
+      describe "and creates an important corrector subject" do
+        before do
+          check "Ce sujet est réservé aux correcteurs"
+          check "Ce sujet doit toujours apparaître en premier lieu"
+          fill_in "Titre", with: title
+          fill_in "MathInput", with: content
+          click_button "Créer"
+        end
+        specify do
+          expect(page).to have_success_message("Votre sujet a bien été posté.")
+          expect(page).to have_content(title)
+          expect(page).to have_selector("div", text: content)
+          expect(Subject.order(:id).last.for_correctors).to eq(true)
+          expect(Subject.order(:id).last.important).to eq(true)
+          expect(Subject.order(:id).last.for_wepion).to eq(false)
+        end
       end
     end
   end

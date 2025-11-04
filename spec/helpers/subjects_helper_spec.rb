@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe SubjectsHelper do
+describe SubjectsHelper, subject: true do
 
   include SubjectsHelper
 

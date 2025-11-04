@@ -2,6 +2,7 @@ module SubjectsHelper
 
   public
 
+  # Date formatting in subjects
   def write_date_from_now(date, datenow)
     between_dates = (datenow.to_i - date.to_i)
     if between_dates >= 24*60*60
@@ -20,6 +21,7 @@ module SubjectsHelper
     end
   end
 
+  # Section problems formatting in subjects
   def get_problem_category_name(section_name)
     section_name = section_name.downcase
     if section_name[0] == "a" or section_name[0] == "é" or section_name[0] == "i"
@@ -27,8 +29,9 @@ module SubjectsHelper
     else
       return "Problèmes de " + section_name
     end
-  end>
+  end
 
+  # Category/Section/Chapter formatting in subjects
   def get_category_name(subject)
     if !subject.category.nil?
       return subject.category.name

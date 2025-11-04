@@ -7,7 +7,7 @@ class SubjectsController < ApplicationController
   
   before_action :signed_in_user, only: [:index, :show, :new, :unfollow]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :migrate, :follow]
-  before_action :admin_user, only: [:destroy, :update, :migrate]
+  before_action :admin_user, only: [:update, :destroy, :migrate]
   before_action :user_not_in_skin, only: [:create, :update]
   
   before_action :get_subject, only: [:show, :update, :destroy, :migrate, :follow, :unfollow]
@@ -130,8 +130,6 @@ class SubjectsController < ApplicationController
     @message = Message.new(content: params[:subject][:content])
     @message.user = current_user
     
-    @subject.for_wepion = false if @subject.for_correctors # We don't allow Wépion if for correctors
-
     if @subject.title.size > 0
       @subject.title = @subject.title.slice(0,1).capitalize + @subject.title.slice(1..-1)
     end
@@ -179,8 +177,6 @@ class SubjectsController < ApplicationController
     @subject.important = params[:subject][:important] if !params[:subject][:important].nil? && current_user.admin?
     @subject.for_wepion = params[:subject][:for_wepion] if !params[:subject][:for_wepion].nil? && (current_user.wepion? || current_user.admin?)
     
-    @subject.for_wepion = false if @subject.for_correctors # We don't allow Wépion if for correctors
-    
     if @subject.title.size > 0
       @subject.title = @subject.title.slice(0,1).capitalize + @subject.title.slice(1..-1)
     end
@@ -210,8 +206,8 @@ class SubjectsController < ApplicationController
 
   # Migrate a subject to another one
   def migrate    
-    autre_id = params[:migreur].to_i
-    @migreur = Subject.find_by_id(autre_id)
+    migreur_id = params[:migreur].to_i
+    @migreur = Subject.find_by_id(migreur_id)
     
     if @migreur.nil?
       flash[:danger] = "Ce sujet n'existe pas."
