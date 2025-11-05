@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "Suspicion pages" do
+describe "Suspicion pages", suspicion: true do
 
   subject { page }
 
@@ -205,7 +205,7 @@ describe "Suspicion pages" do
       end
     end
     
-    describe "unconfirm a suspicion on a plagiarized submission without comment" do
+    describe "unconfirms a suspicion on a plagiarized submission without comment" do
       let!(:suspicion) { FactoryBot.create(:suspicion, :user => corrector, :submission => plagiarized_submission, :status => :confirmed) }
       let!(:auto_following) { FactoryBot.create(:following, :user => corrector, :submission => plagiarized_submission, :kind => :first_corrector) }
       before do
@@ -222,7 +222,7 @@ describe "Suspicion pages" do
       end
     end
     
-    describe "unconfirm a suspicion on a plagiarized submission with a comment" do
+    describe "unconfirms a suspicion on a plagiarized submission with a comment" do
       let!(:suspicion) { FactoryBot.create(:suspicion, :user => corrector, :submission => plagiarized_submission, :status => :confirmed) }
       let!(:correction) { FactoryBot.create(:correction, :user => root, :submission => plagiarized_submission) }
       before do
