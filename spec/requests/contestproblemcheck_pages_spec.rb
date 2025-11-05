@@ -29,6 +29,7 @@ describe "Contestproblemcheck pages", contestproblem: true do
       end
       specify do
         expect(running_contestproblem.not_started_yet?).to eq(true)
+        expect(running_contestproblem.contestproblemcheck).not_to eq(nil)
         expect(page).to have_no_content(running_contestproblem.statement)
       end
     end
@@ -41,6 +42,7 @@ describe "Contestproblemcheck pages", contestproblem: true do
       end
       specify do
         expect(running_contestproblem.in_progress?).to eq(true)
+        expect(running_contestproblem.contestproblemcheck).not_to eq(nil)
         expect(page).to have_content(running_contestproblem.statement)
       end
     end
@@ -55,6 +57,7 @@ describe "Contestproblemcheck pages", contestproblem: true do
       end
       specify do
         expect(running_contestproblem.in_correction?).to eq(true)
+        expect(running_contestproblem.contestproblemcheck).to eq(nil)
         expect(page).to have_content("En cours de correction")
       end
     end

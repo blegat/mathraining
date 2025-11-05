@@ -371,7 +371,7 @@ FactoryBot.define do
   # Virtualtest
   factory :virtualtest do
     duration { 120 }
-    number { 25 }
+    sequence(:number) { |n| n }
     online { false }
   end
 end

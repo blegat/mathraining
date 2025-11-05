@@ -83,7 +83,7 @@ describe "Submission pages" do
         describe "and tries to comment a waiting submission in test (hack)" do
           let(:new_submission) { problem.submissions.order(:id).last }
           let!(:virtualtest) { FactoryBot.create(:virtualtest, online: true) }
-          let!(:takentest) { Takentest.create(virtualtest: virtualtest, user: user, status: :finished) }
+          let!(:takentest) { Takentest.create(virtualtest: virtualtest, user: user, status: :finished, taken_time: DateTime.now - 2.days) }
           before do
             problem.update_attribute(:virtualtest, virtualtest)
             new_submission.update_attribute(:intest, true)
@@ -320,7 +320,7 @@ describe "Submission pages" do
     
     describe "sends a submission to a virtualtest problem (later)" do
       let!(:virtualtest) { FactoryBot.create(:virtualtest, online: true) }
-      let!(:takentest) { Takentest.create(virtualtest: virtualtest, user: user, status: :finished) }
+      let!(:takentest) { Takentest.create(virtualtest: virtualtest, user: user, status: :finished, taken_time: DateTime.now - 2.days) }
       before do
         problem.update_attribute(:virtualtest, virtualtest)
         visit problem_path(problem)

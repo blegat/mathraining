@@ -131,9 +131,9 @@ describe Problem, problem: true do
       
       before do
         problem.update(:online => true, :virtualtest => virtualtest)
-        Takentest.create(user: user3, virtualtest: virtualtest, status: :in_progress)
-        Takentest.create(user: user4, virtualtest: virtualtest, status: :finished)
-        Takentest.create(user: user5, virtualtest: virtualtest, status: :finished)
+        Takentest.create(user: user3, virtualtest: virtualtest, status: :in_progress, taken_time: DateTime.now - 2.minutes)
+        Takentest.create(user: user4, virtualtest: virtualtest, status: :finished, taken_time: DateTime.now - 2.days)
+        Takentest.create(user: user5, virtualtest: virtualtest, status: :finished, taken_time: DateTime.now - 2.days)
       end
       
       specify do

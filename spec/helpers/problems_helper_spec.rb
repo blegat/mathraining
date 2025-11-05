@@ -36,8 +36,8 @@ describe ProblemsHelper, type: :helper, problem: true do
     problem12.chapters << chapter1
     problem12.chapters << chapter2
     problem1_other_section.chapters << chapter1
-    Takentest.create(:virtualtest => virtualtest, :user => user12, :status => :in_progress)
-    Takentest.create(:virtualtest => virtualtest, :user => user12_virtualtest, :status => :finished)
+    Takentest.create(:virtualtest => virtualtest, :user => user12, :status => :in_progress, :taken_time => DateTime.now - 2.minutes)
+    Takentest.create(:virtualtest => virtualtest, :user => user12_virtualtest, :status => :finished, :taken_time => DateTime.now - 2.days)
   end
 
   describe "non-accessible problems" do      

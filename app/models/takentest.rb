@@ -21,10 +21,24 @@ class Takentest < ActiveRecord::Base
   belongs_to :user
   belongs_to :virtualtest
   has_one :takentestcheck, dependent: :destroy
+  
+  # BEFORE, AFTER
+  
+  after_create :create_takentestcheck
 
   # VALIDATIONS
 
+  validates :taken_time, presence: true
   validates :status, presence: true
   validates :virtualtest_id, uniqueness: { scope: :user_id }
+  
+  # OTHER METHODS
+  
+  private
+  
+  # Create the Takentestcheck associated to this Takentest
+  def create_takentestcheck
+    Takentestcheck.create(:takentest => self) if self.in_progress?
+  end
 
 end

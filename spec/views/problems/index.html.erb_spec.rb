@@ -199,7 +199,7 @@ describe "problems/index.html.erb", type: :view, problem: true do
       before do
         user.chapters << chapter1
         user.chapters << chapter2
-        Takentest.create(:user => user, :virtualtest => online_virtualtest, status: :in_progress)
+        Takentest.create(:user => user, :virtualtest => online_virtualtest, :status => :in_progress, :taken_time => DateTime.now - 2.minutes)
       end
       
       it "renders the expected problems" do
@@ -239,7 +239,7 @@ describe "problems/index.html.erb", type: :view, problem: true do
       before do
         user.chapters << chapter1
         user.chapters << chapter2
-        Takentest.create(:user => user, :virtualtest => online_virtualtest, status: :finished)
+        Takentest.create(:user => user, :virtualtest => online_virtualtest, :status => :finished, :taken_time => DateTime.now - 2.days)
       end
       
       it "renders the expected problems" do
@@ -291,7 +291,7 @@ describe "problems/index.html.erb", type: :view, problem: true do
       before do
         user.chapters << chapter1
         user.chapters << chapter2
-        Takentest.create(:user => user, :virtualtest => online_virtualtest, status: :finished)
+        Takentest.create(:user => user, :virtualtest => online_virtualtest, :status => :finished, :taken_time => DateTime.now - 2.days)
       end
       
       it "renders the expected problems" do
@@ -349,7 +349,7 @@ describe "problems/index.html.erb", type: :view, problem: true do
       before do
         user.chapters << chapter1
         user.chapters << chapter2
-        Takentest.create(:user => user, :virtualtest => online_virtualtest, status: :finished)
+        Takentest.create(:user => user, :virtualtest => online_virtualtest, :status => :finished, :taken_time => DateTime.now - 2.days)
       end
       
       it "renders the expected problems" do

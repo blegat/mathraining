@@ -202,7 +202,7 @@ describe "Virtualtest pages" do
               end
             end
             
-            describe "and the time stops" do
+            describe "and the time stops", testNico: true do
               let!(:takentest) { Takentest.where(:user => user_with_rating_200, :virtualtest => virtualtest).first }
               before do
                 takentest.update_attribute(:taken_time, DateTime.now - (virtualtest.duration + 1).minutes)

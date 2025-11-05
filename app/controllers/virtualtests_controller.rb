@@ -91,8 +91,7 @@ class VirtualtestsController < ApplicationController
 
   # Begin a virtualtest
   def begin_test
-    t = Takentest.create(:user => current_user, :virtualtest => @virtualtest, :status => :in_progress, :taken_time => DateTime.now)    
-    Takentestcheck.create(:takentest => t)    
+    Takentest.create(:user => current_user, :virtualtest => @virtualtest, :status => :in_progress, :taken_time => DateTime.now)    
     redirect_to @virtualtest
   end
 
