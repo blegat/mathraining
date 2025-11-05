@@ -3,10 +3,10 @@ class TheoriesController < ApplicationController
   include ChapterConcern
   
   before_action :signed_in_user, only: [:new, :edit]
-  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :order, :put_online, :read, :unread]
+  before_action :signed_in_user_danger, only: [:create, :update, :destroy, :put_online, :order, :read, :unread]
   before_action :admin_user, only: [:put_online]
   
-  before_action :get_theory, only: [:show, :edit, :update, :destroy, :order, :read, :unread, :put_online]
+  before_action :get_theory, only: [:show, :edit, :update, :destroy, :put_online, :order, :read, :unread]
   before_action :get_chapter, only: [:show, :new, :create]
   
   before_action :theory_of_chapter, only: [:show]

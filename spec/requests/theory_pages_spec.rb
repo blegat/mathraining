@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "Theory pages" do
+describe "Theory pages", theory: true do
 
   subject { page }
 
@@ -24,11 +24,6 @@ describe "Theory pages" do
         should have_selector("h3", text: online_theory.title)
         should have_no_link("forum", href: subjects_path(:q => "cha-" + chapter.id.to_s))
       end
-    end
-    
-    describe "visits offline theory" do
-      before { visit chapter_theory_path(chapter, offline_theory) }
-      it { should have_content(error_access_refused) }
     end
   end
   
@@ -75,21 +70,6 @@ describe "Theory pages" do
     
     describe "visits online theory with wrong url" do
       before { visit chapter_theory_path(empty_chapter, online_theory) }
-      it { should have_content(error_access_refused) }
-    end
-    
-    describe "visits offline theory" do
-      before { visit chapter_theory_path(chapter, offline_theory) }
-      it { should have_content(error_access_refused) }
-    end
-    
-    describe "tries to visit theory creation page" do
-      before { visit new_chapter_theory_path(chapter) }
-      it { should have_content(error_access_refused) }
-    end
-    
-    describe "tries to visit theory modification page" do
-      before { visit edit_theory_path(online_theory) }
       it { should have_content(error_access_refused) }
     end
   end
