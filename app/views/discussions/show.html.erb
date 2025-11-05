@@ -61,7 +61,7 @@ window.addEventListener("load", () => {
       <% if !other.deleted? %>
 
         <%= form_for @tchatmessage, :html => { :multipart => true } do |f| %>
-          <%= f.hidden_field :discussion_id, :value => @discussion.id %>
+          <%= hidden_field_tag "discussion_id", @discussion.id %>
           
           <%= render 'shared/error_messages', object: f.object %>
 

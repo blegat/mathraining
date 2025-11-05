@@ -6,10 +6,8 @@ describe DiscussionsController, type: :controller, discussion: true do
   let(:user1) { FactoryBot.create(:user) }
   let(:user2) { FactoryBot.create(:user) }
   let(:user_other) { FactoryBot.create(:user) }
-  let!(:discussion) { Discussion.create }
-  let!(:link1) { Link.create(discussion: discussion, user: user1) }
-  let!(:link2) { Link.create(discussion: discussion, user: user2) }
-  
+  let!(:discussion) { create_discussion_between(user1, user2, "Salut", "Hello") }
+
   context "if the user is not signed in" do
     it { expect(response).to have_controller_new_behavior(:must_be_connected) }
   end

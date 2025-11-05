@@ -89,8 +89,8 @@ class TchatmessagesController < ApplicationController
   
   # Get the discussion
   def get_discussion
-    if params[:tchatmessage].has_key?(:discussion_id)
-      @discussion = Discussion.find_by_id(params[:tchatmessage][:discussion_id])
+    if params.has_key?(:discussion_id)
+      @discussion = Discussion.find_by_id(params[:discussion_id])
       return if check_nil_object(@discussion)
     end
   end

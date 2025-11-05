@@ -320,6 +320,12 @@ FactoryBot.define do
     status { :waiting_confirmation }
   end
   
+  # Tchatmessage
+  factory :tchatmessage do
+    association :user
+    sequence(:content) { |n| "Message #{n} privé" }
+  end
+  
   # Theory
   factory :theory do
     association :chapter
