@@ -1,6 +1,6 @@
 <!-- On vérifie que ce problème peut bien être vu -->
-<% if p.online %>
-  <% unless p.can_be_seen_by(current_user, @no_new_submission) %>
+<% if problem.online %>
+  <% unless problem.can_be_seen_by(current_user, @no_new_submission) %>
     <table class="table table-bordered reference greyy">
     <tr><td class="title">Ce sujet fait référence à un problème auquel vous n'avez pas accès.</td></tr>
     </table>
@@ -8,7 +8,7 @@
     <% if current_user.admin? %>
       <% classe = "yellowy" %>
       <% msg = "" %>
-    <% elsif current_user.pb_solved?(p) %>
+    <% elsif current_user.pb_solved?(problem) %>
       <% classe = "greeny" %>
       <% msg = ", que vous avez résolu" %>
     <% else %>
@@ -17,11 +17,11 @@
     <% end %>
     
     <table class="table table-bordered reference <%= classe %>">
-    <tr><td class="title">Ce sujet fait référence à <%= link_to "ce problème", problem_path(p, :auto => 1), :target => "_blank" %><%= msg %> :</td></tr>
+    <tr><td class="title">Ce sujet fait référence à <%= link_to "ce problème", problem_path(problem, :auto => 1), :target => "_blank" %><%= msg %> :</td></tr>
 
     <!-- Enoncé -->
     <tr><td class="content">
-    <%= htmlise(p.statement) %>
+    <%= htmlise(problem.statement) %>
     </td></tr>
   <% end %>
   </table>

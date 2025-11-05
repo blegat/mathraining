@@ -15,7 +15,7 @@
 
 
 <div class="mb-2">
-  <% cont = m.content %>
+  <% cont = message.content %>
   <% if erreur %>
     <% cont = @error_params[:content] if @error_params.has_key?(:content) %>
   <% end %>

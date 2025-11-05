@@ -1,4 +1,4 @@
-<% if @case == 1 %>
+<% if @code_case == 1 %>
 
 <center>
   <nav>
@@ -30,7 +30,7 @@
   </div>
 </center>
 
-<% elsif @case == 2 || @case == 3 %>
+<% elsif @code_case == 2 || @code_case == 3 %>
 
 <center>
   <nav>
@@ -39,7 +39,7 @@
       <li class="page-item"><a class="page-link" href="/subjects/<%= @subject.id %>?page=1">1</a></li>
       <li class="page-item"><a class="page-link" href="/subjects/<%= @subject.id %>?page=2">2</a></li>
       <li class="page-item"><a class="page-link" rel="prev" href="/subjects/<%= @subject.id %>?page=3">3</a></li>
-      <li class="page-item active"><span class="page-link">$<%= "\\approx" if @case == 2 %>\pi$</span></li>
+      <li class="page-item active"><span class="page-link">$<%= "\\approx" if @code_case == 2 %>\pi$</span></li>
       <li class="page-item"><a class="page-link" rel="next" href="/subjects/<%= @subject.id %>?page=4">4</a></li>
       <li class="page-item"><a class="page-link" href="/subjects/<%= @subject.id %>?page=5">5</a></li>
       <li class="page-item disabled"><i class="page-link">…</i></li>
@@ -53,7 +53,7 @@
     <a href="/subjects/<%= @subject.id %>?page=1">1</a>
     <a href="/subjects/<%= @subject.id %>?page=2">2</a>
     <a rel="prev" href="/subjects/<%= @subject.id %>?page=3">3</a>
-    <em class="current" aria-current="page">$<%= "\\approx" if @case == 2 %>\pi$</em>
+    <em class="current" aria-current="page">$<%= "\\approx" if @code_case == 2 %>\pi$</em>
     <a rel="next" href="/subjects/<%= @subject.id %>?page=4">4</a>
     <span class="gap">...</span>
     <a href="/subjects/<%= @subject.id %>?page=<%= @num_pages-1 %>"><%= @num_pages-1 %></a>

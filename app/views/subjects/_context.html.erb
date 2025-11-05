@@ -1,0 +1,7 @@
+<% if !subject.question.nil? %>
+  <%= render 'subjects/question', question: subject.question %>
+<% elsif !subject.problem.nil? %>
+  <%= render 'subjects/problem', problem: subject.problem %>
+<% elsif !subject.contest.nil? %>
+  <%= render 'subjects/contest', contest: subject.contest %>
+<% end %>

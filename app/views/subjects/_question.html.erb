@@ -1,11 +1,11 @@
 <!-- On vérifie que cet exercice peut bien être vu -->
-<% if q.online || (signed_in? && current_user.admin?) %>
+<% if question.online || (signed_in? && current_user.admin?) %>
   
-  <% c = q.chapter %>
+  <% chapter = question.chapter %>
   <% exovisible = true %>
   
   <% if !current_user.admin? %>
-    <% c.prerequisites.each do |p| %>
+    <% chapter.prerequisites.each do |p| %>
       <% exovisible = false if !p.section.fondation && !current_user.chapters.exists?(p.id) %>
     <% end %>
   <% end %>
@@ -19,10 +19,10 @@
     <% if current_user.admin? %>
       <% classe = "yellowy" %>
       <% msg = "" %>
-    <% elsif Solvedquestion.where(:user_id => current_user.id, :question_id => q.id).count > 0 %>
+    <% elsif current_user.solvedquestions.where(:question_id => question.id).count > 0 %>
       <% classe = "greeny" %>
       <% msg = ", que vous avez résolu" %>
-    <% elsif Unsolvedquestion.where(:user_id => current_user.id, :question_id => q.id).count > 0 %>
+    <% elsif current_user.unsolvedquestions.where(:question_id => question.id).count > 0 %>
       <% classe = "redy" %>
       <% msg = ", que vous n'avez pas résolu" %>
     <% else %>
@@ -31,17 +31,17 @@
     <% end %>
     
     <table class="table table-bordered reference <%= classe %>">
-    <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_question_path(c, q), :target => "_blank" %><%= msg %> :</td></tr>
+    <tr><td class="title">Ce sujet fait référence à <%= link_to "cet exercice", chapter_question_path(chapter, question), :target => "_blank" %><%= msg %> :</td></tr>
     
     <!-- Enoncé -->
     <tr><td class="content">
     <div class="mb-3">
-      <%= htmlise(q.statement, true) %>
+      <%= htmlise(question.statement, true) %>
     </div>
 
-    <% if !q.is_qcm %>
+    <% if !question.is_qcm %>
       <p class="mb-0 fst-italic">
-      <% if q.decimal %>
+      <% if question.decimal %>
         On attend un nombre <b>réel</b>, arrondi si nécessaire au millième près.
       <% else %>
         On attend un nombre <b>entier</b>.
@@ -49,14 +49,14 @@
       </p>
     <% else %>
       <ul class="mt-n1">
-      <% q.items.order(:position).each do |c| %>
+      <% question.items.order(:position).each do |i| %>
         <li class="p-1">
-          <%= htmlise(c.ans) %>
+          <%= htmlise(i.ans) %>
         </li>
       <% end %>
       </ul>
       <p class="mb-0 fst-italic">
-      <% if q.many_answers %>
+      <% if question.many_answers %>
         Il y a éventuellement <b>plusieurs</b> propositions correctes.
       <% else %>
         Il n'y a qu'<b>une seule</b> proposition correcte.

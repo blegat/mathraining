@@ -2,23 +2,17 @@
 
 <div id="the<%= postfix %>" class="content-part">
 
-<% if !@subject.question.nil? %>
-  <%= render 'subjects/question', q: @subject.question %>
-<% elsif !@subject.problem.nil? %>
-  <%= render 'subjects/problem', p: @subject.problem %>
-<% elsif !@subject.contest.nil? %>
-  <%= render 'subjects/contest', contest: @subject.contest %>
-<% end %>
+<%= render 'subjects/context', subject: subject %>
 
 <% if current_user.admin? %>
   <p class="text-center">
     <a href="#" onclick='return Rolling.develop("<%= postfix %>", true)'>Modifier ce sujet</a>
-    | <%= link_to "Supprimer ce sujet", subject_path(@subject), method: :delete, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer ce sujet et tous les messages associés ?" }  %>
+    | <%= link_to "Supprimer ce sujet", subject_path(subject), method: :delete, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer ce sujet et tous les messages associés ?" }  %>
     | <a href='#' id='showform' onclick='document.getElementById("migration_form").style.display="block"; return false;' style='display:inline;'>Migrer ce sujet</a>
   </p>
   <div id="migration_form" class="mb-3" style="<%= 'display:none;' unless Rails.env.test? %>">
     <center>
-    <%= form_tag migrate_subject_path(@subject), :method => :put do %>
+    <%= form_tag migrate_subject_path(subject), :method => :put do %>
       <div class="input-group" style="width:320px;">
       <span class="input-group-text text-center" style="width:170px;">Migrer vers le sujet n°</span>
       <%= hidden_field_tag "q", @q %>
@@ -34,7 +28,7 @@
 
 <% if current_user.admin? %>
   <div id="form<%= postfix %>" class="form-part px-1" style="height:0px;">
-  <%= render 'subjects/edit', s: s, postfix: postfix %>
+  <%= render 'subjects/edit', subject: subject, postfix: postfix %>
   </div>
 <% end %>
 

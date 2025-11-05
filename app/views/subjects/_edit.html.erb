@@ -1,5 +1,5 @@
 <!-- Formulaire -->
-<%= form_for @subject, :url => subject_path(@subject, :action => :update, :q => @q), :html => { :multipart => true, :class => "mb-3" } do |f| %>
+<%= form_for subject, :url => subject_path(subject, :action => :update, :q => @q), :html => { :multipart => true, :class => "mb-3" } do |f| %>
   <%= render 'subjects/form', f: f, postfix: postfix, is_edit: true %>
   <%= f.submit "Modifier", id: "Submit#{ postfix }", class: "btn btn-lg btn-primary", :disabled => in_skin? %>
   <button class="btn btn-lg btn-ld-light-dark" onclick="return Rolling.hideActual();">Annuler</button>

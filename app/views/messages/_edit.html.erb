@@ -1,6 +1,6 @@
-<%= form_for m, :url => message_path(m, :action => :update, :q => @q), :html => { :multipart => true, :class => "mb-3" }  do |f| %>
-  <%= render 'messages/form', f: f, m: m, postfix: postfix %>
-  <%= render 'shared/edit_files', s: m, postfix: postfix %>
+<%= form_for message, :url => message_path(message, :action => :update, :q => @q), :html => { :multipart => true, :class => "mb-3" }  do |f| %>
+  <%= render 'messages/form', f: f, message: message, postfix: postfix %>
+  <%= render 'shared/edit_files', s: message, postfix: postfix %>
 
   <%= f.submit "Modifier", id: "Submit#{ postfix }", class: "btn btn-lg btn-primary", :disabled => in_skin? %>
   <button class="btn btn-lg btn-ld-light-dark" onclick="return Rolling.hideActual();">Annuler</button>

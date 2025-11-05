@@ -6,13 +6,13 @@
 
 <div id="form<%= postfix %>" class="form-part px-1" style="height:0px;">
 
-<% @message = Message.new %>
-<%= form_for [@subject, @message], :url => subject_messages_path(@subject, @message, :action => :create, :q => @q), :html => { :multipart => true, :class => "mb-3" } do |f| %>
-  <%= render 'messages/form', f: f, m: @message, postfix: postfix, show_mail_checkboxes: true %>
+<% message = Message.new %>
+<%= form_for [subject, message], :url => subject_messages_path(subject, message, :action => :create, :q => @q), :html => { :multipart => true, :class => "mb-3" } do |f| %>
+  <%= render 'messages/form', f: f, message: message, postfix: postfix, show_mail_checkboxes: true %>
   <%= render 'shared/edit_files', postfix: postfix %>
   
   <% lastid = -1 %>
-  <% lastmessage = @subject.messages.order("id DESC").first %>
+  <% lastmessage = subject.messages.order("id DESC").first %>
   <% if !lastmessage.nil? %>
     <% lastid = lastmessage.id %>
   <% end %>

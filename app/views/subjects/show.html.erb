@@ -1,23 +1,24 @@
 <% provide(:title, @subject.title) %>
 
-<% @messages = @subject.messages.includes(:user).order(:created_at).paginate(:page => @page, :per_page => 10).to_a %>
-<% @myfiles = Myfile.where(:myfiletable => @messages).to_a %>
-<% @fakefiles = Fakefile.where(:fakefiletable => @messages).to_a %>
+<% if @code_case.nil? %>
+  <% messages = @subject.messages.includes(:user).order(:created_at).paginate(:page => @page, :per_page => 10).to_a %>
+  <% @myfiles = Myfile.where(:myfiletable => messages).to_a %>
+  <% @fakefiles = Fakefile.where(:fakefiletable => messages).to_a %>
+<% end %>
 
 <% @nb_indice = 1 %>
 
 <% if !@subject.category.nil? %>
-  <% @category = @subject.category %>
-  <% title_complement = @category.name %>
+  <% category = @subject.category %>
+  <% title_complement = category.name %>
 <% elsif @subject.section.nil? %>
   <% title_complement = "" %>
 <% elsif @subject.chapter.nil? %>
-  <% @chapitre = nil %>
-  <% @section = @subject.section %>
-  <% title_complement = (link_to @section.name, @section, target: '_blank') %>
+  <% section = @subject.section %>
+  <% title_complement = (link_to section.name, section, target: '_blank') %>
 <% else %>
-  <% @chapitre = @subject.chapter %>
-  <% title_complement = (link_to @chapitre.name, @chapitre, target: '_blank') %>
+  <% chapitre = @subject.chapter %>
+  <% title_complement = (link_to chapitre.name, chapitre, target: '_blank') %>
 <% end %>
 
 <div class="split-title-lg mb-2">
@@ -38,34 +39,38 @@
   </div>
 </div>
 
-<!-- We need to provide the following params manually for the case where we encounter an error while creating
-     or updating a message. In that case, we can arrive to this page with an url that is not the expected one -->
-<% params = {:controller => "subjects", :action => "show", :id => @subject.id} %>
-<%= render 'shared/pages', data: @messages, params: params %>
+<% if @code_case.nil? %>
+  <!-- We need to provide the following params manually for the case where we encounter an error while creating
+       or updating a message. In that case, we can arrive to this page with an url that is not the expected one -->
+  <% params = {:controller => "subjects", :action => "show", :id => @subject.id} %>
+  <%= render 'shared/pages', data: messages, params: params %>
 
-<!-- S'il s'agit de la première page, on affiche le sujet -->
-<% if @page.nil? || @page == 1 %>
-  <%= render 'subjects/subject', s: @subject %>
-<% else %>
-  <% if !@subject.question.nil? %>
-    <%= render 'subjects/question', q: @subject.question %>
-  <% elsif !@subject.problem.nil? %>
-    <%= render 'subjects/problem', p: @subject.problem %>
-  <% elsif !@subject.contest.nil? %>
-    <%= render 'subjects/contest', contest: @subject.contest %>
+  <!-- S'il s'agit de la première page, on affiche le sujet (incluant le contexte), sinon uniquement le contexte -->
+  <% if @page.nil? || @page == 1 %>
+    <%= render 'subjects/subject', subject: @subject %>
+  <% else %>
+    <%= render 'subjects/context', subject: @subject %>
   <% end %>
-<% end %>
 
-<!-- On affiche les messages -->
-<% @messages.each do |m| %>
-  <%= render 'messages/show', m: m %>
-<% end %>
+  <!-- On affiche les messages -->
+  <% messages.each do |m| %>
+    <%= render 'messages/show', message: m %>
+  <% end %>
 
-<% if @messages.current_page == @messages.total_pages %>
-  <!-- Répondre -->
-  <%= render 'messages/new' %>
-<% end %>
+  <% if messages.current_page == messages.total_pages %>
+    <!-- Répondre -->
+    <%= render 'messages/new', subject: @subject %>
+  <% end %>
 
-<%= render 'shared/pages', data: @messages, params: params %>
+  <%= render 'shared/pages', data: messages, params: params %>
+<% else %>
+  <% @num_pages = (@subject.messages.count / 10.0).ceil %>
+  <%= render "code_page" %>
+
+  <% m = Message.new(:user_id => 0, :subject_id => @subject, :content => @code_content, :created_at => DateTime.now) %>
+  <%= render 'messages/show', message: m %>
+
+  <%= render "code_page" %>
+<% end %>
 
 <a name="bottom"></a>
