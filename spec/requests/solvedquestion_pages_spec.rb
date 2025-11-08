@@ -91,6 +91,8 @@ describe "Solvedquestion pages", solvedquestion: true do
           expect(page).to have_no_content(exercise.explanation)
           expect(page).to have_no_content("Vous avez déjà commis") # Should not be counted as an error
           expect(user.rating).to eq(rating_before)
+          expect(user.unsolvedquestions.where(:question => exercise).count).to eq(0)
+          expect(user.solvedquestions.where(:question => exercise).count).to eq(0)
         end
       end
       
@@ -109,6 +111,8 @@ describe "Solvedquestion pages", solvedquestion: true do
           expect(page).to have_selector("a", id: "menu-question-#{exercise.id}", class: "list-group-item-danger")
           expect(user.rating).to eq(rating_before)
           expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before)
+          expect(user.unsolvedquestions.where(:question => exercise).count).to eq(1)
+          expect(user.solvedquestions.where(:question => exercise).count).to eq(0)
         end
         
         describe "and then solves it" do
@@ -126,6 +130,8 @@ describe "Solvedquestion pages", solvedquestion: true do
             expect(page).to have_selector("a", id: "menu-question-#{exercise.id}", class: "list-group-item-success")
             expect(user.rating).to eq(rating_before + exercise.value)
             expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + exercise.value)
+            expect(user.unsolvedquestions.where(:question => exercise).count).to eq(0)
+            expect(user.solvedquestions.where(:question => exercise).count).to eq(1)
           end
         end
         
@@ -139,6 +145,8 @@ describe "Solvedquestion pages", solvedquestion: true do
             expect(page).to have_info_message("Cette réponse est la même")
             expect(page).to have_content("Vous avez déjà commis 1 erreur.")
             expect(user.rating).to eq(rating_before)
+            expect(user.unsolvedquestions.where(:question => exercise).count).to eq(1)
+            expect(user.solvedquestions.where(:question => exercise).count).to eq(0)
           end
         end
         
@@ -152,6 +160,8 @@ describe "Solvedquestion pages", solvedquestion: true do
           it do
             should have_button("Soumettre", disabled: true)
             should have_content("Vous devez encore patienter")
+            expect(user.unsolvedquestions.where(:question => exercise).count).to eq(1)
+            expect(user.solvedquestions.where(:question => exercise).count).to eq(0)
           end
         end
       end
@@ -215,6 +225,8 @@ describe "Solvedquestion pages", solvedquestion: true do
           expect(user.rating).to eq(rating_before + qcm.value)
           expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + qcm.value)
           expect(user.chapters.exists?(chapter.id)).to eq(false) # Because it's NOT the only question of chapter
+          expect(user.unsolvedquestions.where(:question => qcm).count).to eq(0)
+          expect(user.solvedquestions.where(:question => qcm).count).to eq(1)
         end
             
         describe "and correctly solves it again for fun" do
@@ -233,6 +245,8 @@ describe "Solvedquestion pages", solvedquestion: true do
             expect(user.solvedquestions.where(:question => qcm).count).to eq(1) # And not 2
             expect(user.rating).to eq(rating_before + qcm.value) # Should not gain points again!
             expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + qcm.value) # Should not gain points again!
+            expect(user.unsolvedquestions.where(:question => qcm).count).to eq(0)
+            expect(user.solvedquestions.where(:question => qcm).count).to eq(1)
           end
         end
         
@@ -250,6 +264,7 @@ describe "Solvedquestion pages", solvedquestion: true do
             expect(page).to have_no_content(exercise.explanation)
             expect(page).to have_selector("a", id: "menu-question-#{qcm.id}", class: "list-group-item-success") # should still be green
             expect(user.unsolvedquestions.where(:question => qcm).count).to eq(0) # When answering for fun, no unsolvedquestion should be created!
+            expect(user.solvedquestions.where(:question => qcm).count).to eq(1)
           end
         end
       end
@@ -267,6 +282,8 @@ describe "Solvedquestion pages", solvedquestion: true do
           expect(page).to have_no_content(qcm.explanation)
           expect(user.rating).to eq(rating_before)
           expect(user.pointspersections.where(:section_id => section.id).first.points).to eq(section_rating_before)
+          expect(user.unsolvedquestions.where(:question => qcm).count).to eq(1)
+          expect(user.solvedquestions.where(:question => qcm).count).to eq(0)
         end
       end
       
@@ -280,6 +297,8 @@ describe "Solvedquestion pages", solvedquestion: true do
           expect(page).to have_info_message("Veuillez cocher une réponse.")
           expect(page).to have_no_content("Votre réponse est erronée. Vous avez déjà commis 1 erreur.")
           expect(user.rating).to eq(rating_before)
+          expect(user.unsolvedquestions.where(:question => qcm).count).to eq(0)
+          expect(user.solvedquestions.where(:question => qcm).count).to eq(0)
         end
       end
     end
@@ -301,6 +320,8 @@ describe "Solvedquestion pages", solvedquestion: true do
           expect(page).to have_content(qcm_multiple.explanation)
           expect(user.rating).to eq(rating_before + qcm_multiple.value)
           expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before + qcm_multiple.value)
+          expect(user.unsolvedquestions.where(:question => qcm_multiple).count).to eq(0)
+          expect(user.solvedquestions.where(:question => qcm_multiple).count).to eq(1)
           expect(user.chapters.exists?(chapter2.id)).to eq(true) # Because it's the only question of chapter2
         end
       end
@@ -319,6 +340,8 @@ describe "Solvedquestion pages", solvedquestion: true do
           expect(page).to have_no_content(qcm_multiple.explanation)
           expect(user.rating).to eq(rating_before)
           expect(user.pointspersections.where(:section_id => section).first.points).to eq(section_rating_before)
+          expect(user.unsolvedquestions.where(:question => qcm_multiple).count).to eq(1)
+          expect(user.solvedquestions.where(:question => qcm_multiple).count).to eq(0)
           expect(user.chapters.exists?(chapter2.id)).to eq(false)
         end
       end

@@ -30,5 +30,6 @@ class Unsolvedquestion < ActiveRecord::Base
   validates :question_id, uniqueness: { scope: :user_id }
   validates :guess, presence: true
   validates :nb_guess, presence: true, numericality: { greater_than_or_equal_to: 1 }
+  validates :last_guess_time, presence: true
 
 end
