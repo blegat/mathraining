@@ -61,6 +61,22 @@ describe Problem, problem: true do
     specify { expect(problem.value).to eq(problem.level * 15) }
   end
   
+  # Number
+  describe "when number is not present" do
+    before { problem.number = nil }
+    it { should_not be_valid }
+  end
+  
+  describe "when number is too small" do
+    before { problem.number = 0 }
+    it { should_not be_valid }
+  end
+  
+  describe "when number is not unique" do
+    before { FactoryBot.create(:problem, number: problem.number) }
+    it { should_not be_valid }
+  end
+  
   # can_be_seen_by
   describe "can_be_updated_by should work" do
     let!(:user1) { FactoryBot.create(:user, rating: 200) }

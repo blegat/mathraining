@@ -39,7 +39,7 @@ class Problem < ActiveRecord::Base
 
   # VALIDATIONS
 
-  validates :number, presence: true, uniqueness: true
+  validates :number, presence: true, uniqueness: true, numericality: { greater_than: 0 }
   validates :statement, presence: true, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
   validates :explanation, presence: true, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice
   validates :markscheme, presence: true, length: { maximum: 16000 } # Limited to 8000 in the form but end-of-lines count twice

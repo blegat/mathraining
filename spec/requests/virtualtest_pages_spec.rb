@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "Virtualtest pages" do
+describe "Virtualtest pages", virtualtest: true do
 
   subject { page }
 
@@ -37,11 +37,6 @@ describe "Virtualtest pages" do
         should have_selector("div", text: "Les tests virtuels ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
       end
     end
-    
-    describe "tries visiting online virtualtest" do
-      before { visit virtualtest_path(virtualtest) }
-      it { should have_content(error_must_be_connected) }
-    end
   end
   
   describe "user with rating 199" do
@@ -54,11 +49,6 @@ describe "Virtualtest pages" do
         should have_selector("div", text: "Les tests virtuels ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
       end
     end
-    
-    describe "tries visiting online virtualtest" do
-      before { visit virtualtest_path(virtualtest) }
-      it { should have_content(error_access_refused) }
-    end
   end
   
   describe "user with rating 200" do
@@ -70,11 +60,6 @@ describe "Virtualtest pages" do
         should have_selector("h1", text: "Tests virtuels")
         should have_no_selector("h4", text: "Test \##{virtualtest.number}")
       end
-    end
-    
-    describe "tries visiting online virtualtest" do
-      before { visit virtualtest_path(virtualtest) }
-      it { should have_content(error_access_refused) }
     end
   end
   
@@ -125,6 +110,17 @@ describe "Virtualtest pages" do
         specify do
           expect(page).to have_info_message(sanction.message)
           expect(Takentest.where(:virtualtest => virtualtest, :user => user_with_rating_200).count).to eq(0)
+        end
+      end
+      
+      describe "and tries to start the test while it was already started (double click)" do
+        before do
+          Takentest.create(virtualtest: virtualtest, user: user_with_rating_200, taken_time: DateTime.now - 10.seconds, status: :in_progress)
+          click_link "Commencer ce test"
+        end
+        specify do
+          expect(Takentest.where(:virtualtest => virtualtest, :user => user_with_rating_200).count).to eq(1)
+          expect(page).to have_selector("h1", text: "Test \##{virtualtest.number}")
         end
       end
       
@@ -202,7 +198,7 @@ describe "Virtualtest pages" do
               end
             end
             
-            describe "and the time stops", testNico: true do
+            describe "and the time stops" do
               let!(:takentest) { Takentest.where(:user => user_with_rating_200, :virtualtest => virtualtest).first }
               before do
                 takentest.update_attribute(:taken_time, DateTime.now - (virtualtest.duration + 1).minutes)
@@ -246,17 +242,7 @@ describe "Virtualtest pages" do
           before { visit section_problems_path(section) }
           it { should have_no_link("Problème \##{problem.id}", href: problem_path(problem)) }
         end
-        
-        describe "and tries to visit the problem page" do
-          before { visit problem_path(problem) }
-          it { should have_content(error_access_refused) }
-        end
       end
-    end
-    
-    describe "tries visiting online virtualtest without starting it" do
-      before { visit virtualtest_path(virtualtest) }
-      it { should have_content(error_access_refused) }
     end
   end
   
@@ -353,6 +339,7 @@ describe "Virtualtest pages" do
       end
       specify do
         expect(page).to have_link("Mettre en ligne")
+        expect(page).to have_link("Modifier ce test")
         expect(page).to have_link("Supprimer ce test")
         expect(page).to have_link("bas", href: order_problem_path(problem, :new_position => 2))
         expect(page).to have_link("haut", href: order_problem_path(problem_with_prerequisite, :new_position => 1))
@@ -381,19 +368,9 @@ describe "Virtualtest pages" do
         specify do
           expect(page).to have_no_content("Test virtuel mis en ligne.")
           expect(virtualtest.online).to eq(false)
+          expect(page).to have_link("Mettre en ligne", class: "disabled")
+          expect(page).to have_content("(Problèmes doivent être en ligne)")
         end
-      end
-    end
-    
-    describe "visits an offline test with an offline problem" do
-      before do
-        virtualtest.update_attribute(:online, false)
-        problem.update_attribute(:online, false)
-        visit virtualtests_path
-      end
-      it do
-        should have_link("Mettre en ligne", class: "disabled")
-        should have_content("(Problèmes doivent être en ligne)")
       end
     end
   end

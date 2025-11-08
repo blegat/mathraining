@@ -12,7 +12,7 @@ class VirtualtestsController < ApplicationController
   before_action :user_can_write_submission, only: [:begin_test]
   before_action :user_can_begin_virtualtest, only: [:begin_test]
   before_action :virtualtest_can_be_online, only: [:put_online]
-  before_action :offline_virtualtest, only: [:destroy]
+  before_action :offline_virtualtest, only: [:edit, :update, :destroy]
   before_action :user_in_test, only: [:show]
 
   # Show all virtualtests (that can be seen)
@@ -160,7 +160,7 @@ class VirtualtestsController < ApplicationController
       flash[:info] = current_user.last_sanction_of_type(:no_submission).message
       redirect_to virtualtests_path
     elsif current_user.test_status(@virtualtest) != "not_started"
-      redirect_to virtualtests_path
+      redirect_to @virtualtest # if finished, then will be redirected again by user_in_test
     elsif Takentest.where(:user => current_user, :status => :in_progress).count > 0
       flash[:danger] = "Vous avez déjà un test virtuel en cours !"
       redirect_to virtualtests_path
