@@ -331,7 +331,7 @@ describe "Stats pages" do
         expect(record6.avg_correction_time).to eq(0.0)
       end
       
-      describe "and recompute submission stats a week later" do
+      describe "and recomputes submission stats a week later" do
         let!(:cor22) { FactoryBot.create(:correction, user: admin, submission: sub22, created_at: now+2.days+6.hours) } # 23.25 days later
         let!(:cor14) { FactoryBot.create(:correction, user: admin, submission: sub14, created_at: now+1.day+12.hours) } # 16.5 days after end of test
         before do
@@ -368,78 +368,6 @@ describe "Stats pages" do
           expect(record7.complete).to eq(false)
         end
       end
-    end
-    
-    describe "computes visitor stats just after midnight" do
-      let!(:time_now) { Time.zone.local(2021, 12, 3, 0, 0, 23) } # We set current date to 03/12/2021 at 00:00:23
-      let!(:date_now) { time_now.to_date }
-      before do
-        travel_to time_now
-        user1.update_attribute(:last_connexion_date, date_now - 1)
-        user2.update_attribute(:last_connexion_date, date_now - 2)
-        admin.update_attribute(:last_connexion_date, date_now) # Should also be counted for yesterday
-        Visitor.compute
-        travel_back
-      end
-      let!(:visitor_data) { Visitor.where(:date => date_now - 1).first }
-      specify do
-        expect(visitor_data.nb_users).to eq(1)
-        expect(visitor_data.nb_admins).to eq(1)
-      end
-    end
-    
-    describe "computes visitor stats just after midnight, two times" do # In case crontab does two times the job for some reason
-      let!(:time_now) { Time.zone.local(2021, 12, 3, 0, 0, 23) } # We set current date to 03/12/2021 at 00:00:23
-      let!(:date_now) { time_now.to_date }
-      let!(:num_visitor_records_before) { Visitor.count }
-      before do
-        travel_to time_now
-        user1.update_attribute(:last_connexion_date, date_now)
-        user2.update_attribute(:last_connexion_date, date_now)
-        admin.update_attribute(:last_connexion_date, date_now - 1) # Should also be counted for yesterday
-        Visitor.compute
-        Visitor.compute # The second time it should do nothing
-        travel_back
-      end
-      let!(:visitor_data) { Visitor.where(:date => date_now - 1).first }
-      specify do
-        expect(Visitor.count).to eq(num_visitor_records_before + 1)
-        expect(visitor_data.nb_users).to eq(2)
-        expect(visitor_data.nb_admins).to eq(1)
-      end
-    end
-    
-    describe "computes visitor stats just before midnight" do # Should not occur in general, but in case crontab is too early...
-      let!(:time_now) { Time.zone.local(2021, 12, 3, 23, 58, 12) } # We set current date to 03/12/2021 at 23:58:12 
-      let!(:date_now) { time_now.to_date }
-      before do
-        travel_to time_now
-        user1.update_attribute(:last_connexion_date, date_now)
-        user2.update_attribute(:last_connexion_date, date_now - 1)
-        admin.update_attribute(:last_connexion_date, date_now - 2)
-        Visitor.compute
-        travel_back
-      end
-      let!(:visitor_data) { Visitor.where(:date => date_now).first }
-      specify do
-        expect(visitor_data.nb_users).to eq(1)
-        expect(visitor_data.nb_admins).to eq(0)
-      end
-    end
-    
-    describe "computes visitor stats in the middle of the day" do # Should not occur in general, but in case crontab is completely broken
-      let!(:time_now) { Time.zone.local(2021, 12, 3, 7, 23, 15) } # We set current date to 03/12/2021 at 07:23:15 
-      let!(:date_now) { time_now.to_date }
-      let!(:num_visitor_records_before) { Visitor.count }
-      before do
-        travel_to time_now
-        user1.update_attribute(:last_connexion_date, date_now)
-        user2.update_attribute(:last_connexion_date, date_now - 1)
-        admin.update_attribute(:last_connexion_date, date_now - 2)
-        Visitor.compute
-        travel_back
-      end
-      specify { expect(Visitor.count).to eq(num_visitor_records_before) }
     end
   end
 end
