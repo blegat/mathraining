@@ -55,6 +55,12 @@ describe VirtualtestsController, :type => :controller, virtualtest: true do
       
       it { expect(response).to have_controller_show_behavior(virtualtest, :ok) }
     end
+    
+    describe "and has finished the test" do
+      before { Takentest.create(virtualtest: virtualtest, user: user, taken_time: DateTime.now - 20.days, status: :finished) }
+      
+      it { expect(response).to have_controller_show_behavior(virtualtest, :danger) }
+    end
   end
   
   describe "if the user is an admin" do

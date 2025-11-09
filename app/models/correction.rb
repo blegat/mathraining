@@ -26,5 +26,6 @@ class Correction < ActiveRecord::Base
   # BEFORE, AFTER
   
   after_create { self.submission.update_last_comment }
+  after_destroy { self.submission.update_last_comment }
 
 end

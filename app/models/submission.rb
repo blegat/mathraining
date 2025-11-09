@@ -14,7 +14,6 @@
 #  score             :integer          default(-1)
 #  last_comment_time :datetime
 #  star              :boolean          default(FALSE)
-#  old_created_at    :datetime
 #
 class Submission < ActiveRecord::Base
   
@@ -43,7 +42,6 @@ class Submission < ActiveRecord::Base
   
   # BEFORE, AFTER
   
-  after_create :set_old_created_at
   after_create :update_last_comment
   before_destroy { self.notified_users.clear }
 
@@ -90,8 +88,16 @@ class Submission < ActiveRecord::Base
     return true  if self.user == user               # One can always see his own submission
     return false if !user.pb_solved?(self.problem)  # One cannot see other submissions if he didn't solve the problem
     return true  if self.correct?                   # One can see all other correct submissions (if he solved the problem)
-    return true  if user.corrector?                 # Corrector can see all (visible) submissions (if he solved the problem)
+    return true  if user.corrector?                 # Corrector can see all (non-draft) submissions (if he solved the problem)
     return false
+  end
+  
+  # Tell if the submission can be corrected by the given user
+  def can_be_corrected_by(user)
+    return true if user.admin?            # Admins can correct all submissions
+    return false if !user.corrector?      # Non-correctors cannot correct anything
+    return false if self.user == user     # One can never correct his own submission
+    return user.pb_solved?(self.problem)  # Corrector can only solve problems he solved
   end
   
   # Tell if the submission has had some activity recently
@@ -99,12 +105,7 @@ class Submission < ActiveRecord::Base
     return self.last_comment_time + 2.months > DateTime.now
   end
   
-  # Set old_created_at to same value as created_at
-  def set_old_created_at
-    self.update(:old_created_at => self.created_at)
-  end
-  
-  # Update last_comment_time and last_comment_user
+  # Update last_comment_time
   def update_last_comment
     last_correction = self.corrections.order(:created_at).last
     if last_correction.nil?
@@ -146,7 +147,7 @@ class Submission < ActiveRecord::Base
                            :submission      => self,
                            :resolution_time => resolution_time)
                            
-      # Update statistics of pb
+      # Update statistics of pb (faster than pb.update_stats)
       pb.nb_solves += 1
       if pb.first_solve_time.nil? || pb.first_solve_time > resolution_time
         pb.first_solve_time = resolution_time
@@ -175,7 +176,7 @@ class Submission < ActiveRecord::Base
       self.starproposals.destroy_all
       nb_corr = Submission.where(:problem => pb, :user => u, :status => :correct).count
       if nb_corr == 0
-        # Si c'était la seule soumission correcte, alors il faut agir et baisser le score
+        # If only correct submission, then user score must be decreased
         sp = Solvedproblem.where(:submission => self).first
         sp.destroy unless sp.nil? # Should never be nil, but for security (and for tests)
         if u.student?
@@ -185,7 +186,7 @@ class Submission < ActiveRecord::Base
         end
         Globalstatistic.get.update_after_problem_unsolved(pb.value)
       else
-        # Si il y a d'autres soumissions il faut peut-être modifier le submission_id du Solvedproblem correspondant
+        # If there are other correct submissions, then we might need to update the submission_id of the Solvedproblem
         sp = Solvedproblem.where(:problem => pb, :user => u).first
         if sp.submission == self
           which = -1
@@ -193,19 +194,19 @@ class Submission < ActiveRecord::Base
           resolution_time = nil
           Submission.where(:problem => pb, :user => u, :status => :correct).each do |s| 
             lastcomm = s.corrections.where("user_id != ?", u.id).order(:created_at).last
-            if(which == -1 || lastcomm.created_at < correction_time)
+            if which == -1 || lastcomm.created_at < correction_time
               which = s.id
               correction_time = lastcomm.created_at
               usercomm = s.corrections.where("user_id = ? AND created_at < ?", u.id, correction_time).last
               resolution_time = (usercomm.nil? ? s.created_at : usercomm.created_at)
             end
           end
-          sp.submission_id = which
-          sp.correction_time = correction_time
-          sp.resolution_time = resolution_time
-          sp.save
+          sp.update(:submission_id => which, :correction_time => correction_time, :resolution_time => resolution_time)
         end
       end
+      
+      # Update statistics of problem
+      pb.update_stats
     end
   end
 end

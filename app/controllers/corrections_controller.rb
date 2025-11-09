@@ -175,6 +175,7 @@ class CorrectionsController < ApplicationController
   # Check that the submission is not plagiarized or closed (nobody can comment in that case)
   def submission_not_plagiarized_or_closed
     if @submission.plagiarized? || @submission.closed?
+      flash[:danger] = "Cette solution ne peut plus être commentée."
       redirect_to problem_path(@problem, :sub => @submission)
     end
   end
@@ -189,6 +190,7 @@ class CorrectionsController < ApplicationController
   # Check that submission has recent activity
   def submission_has_recent_activity
     if @submission.user == current_user && @submission.wrong? && !@submission.has_recent_activity
+      flash[:danger] = "Cette soumission ne peut plus être commentée."
       redirect_to problem_path(@problem, :sub => @submission)
     end
   end

@@ -31,15 +31,15 @@ every :day, :at => '2am' do
 end
 
 every :monday, :at => '3am' do
-  runner "Chapter.update_stats" # Update statistics for chapters (not so important, so done once a week)
+  runner "Chapter.update_all_stats" # Update statistics for chapters (not so important, so done once a week)
 end
 
 every :tuesday, :at => '3am' do
-  runner "Question.update_stats" # Update statistics for questions (not so important, so done once a week)
+  runner "Question.update_all_stats" # Update statistics for questions (not so important, so done once a week)
 end
 
 every :wednesday, :at => '3am' do
-  runner "Problem.update_stats" # Update statistics for problems (not so important, so done once a week)
+  runner "Problem.update_all_stats" # Update statistics for problems (not so important, so done once a week)
 end
 
 every :day, :at => '12am' do

@@ -57,6 +57,36 @@ describe Subject, subject: true do
     it { should_not be_valid }
   end
   
+  # Last comment
+  describe "last_comment_time and last_comment_user_id are correct after creation" do
+    let!(:sub2) { FactoryBot.create(:subject) }
+    let!(:message1) { FactoryBot.create(:message, subject: sub2, created_at: DateTime.now - 2.days) }
+    specify do
+      expect(sub2.last_comment_time).to be_within(1.second).of(message1.created_at)
+      expect(sub2.last_comment_user).to eq(message1.user)
+    end
+    
+    describe "and is still correct after message creation" do
+      let!(:message2) { FactoryBot.create(:message, subject: sub2) }
+      before { sub2.reload }
+      specify do
+        expect(sub2.last_comment_time).to be_within(1.second).of(message2.created_at)
+        expect(sub2.last_comment_user).to eq(message2.user)
+      end
+      
+      describe "and is still correct after message deletion" do
+        before do
+          message2.destroy
+          sub2.reload
+        end
+        specify do
+          expect(sub2.last_comment_time).to be_within(1.second).of(message1.created_at)
+          expect(sub2.last_comment_user).to eq(message1.user)
+        end
+      end
+    end
+  end
+  
   # Cannot be for correctors and for wepion
   describe "when for correctors and for wepion" do
     before do

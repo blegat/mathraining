@@ -75,6 +75,11 @@ class Subject < ActiveRecord::Base
     return Subject.page_with_message_num(self.messages.count)
   end
   
+  # Gives the page containing the n-th message
+  def self.page_with_message_num(n)
+    return [0, ((n-1)/10).floor].max + 1
+  end
+  
   # Update last_comment_time and last_comment_user_id
   def update_last_comment
     last_message = self.messages.order(:created_at).last
@@ -82,11 +87,6 @@ class Subject < ActiveRecord::Base
       self.update(:last_comment_time    => last_message.created_at,
                   :last_comment_user_id => last_message.user_id)
     end
-  end
-  
-  # Gives the page containing the n-th message
-  def self.page_with_message_num(n)
-    return [0, ((n-1)/10).floor].max + 1
   end
 
   # Create subject together with its first message

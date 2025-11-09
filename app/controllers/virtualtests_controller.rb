@@ -110,8 +110,13 @@ class VirtualtestsController < ApplicationController
   # Check that current user is currently doing the virtualtest
   def user_in_test
     virtualtest_status = current_user.test_status(@virtualtest)
-    render 'errors/access_refused' if virtualtest_status == "not_started"
-    redirect_to virtualtests_path if virtualtest_status == "finished" # Smoothly redirect because it can happen when timer stops
+    if virtualtest_status == "not_started"
+      render 'errors/access_refused'
+    elsif virtualtest_status == "finished"
+      # Smoothly redirect because it can happen when timer stops
+      flash[:danger] = "Ce test est maintenant terminé."
+      redirect_to virtualtests_path
+    end
   end
 
   # Check that current user has access to the virtualtest

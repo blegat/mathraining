@@ -70,24 +70,26 @@ class Problem < ActiveRecord::Base
     return true
   end
   
-  # Update the nb_solves, first_solve_time and last_solve_time of each problem (done every wednesday at 3 am (see schedule.rb))
+  # Update nb_solves, first_solve_time and last_solve_time
+  def update_stats
+    real_nb_solves = self.solvedproblems.count
+    if real_nb_solves >= 1
+      real_first_solve_time = self.solvedproblems.order(:resolution_time).first.resolution_time
+      real_last_solve_time = self.solvedproblems.order(:resolution_time).last.resolution_time
+    else
+      real_first_solve_time = nil
+      real_last_solve_time = nil
+    end
+    if self.nb_solves != real_nb_solves || self.first_solve_time != real_first_solve_time || self.last_solve_time != real_last_solve_time
+      self.update(:nb_solves => real_nb_solves, :first_solve_time => real_first_solve_time, :last_solve_time => real_last_solve_time)
+    end
+  end
+  
+  # Update the nb_solves, first_solve_time and last_solve_time of all problems (done every wednesday at 3 am (see schedule.rb))
   # NB: They are more or less maintained correct, but not when a user is deleted for instance
-  def self.update_stats
+  def self.update_all_stats
     Problem.where(:online => true).each do |p|
-      nb_solves = p.solvedproblems.count
-      if nb_solves >= 1
-        first_solve_time = p.solvedproblems.order(:resolution_time).first.resolution_time
-        last_solve_time = p.solvedproblems.order(:resolution_time).last.resolution_time
-      else
-        first_solve_time = nil
-        last_solve_time = nil
-      end
-      if p.nb_solves != nb_solves or p.first_solve_time != first_solve_time or p.last_solve_time != last_solve_time
-        p.nb_solves = nb_solves
-        p.first_solve_time = first_solve_time
-        p.last_solve_time = last_solve_time
-        p.save
-      end
+      p.update_stats
     end
   end
 end

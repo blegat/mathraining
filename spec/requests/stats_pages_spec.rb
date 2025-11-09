@@ -107,7 +107,7 @@ describe "Stats pages" do
                             :nb_completions => 42)
             chapter2.update(:nb_tries => 42,
                             :nb_completions => 42)
-            Chapter.update_stats
+            Chapter.update_all_stats
             chapter1.reload
             chapter2.reload
           end
@@ -131,7 +131,7 @@ describe "Stats pages" do
             exercise21.update(:nb_wrong => 42,
                               :nb_correct => 42,
                               :nb_first_guesses => 42)
-            Question.update_stats
+            Question.update_all_stats
             exercise11.reload
             exercise12.reload
             exercise21.reload
@@ -212,7 +212,7 @@ describe "Stats pages" do
               problem2.update(:nb_solves => 42,
                               :first_solve_time => now,
                               :last_solve_time => now)
-              Problem.update_stats
+              Problem.update_all_stats
               problem.reload
               problem2.reload
             end

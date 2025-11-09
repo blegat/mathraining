@@ -56,6 +56,15 @@ class Chapter < ActiveRecord::Base
     visited.delete(self.id)
     visited.to_a
   end
+  
+  # Update nb_tries and nb_completions
+  def update_stats
+    real_nb_tries = Solvedquestion.where(:question => self.questions).distinct.count(:user_id)
+    real_nb_completions = self.users.count
+    if self.nb_tries != real_nb_tries || self.nb_completions != real_nb_completions
+      self.update(:nb_tries => real_nb_tries, :nb_completions => real_nb_completions)
+    end
+  end
 
   private
 
@@ -71,13 +80,9 @@ class Chapter < ActiveRecord::Base
   
   # Update the nb_tries and nb_completions of each chapter (done every monday at 3 am (see schedule.rb))
   # NB: They are more or less maintained correct, but not when a user is deleted for instance
-  def self.update_stats
+  def self.update_all_stats
     Chapter.where(:online => true).each do |c|
-      nb_tries = Solvedquestion.where(:question => c.questions).distinct.count(:user_id)
-      nb_completions = c.users.count
-      if c.nb_tries != nb_tries || c.nb_completions != nb_completions
-        c.update(:nb_tries => nb_tries, :nb_completions => nb_completions)
-      end
+      c.update_stats
     end
   end
 end

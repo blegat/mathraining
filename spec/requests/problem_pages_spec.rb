@@ -155,6 +155,22 @@ describe "Problem pages", problem: true do
         should have_link("Problème ##{online_problem_with_prerequisite.number}", href: problem_path(online_problem_with_prerequisite, :auto => 1))
         should have_selector("div", text: online_problem_with_prerequisite.statement)
       end
+      
+      describe "and mark one problem as favorite", :js => true do
+        before do
+          find("#heart-#{online_problem.id}").click()
+          wait_for_ajax
+        end
+        specify { expect(admin.favorite_problems.exists?(online_problem.id)).to eq(true) }
+        
+        describe "and mark it as non-favorite" do
+          before do
+            find("#heart-filled-#{online_problem.id}").click()
+            wait_for_ajax
+          end
+          specify { expect(admin.favorite_problems.exists?(online_problem.id)).to eq(false) }
+        end
+      end
     end
     
     describe "visits online problem" do

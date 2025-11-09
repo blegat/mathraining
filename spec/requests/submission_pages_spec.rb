@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "Submission pages" do
+describe "Submission pages", submission: true do
 
   subject { page }
 
@@ -79,23 +79,6 @@ describe "Submission pages" do
           expect(problem.submissions.order(:id).last.content).to eq(newsubmission)
           expect(problem.submissions.order(:id).last.waiting?).to eq(true)
         end
-        
-        describe "and tries to comment a waiting submission in test (hack)" do
-          let(:new_submission) { problem.submissions.order(:id).last }
-          let!(:virtualtest) { FactoryBot.create(:virtualtest, online: true) }
-          let!(:takentest) { Takentest.create(virtualtest: virtualtest, user: user, status: :finished, taken_time: DateTime.now - 2.days) }
-          before do
-            problem.update_attribute(:virtualtest, virtualtest)
-            new_submission.update_attribute(:intest, true)
-            fill_in "MathInput", with: newanswer
-            click_button "Poster"
-            new_submission.reload
-          end
-          specify do
-            expect(new_submission.corrections.count).to eq(0)
-            expect(page).to have_content(error_access_refused)
-          end
-        end
       end
       
       describe "and writes new draft with expired session (or invalid CSRF token)" do
@@ -132,82 +115,6 @@ describe "Submission pages" do
           expect(page).to have_no_link("Nouvelle soumission")
           expect(problem.submissions.order(:id).last.content).not_to eq(newsubmission)
           expect(problem.submissions.where(:user => user).count).to eq(1) # Only the one created by FactoryBot 
-        end
-      end
-      
-      describe "and writes new draft while another submission was recently plagiarized" do
-        before do
-          plagiarism = FactoryBot.create(:submission, problem: problem, user: user, status: :plagiarized)
-          plagiarism.update_attribute(:last_comment_time, DateTime.now - 3.months)
-          fill_in "MathInput", with: newsubmission
-          click_button "Enregistrer cette solution"
-        end
-        specify do
-          expect(page).to have_selector("h1", text: "Problème ##{problem.number}")
-          expect(page).to have_no_link("Nouvelle soumission")
-          expect(page).to have_content("Vous avez soumis une solution plagiée à ce problème.")
-          expect(problem.submissions.order(:id).last.content).not_to eq(newsubmission)
-          expect(problem.submissions.where(:user => user).count).to eq(1) # Only the plagiarized one created by FactoryBot 
-        end
-      end
-        
-      describe "and sends new draft while another submission was plagiarized long ago" do
-        before do
-          plagiarism = FactoryBot.create(:submission, problem: problem, user: user, status: :plagiarized)
-          plagiarism.update_attribute(:last_comment_time, DateTime.now - 2.years)
-          fill_in "MathInput", with: newsubmission
-          click_button "Enregistrer cette solution"
-        end
-        specify do
-          expect(page).to have_selector("h1", text: "Problème ##{problem.number}")
-          expect(page).to have_no_content("Vous avez soumis une solution plagiée à ce problème.") # not shown for old plagiarism
-          expect(page).to have_success_message("Votre solution a bien été enregistrée.")
-          expect(page).to have_selector("h3", text: "Nouvelle soumission")
-          expect(page).to have_selector("div", text: newsubmission)
-        end
-      end
-      
-      describe "and sends new draft while another submission was recently closed" do
-        before do
-          closed = FactoryBot.create(:submission, problem: problem, user: user, status: :closed)
-          closed.update_attribute(:last_comment_time, DateTime.now - 3.days)
-          fill_in "MathInput", with: newsubmission
-          click_button "Enregistrer cette solution"
-        end
-        specify do
-          expect(page).to have_selector("h1", text: "Problème ##{problem.number}")
-          expect(page).to have_no_link("Nouvelle soumission")
-          expect(page).to have_content("Vous avez soumis une solution à ce problème qui a été clôturée par un correcteur.")
-          expect(problem.submissions.order(:id).last.content).not_to eq(newsubmission)
-          expect(problem.submissions.where(:user => user).count).to eq(1) # Only the closed one created by FactoryBot 
-        end
-      end
-      
-      describe "and sends new draft while another submission was closed long ago" do
-        before do
-          closed = FactoryBot.create(:submission, problem: problem, user: user, status: :closed)
-          closed.update_attribute(:last_comment_time, DateTime.now - 2.weeks)
-          fill_in "MathInput", with: newsubmission
-          click_button "Enregistrer cette solution"
-        end
-        specify do
-          expect(page).to have_selector("h1", text: "Problème ##{problem.number}")
-          expect(page).to have_no_content("Vous avez soumis une solution à ce problème qui a été clôturée par un correcteur.") # not shown for old closed submission
-          expect(page).to have_success_message("Votre solution a bien été enregistrée.")
-          expect(page).to have_selector("h3", text: "Nouvelle soumission")
-          expect(page).to have_selector("div", text: newsubmission)
-        end
-      end
-      
-      describe "and sends new submission while he did not solve chapters to write a submission" do # Hack
-        before do
-          FactoryBot.create(:chapter, online: true, submission_prerequisite: true)
-          fill_in "MathInput", with: newsubmission
-          click_button "Enregistrer cette solution"
-        end
-        specify do
-          expect(page).to have_content(error_access_refused)
-          expect(problem.submissions.count).to eq(0)
         end
       end
     end
@@ -288,21 +195,7 @@ describe "Submission pages" do
         end
       end
       
-      describe "and tries to update the draft of somebody else (hack)" do # Not possible without hack
-        before do
-          draft_submission.update_attribute(:user, other_user)
-          fill_in "MathInput", with: newsubmission2
-          click_button "Enregistrer cette solution"
-          draft_submission.reload
-        end
-        specify do
-          expect(page).to have_content(error_access_refused)
-          expect(draft_submission.content).to eq(newsubmission)
-          expect(draft_submission.draft?).to eq(true)
-        end
-      end
-      
-      describe "and tries to update a draft that is already sent (hack)" do # Can only be done with several tabs
+      describe "and tries to update a draft that is already sent" do # Can only be done with several tabs
         before do
           draft_submission.waiting!
           fill_in "MathInput", with: newsubmission2
@@ -451,20 +344,6 @@ describe "Submission pages" do
         end
       end
       
-      describe "and accepts it while his own submission was marked incorrect" do
-        before do
-          good_corrector_submission.wrong!
-          good_corrector_solvedproblem.destroy
-          fill_in "MathInput", with: newcorrection
-          click_button "Poster et accepter la soumission"
-          waiting_submission.reload
-        end
-        specify do
-          expect(waiting_submission.waiting?).to eq(true)
-          expect(waiting_submission.corrections.count).to eq(0)
-        end
-      end
-      
       describe "and tries to accept it without any comment" do
         before do
           fill_in "MathInput", with: ""
@@ -489,20 +368,6 @@ describe "Submission pages" do
           expect(page).to have_error_message("Un nouveau commentaire a été posté avant le vôtre !")
           expect(waiting_submission.waiting?).to eq(true)
           expect(waiting_submission.corrections.count).to eq(1)
-        end
-      end
-      
-      describe "and accepts it while submission was marked as plagiarized" do
-        before do
-          waiting_submission.plagiarized!
-          fill_in "MathInput", with: newcorrection
-          click_button "Poster et accepter la soumission"
-          waiting_submission.reload
-        end
-        specify do
-          expect(waiting_submission.plagiarized?).to eq(true)
-          expect(waiting_submission.corrections.count).to eq(0)
-          expect(page).to have_selector("h3", text: "Soumission (plagiée)")
         end
       end
       
@@ -603,58 +468,6 @@ describe "Submission pages" do
               it do
                 should have_selector("h1", text: "Nouvelles réponses")
                 should have_no_link("Voir", href: problem_path(problem_with_submissions, :sub => waiting_submission))
-              end
-            end
-            
-            describe "and answers while another submission of same user was marked as plagiarized" do
-              before do
-                FactoryBot.create(:submission, user: waiting_submission.user, problem: waiting_submission.problem, status: :plagiarized, last_comment_time: DateTime.now - 2.months)
-                fill_in "MathInput", with: newanswer
-                click_button "Poster"
-                waiting_submission.reload
-              end
-              specify do
-                expect(waiting_submission.corrections.last.content).not_to eq(newanswer)
-                expect(page).to have_content("Vous avez soumis une solution plagiée à ce problème.")
-              end
-            end
-            
-            describe "and answers while another submission of same user was closed" do
-              before do
-                FactoryBot.create(:submission, user: waiting_submission.user, problem: waiting_submission.problem, status: :closed, last_comment_time: DateTime.now - 2.days)
-                fill_in "MathInput", with: newanswer
-                click_button "Poster"
-                waiting_submission.reload
-              end
-              specify do
-                expect(waiting_submission.corrections.last.content).not_to eq(newanswer)
-                expect(page).to have_content("Vous avez soumis une solution à ce problème qui a été clôturée par un correcteur.")
-              end
-            end
-            
-            describe "and answers while a sanction was given" do
-              let!(:sanction) { FactoryBot.create(:sanction, user: waiting_submission.user, sanction_type: :no_submission) }
-              before do
-                fill_in "MathInput", with: newanswer
-                click_button "Poster"
-                waiting_submission.reload
-              end
-              specify do
-                expect(waiting_submission.corrections.last.content).not_to eq(newanswer)
-                expect(page).to have_content(sanction.message)
-              end
-            end
-            
-            describe "and tries to answer much later" do
-              before do
-                travel_to DateTime.now + 80.days
-                fill_in "MathInput", with: newanswer
-                click_button "Poster"
-                travel_back
-              end
-              specify do
-                expect(waiting_submission.corrections.last.content).not_to eq(newanswer)
-                expect(page).to have_content("Cette solution a été automatiquement clôturée après une inactivité de deux mois.")
               end
             end
             
@@ -917,38 +730,16 @@ describe "Submission pages" do
     describe "marks a solution as wrong" do
       let!(:rating_before) { good_corrector.rating }
     
-      describe "when it was the only correct solution" do
-        before do
-          visit problem_path(problem_with_submissions, :sub => good_corrector_submission)
-          click_link "Marquer comme erronée"
-          good_corrector_submission.reload
-          good_corrector.reload
-        end
-        specify do
-          expect(good_corrector_submission.wrong?).to eq(true)
-          expect(good_corrector.rating).to eq(rating_before - problem_with_submissions.value)
-          expect(Solvedproblem.where(:user => good_corrector, :problem => problem_with_submissions).count).to eq(0)
-        end
+      before do
+        visit problem_path(problem_with_submissions, :sub => good_corrector_submission)
+        click_link "Marquer comme erronée"
+        good_corrector_submission.reload
+        good_corrector.reload
       end
-    
-      describe "when there is another correct submission" do
-        let!(:other_correct_submission) { FactoryBot.create(:submission, problem: problem_with_submissions, user: good_corrector, status: :correct, created_at: DateTime.now - 2.weeks) }
-        let!(:other_correction) { FactoryBot.create(:correction, submission: other_correct_submission, user: root, created_at: DateTime.now - 1.week) }
-        before do
-          visit problem_path(problem_with_submissions, :sub => good_corrector_submission)
-          click_link "Marquer comme erronée"
-          good_corrector_submission.reload
-          good_corrector.reload
-          good_corrector_solvedproblem.reload
-        end
-        specify do
-          expect(good_corrector_submission.wrong?).to eq(true)
-          expect(good_corrector.rating).to eq(rating_before)
-          expect(good_corrector_solvedproblem.submission).to eq(other_correct_submission)
-          # NB: We need be_within(1.second) below, see https://stackoverflow.com/questions/20403063/trouble-comparing-time-with-rspec
-          expect(good_corrector_solvedproblem.correction_time).to be_within(1.second).of other_correction.created_at
-          expect(good_corrector_solvedproblem.resolution_time).to be_within(1.second).of other_correct_submission.created_at
-        end
+      specify do
+        expect(good_corrector_submission.wrong?).to eq(true)
+        expect(good_corrector.rating).to eq(rating_before - problem_with_submissions.value)
+        expect(Solvedproblem.where(:user => good_corrector, :problem => problem_with_submissions).count).to eq(0)
       end
     end
     

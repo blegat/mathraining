@@ -19,8 +19,8 @@ class SubmissionsController < ApplicationController
   before_action :user_can_see_problem_or_in_test, only: [:create]
   before_action :user_did_not_solve_problem, only: [:create]
   before_action :user_can_write_submission_to_problem, only: [:create, :send_draft]
-  before_action :draft_submission_or_root, only: [:update, :destroy, :send_draft]
   before_action :author_of_submission_or_root, only: [:update, :destroy, :send_draft]
+  before_action :draft_submission_or_root, only: [:update, :destroy, :send_draft]
   before_action :new_submissions_allowed_or_in_test, only: [:create, :update, :send_draft]
   before_action :user_has_no_recent_plagiarism_or_closure, only: [:create, :update, :send_draft]
   before_action :user_can_write_submission_or_in_test, only: [:create, :send_draft]
@@ -352,7 +352,7 @@ class SubmissionsController < ApplicationController
 
   # Check that current user did not already solve the problem
   def user_did_not_solve_problem
-    redirect_to root_path if current_user.pb_solved?(@problem)
+    redirect_to problem_path(@problem) if current_user.pb_solved?(@problem)
   end
   
   # Check that new submissions are allowed, or that the user is in a virtualtest
@@ -379,7 +379,8 @@ class SubmissionsController < ApplicationController
   # Check that the submission is a draft, or current user is a root
   def draft_submission_or_root
     if !@submission.draft? && !current_user.root?
-      redirect_to @problem
+      flash[:danger] = "Vous ne pouvez plus modifier cette solution."
+      redirect_to problem_path(@problem, :sub => @submission)
     end
   end
   
@@ -445,7 +446,7 @@ class SubmissionsController < ApplicationController
   # Helper method to update the dates of a draft submission when updating or sending it
   def update_draft_dates
     date_now = DateTime.now
-    @submission.update(:created_at => date_now, :old_created_at => date_now, :last_comment_time => date_now)
+    @submission.update(:created_at => date_now, :last_comment_time => date_now)
   end
 
   # Helper method to mark as read/unread

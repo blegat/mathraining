@@ -136,7 +136,7 @@ class Question < ActiveRecord::Base
   
   # Update the nb_correct, nb_wrong and nb_first_guesses of each question (done every tuesday at 3 am (see schedule.rb))
   # NB: They are more or less maintained correct, but not when a user is deleted for instance
-  def self.update_stats
+  def self.update_all_stats
     nb_correct_by_question = Solvedquestion.group(:question_id).count
     nb_wrong_by_question = Unsolvedquestion.group(:question_id).count
     nb_first_guesses_by_question = Solvedquestion.where(:nb_guess => 1).group(:question_id).count
