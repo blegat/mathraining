@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "Authentication" do
+describe "Session pages", session: true do
 
   subject { page }
   
@@ -118,6 +118,34 @@ describe "Authentication" do
         end
       end
     end
+    
+    describe "When website is temporary closed" do
+      let(:user_wepion) { FactoryBot.create(:user, wepion: true) }
+      let(:corrector) { FactoryBot.create(:corrector) }
+      let(:admin) { FactoryBot.create(:admin) }
+      
+      before { Globalvariable.create(:key => "temporary_closure", :value => true, :message => "Site fermé") }
+    
+      describe "to a random user account" do
+        before { sign_in_with_form(user, false) }
+        it { should have_no_content(user.fullname) } # Should not be connected
+      end
+    
+      describe "sign in should work for a wepion user" do
+        before{ sign_in_with_form(user_wepion, false) }
+        it { should have_content(user_wepion.fullname) } # Should be connected
+      end
+    
+      describe "sign in should work for a corrector" do
+        before { sign_in_with_form(corrector, false) }
+        it { should have_content(corrector.fullname) } # Should be connected
+      end
+    
+      describe "sign in should work for an admin" do
+        before { sign_in_with_form(admin, false) }
+        it { should have_content(admin.fullname) } # Should be connected
+      end
+    end
   end
   
   describe "visits a page only for connected people" do
@@ -128,7 +156,7 @@ describe "Authentication" do
       should have_button("connect_button")
     end
     
-    describe "and signin with main form" do
+    describe "and signs in with main form" do
       before do
         fill_in "connect_email", with: user.email
         fill_in "connect_password", with: user.password
@@ -137,7 +165,7 @@ describe "Authentication" do
       it { should have_selector("h1", text: "Forum") }
     end
     
-    describe "and signin with header form" do
+    describe "and signs in with header form" do
       before do
         click_link "Connexion"
         fill_in "header_connect_email", with: user.email
@@ -151,9 +179,7 @@ describe "Authentication" do
   
   describe "uses fast signin in test environment" do
     before { sign_in user }
-    specify do
-      expect(Capybara.current_session.driver.request.cookies.[]('remember_token')).to eq(user.remember_token)
-    end
+    specify { expect(Capybara.current_session.driver.request.cookies.[]('remember_token')).to eq(user.remember_token) }
   end
   
   describe "tries to use fast signin in production environment" do
@@ -161,8 +187,7 @@ describe "Authentication" do
       allow(Rails).to receive(:env).and_return(ActiveSupport::StringInquirer.new("production"))
       sign_in user
     end
-    specify do
-      expect(Capybara.current_session.driver.request.cookies.[]('remember_token')).not_to eq(user.remember_token)
-    end
+    specify { expect(Capybara.current_session.driver.request.cookies.[]('remember_token')).not_to eq(user.remember_token) }
+    after { allow(Rails).to receive(:env).and_return(ActiveSupport::StringInquirer.new("test")) }
   end
 end

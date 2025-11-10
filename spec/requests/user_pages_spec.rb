@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "User pages" do
+describe "User pages", user: true do
 
   subject { page }
 
@@ -41,7 +41,7 @@ describe "User pages" do
       end
     end
 
-    describe "signup with with valid information" do
+    describe "signup with valid information" do
       before do
         fill_in "Prénom", with: "Example"
         fill_in "Nom", with: "User"
@@ -166,6 +166,14 @@ describe "User pages" do
           end
           it { should have_selector("h1", text: "Nouveau mot de passe") }
           
+          describe "and finds back his password" do
+            before { sign_in_with_form(zero_user, false) }
+            it do
+              should have_selector("h1", text: "Actualités")
+              should have_link("Déconnexion", href: sessions_path)
+            end
+          end
+          
           describe "and sets an empty password" do
             before { click_button "Modifier le mot de passe" }
             it { should have_error_message("Mot de passe est vide") }
@@ -233,11 +241,6 @@ describe "User pages" do
       end
     end
     
-    describe "scraps scores page" do
-      before { visit users_path(:page => 3, :rank => 5) }
-      it { should have_content(error_access_refused) }
-    end
-    
     describe "visits country scores page" do
       before { visit users_path(:country => country) }
       it do
@@ -263,11 +266,6 @@ describe "User pages" do
         should have_no_link(other_ranked_user.name, href: user_path(other_ranked_user)) # Has 210 points but not in country
         should have_link(other_ranked_user2.name, href: user_path(other_ranked_user2)) # Has 225 points and in country
       end
-    end
-    
-    describe "tries to visit followed users" do
-      before { visit followed_users_path }
-      it { should have_content(error_must_be_connected) }
     end
   end
 
@@ -498,27 +496,6 @@ describe "User pages" do
       end
     end
     
-    describe "tries to edit the profile of another user" do
-      before { visit edit_user_path(other_zero_user) }
-      it { should have_content(error_access_refused) }
-    end
-    
-    describe "tries to visit the profile of a deleted user" do
-      before do
-        other_zero_user.update_attribute(:role, :deleted)
-        visit user_path(other_zero_user)
-      end
-      it { should have_content(error_access_refused) }
-    end
-    
-    describe "tries to visit wepion groups while not being in it" do
-      before do
-        zero_user.update(:wepion => false, :group => "")
-        visit groups_users_path
-      end
-      it { should have_content(error_access_refused) }
-    end
-    
     describe "has a weak password" do
       before do
         zero_user.weak_password!
@@ -567,16 +544,6 @@ describe "User pages" do
   describe "admin" do
     before { sign_in admin }
 
-    describe "tries to delete a student" do
-      before { visit user_path(zero_user) }
-      it { should have_no_link("Supprimer") }
-    end
-    
-    describe "tries to delete himself" do
-      before { visit user_path(admin) }
-      it { should have_no_link("Supprimer") }
-    end
-    
     describe "visits wepion groups" do
       before do
         zero_user.update(:wepion => true, :group => "A")
@@ -615,14 +582,11 @@ describe "User pages" do
         expect { click_link "Supprimer" }.to change(User, :count).by(-1)
       end
     end
-
-    describe "tries to delete another root" do
-      before { visit user_path(other_root) }
-      it { should have_no_link("Supprimer") }
-    end
     
     describe "deletes data of a student" do
       let!(:sub) { FactoryBot.create(:subject) }
+      let!(:section) { FactoryBot.create(:section) }
+      let!(:pps) { Pointspersection.create(user: zero_user, section: section, points: 3) }
       let!(:contest) { FactoryBot.create(:contest) }
       let!(:old_remember_token) { zero_user.remember_token }
       before do
@@ -631,20 +595,24 @@ describe "User pages" do
         other_zero_user.followed_users << zero_user # He is followed by other_zero_user
         zero_user.followed_subjects << sub # He follows a subject
         zero_user.followed_contests << contest # He follows a contest
+        zero_user.update_attribute(:rating, 3)
         
         visit user_path(zero_user)
         click_link "Supprimer les données personnelles"
         zero_user.reload
         other_root.reload
+        pps.reload
       end
       specify do
         expect(zero_user.deleted?).to eq(true)
+        expect(zero_user.rating).to eq(0)
         expect(other_root.skin).to eq(0)
         expect(zero_user.followed_users.count).to eq(0)
         expect(zero_user.following_users.count).to eq(0)
         expect(zero_user.followed_subjects.count).to eq(0)
         expect(zero_user.followed_contests.count).to eq(0)
         expect(zero_user.remember_token).not_to eq(old_remember_token) # should be disconnected
+        expect(pps.points).to eq(0)
       end
     end
     
@@ -726,7 +694,7 @@ describe "User pages" do
         expect { click_link "Retirer du groupe Wépion" and zero_user.reload }.to change{zero_user.wepion}.to(false)
       end
       
-      describe "and remove from group A" do
+      describe "and removes from group A" do
         before do
           zero_user.update_attribute(:group, "A")
           visit user_path(zero_user)
@@ -802,68 +770,6 @@ describe "User pages" do
       it do
         should have_link(root.name, href: user_path(root))
         should have_no_link(other_root.name, href: user_path(other_root))
-      end
-    end
-  end
-  
-  describe "cron job" do
-    describe "deletes user with unconfirmed email for a long time" do
-      before do
-        zero_user.update(:email_confirm => false,
-                         :created_at => DateTime.now - 8.days)
-        other_zero_user.update(:email_confirm => false,
-                               :created_at => DateTime.now - 6.days)
-      end
-      specify { expect { User.delete_unconfirmed }.to change(User, :count).by(-1) } # Only zero_user should be deleted
-    end
-    
-    describe "deletes user that never came for one month" do
-      let!(:other_zero_user2) { FactoryBot.create(:user, country: other_country, rating: 0) }
-      before do
-        zero_user.update(:created_at => DateTime.now - 40.days,
-                         :last_connexion_date => "2009-01-01")
-        other_zero_user.update(:created_at => DateTime.now - 20.days,
-                               :last_connexion_date => "2009-01-01")
-        other_zero_user2.update(:created_at => DateTime.now - 40.days,
-                                :last_connexion_date => "2020-01-01")
-      end
-      specify { expect { User.delete_unconfirmed }.to change(User, :count).by(-1) } # Only zero_user should be deleted
-    end
-  end
-  
-  describe "command line" do
-    let!(:user) { FactoryBot.create(:user) }
-    let!(:section) { FactoryBot.create(:section, :fondation => false) }
-    let!(:section2) { FactoryBot.create(:section, :fondation => false) }
-    let!(:section_fondation) { FactoryBot.create(:section, :fondation => true) }
-    let!(:chapter) { FactoryBot.create(:chapter, :section => section, :online => true) }
-    let!(:chapter_fondation) { FactoryBot.create(:chapter, :section => section_fondation, :online => true) }
-    let!(:question) { FactoryBot.create(:exercise, :chapter => chapter, :level => 2, :online => true) }
-    let!(:question2) { FactoryBot.create(:exercise, :chapter => chapter, :level => 3, :online => true) }
-    let!(:question_fondation) { FactoryBot.create(:exercise, :chapter => chapter_fondation, :level => 4, :online => true) }
-    let!(:problem) { FactoryBot.create(:problem, :section => section2, :level => 4, :online => true) }
-    let!(:problem_offline) { FactoryBot.create(:problem, :section => section, :level => 5, :online => false) }
-    let!(:submission) { FactoryBot.create(:submission, :problem => problem, :user => user, :status => "correct") }
-    let!(:solvedproblem) { FactoryBot.create(:solvedproblem, :problem => problem, :user => user, :submission => submission) }
-    let!(:solvedquestion) { FactoryBot.create(:solvedquestion, :question => question, :user => user) }
-    let!(:unsolvedquestion) { FactoryBot.create(:unsolvedquestion, :question => question2, :user => user) }
-    let!(:solvedquestion_fondation) { FactoryBot.create(:solvedquestion, :question => question_fondation, :user => user) }
-    let!(:pointspersection) { Pointspersection.create(:user => user, :section => section, :points => 0) }
-    let!(:pointspersection2) { Pointspersection.create(:user => user, :section => section2, :points => 0) }
-    
-    describe "recomputed scores" do
-      before do
-        User.recompute_scores(false)
-        user.reload
-        section.reload
-        section2.reload
-      end
-      specify do
-        expect(user.rating).to eq(problem.value + question.value)
-        expect(section.max_score).to eq(question.value + question2.value)
-        expect(section2.max_score).to eq(problem.value)
-        expect(user.pointspersections.where(:section => section).first.points).to eq(question.value)
-        expect(user.pointspersections.where(:section => section2).first.points).to eq(problem.value)
       end
     end
   end

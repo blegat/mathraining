@@ -46,13 +46,13 @@ class CharacterValidator < ActiveModel::Validator
     (0..1).each do |j|
       one_letter = false
       (0..(a[j].size-1)).each do |i|
-        if (User.allowed_characters.include?(a[j][i]))
+        if User.allowed_characters.include?(a[j][i])
           one_letter = true
-        elsif (!User.allowed_special_characters.include?(a[j][i]))
+        elsif !User.allowed_special_characters.include?(a[j][i])
           record.errors.add(:base, "#{b[j]} ne peut pas contenir le caractère #{a[j][i]}")
         end
       end
-      if(not one_letter)
+      if !one_letter
         record.errors.add(:base, "#{b[j]} doit contenir au moins une lettre")
       end
     end
@@ -177,18 +177,6 @@ class User < ActiveRecord::Base
   
   # OTHER METHODS
   
-  def self.allowed_characters
-    Set["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "É", "Ö", "à", "á", "â", "ã", "ä", "ç", "è", "é", "ê", "ë", "î", "ï", "ñ", "ò", "ó", "ô", "ö", "ù", "ü", "š"]
-  end
-  
-  def self.allowed_special_characters
-    Set[" ", "'", "-", "."]
-  end
-  
-  def self.limit_waiting_submissions
-    return (Rails.env.production? ? 50 : 2)
-  end
-  
   # Tells if user is an administrator or a root
   def admin?
     return self.administrator? || self.root?
@@ -250,24 +238,29 @@ class User < ActiveRecord::Base
 
   # Returns [n, d], saying there are n submissions that the user can correct + all submissions of last d days
   def num_notifications_new(levels, show_all = false, favorite_only = false)
+    if favorite_only
+      pb_condition = "problem_id IN (SELECT favoriteproblems.problem_id FROM favoriteproblems WHERE favoriteproblems.user_id = #{self.id})"
+    elsif self.admin?
+      pb_condition = ""
+    else
+      pb_condition = "problem_id IN (SELECT solvedproblems.problem_id FROM solvedproblems WHERE solvedproblems.user_id = #{self.id})"
+    end
+    
+    if show_all
+      return [Submission.joins(:problem).where(pb_condition).where(:status => :waiting).where("problems.level in (?)", levels).count, 0]
+    end
+    
     Groupdate.time_zone = false unless Rails.env.production?
-    visible_condition = favorite_only || self.admin? ? "" : "problem_id IN (SELECT solvedproblems.problem_id FROM solvedproblems WHERE solvedproblems.user_id = #{self.id})"
-    fav_condition = favorite_only ? "problem_id IN (SELECT favoriteproblems.problem_id FROM favoriteproblems WHERE favoriteproblems.user_id = #{self.id})" : ""
-    x = Submission.joins(:problem).where(visible_condition).where(fav_condition).where(:status => :waiting).where("problems.level in (?)", levels).group_by_day(:created_at).count
+    x = Submission.joins(:problem).where(pb_condition).where(:status => :waiting).where("problems.level in (?)", levels).group_by_day(:created_at).count
     y = x.sort_by(&:first)
     n = 0
     y.each do |a|
       n = n + a[1]
-      if !show_all && n >= User.limit_waiting_submissions
+      if n >= Submission.limit_waiting_submissions
         return [n, (Date.today - a[0]).to_i]
       end
     end
     return [n, 0]
-  end
-
-  # Gives the number of submissions with a new comment to read
-  def num_notifications_update
-    return followings.where(:read => false).count
   end
 
   # Gives the "level" of the user
@@ -307,7 +300,7 @@ class User < ActiveRecord::Base
   # Adapt the name of the user automatically
   def adapt_name
     (0..1).each do |j|
-      if(j == 0)
+      if j == 0
         r = self.first_name
       else
         r = self.last_name
@@ -315,8 +308,8 @@ class User < ActiveRecord::Base
       previousLetter = false
       
       (0..(r.size-1)).each do |i|
-        if(r[i] =~/[[:alpha:]]/)
-          if(previousLetter)
+        if r[i] =~/[[:alpha:]]/
+          if previousLetter
             r[i] = r[i].downcase
           end
           previousLetter = true
@@ -337,7 +330,7 @@ class User < ActiveRecord::Base
         r = r + "."
       end
       
-      if(j == 0)
+      if j == 0
         self.first_name = r
       else
         self.last_name = r
@@ -345,54 +338,12 @@ class User < ActiveRecord::Base
     end
   end
   
-  # If F_0 = 0 and F_1 = 1, then a corrector needs F_(delta+1+i) corrections to be "Chevalier d'ordre i"
-  def self.correction_level_delta
-    return (Rails.env.production? ? 8 : 1)
-  end
-  
-  # Compute actuel correction level
-  def compute_correction_level
-    num_corrections = self.followings.where(:kind => [:first_corrector, :other_corrector]).count
-    level = 0
-    a = 1
-    b = 1
-    while num_corrections >= b
-      c = a+b
-      a = b
-      b = c
-      level += 1
-    end
-    return level - User.correction_level_delta
-  end
-  
   # Update correction level
   def update_correction_level
-    level = self.compute_correction_level
+    num_corrections = self.followings.where(:kind => [:first_corrector, :other_corrector]).count
+    level = User.compute_correction_level(num_corrections)
     if self.correction_level < level
       self.update_attribute(:correction_level, level)
-    end
-  end
-  
-  # Get number of corrections for a given correction level
-  def self.get_threshold_of_correction_level(level)
-    l = level + User.correction_level_delta
-    a = 1
-    b = 1
-    while l > 1
-      c = a+b
-      a = b
-      b = c
-      l -= 1
-    end
-    return b
-  end
-  
-  # Gives the corrector prefix (if any) for the name
-  def corrector_prefix
-    if (self.admin? || self.corrector?) && self.correction_level > 0
-      return "<span class='text-color-black-white fw-bold'><sup>#{self.correction_level}</sup></span>"
-    else
-      return ""
     end
   end
   
@@ -454,28 +405,29 @@ class User < ActiveRecord::Base
     self.create_remember_token
     self.save
   end
-
-  # Create a random token
-  def create_remember_token
-    begin
-      self.remember_token = SecureRandom.urlsafe_base64
-    end while User.exists?(:remember_token => self.remember_token)
+  
+  # Normal characters allowed in user names
+  def self.allowed_characters
+    Set["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "É", "Ö", "à", "á", "â", "ã", "ä", "ç", "è", "é", "ê", "ë", "î", "ï", "ñ", "ò", "ó", "ô", "ö", "ù", "ü", "š"]
   end
   
-  # Create a random color (for correctors) or remove it (for non-correctors)
-  def create_corrector_color
-    if self.admin? || self.corrector?
-      if self.corrector_color.nil?
-        self.corrector_color = "#"
-        (0..5).each do |i|
-          r = (i % 2 == 1 ? rand(0..15) : rand(5..12));
-          x = (r < 10 ? ("0".ord + r).chr : ("A".ord + r-10).chr)
-          self.corrector_color = self.corrector_color + x
-        end
-      end
-    elsif !self.corrector_color.nil?
-      self.corrector_color = nil
+  # Special characters allowed in user names
+  def self.allowed_special_characters
+    Set[" ", "'", "-", "."]
+  end
+  
+  # Get number of corrections for a given correction level
+  def self.get_threshold_of_correction_level(level)
+    l = level + User.correction_level_delta
+    a = 1
+    b = 1
+    while l > 1
+      c = a+b
+      a = b
+      b = c
+      l -= 1
     end
+    return b
   end
   
   # Deletes the user that never came on the website (done very day at 2 am (see schedule.rb))
@@ -564,11 +516,43 @@ class User < ActiveRecord::Base
   end
   
   private
+  
+  # Gives the corrector prefix (if any) for the name
+  def corrector_prefix
+    if (self.admin? || self.corrector?) && self.correction_level > 0
+      return "<span class='text-color-black-white fw-bold'><sup>#{self.correction_level}</sup></span>"
+    else
+      return ""
+    end
+  end
+  
+  # Create a random token
+  def create_remember_token
+    begin
+      self.remember_token = SecureRandom.urlsafe_base64
+    end while User.exists?(:remember_token => self.remember_token)
+  end
 
   # Create the points per section associated to the user
   def create_points
     # We can probably do that with ruby? (We want only one request because it is done very often during testing)
     ActiveRecord::Base.connection.execute("INSERT INTO pointspersections (user_id, section_id, points) SELECT '#{self.id}', id, '0' FROM sections WHERE fondation = 'false';")
+  end
+  
+  # Create a random color (for correctors)
+  def create_corrector_color
+    if self.admin? || self.corrector?
+      if self.corrector_color.nil?
+        self.corrector_color = "#"
+        (0..5).each do |i|
+          r = (i % 2 == 1 ? rand(0..15) : rand(5..12));
+          x = (r < 10 ? ("0".ord + r).chr : ("A".ord + r-10).chr)
+          self.corrector_color = self.corrector_color + x
+        end
+      end
+    else
+      self.corrector_color = nil
+    end
   end
 
   # Delete all discussions of the user
@@ -576,5 +560,24 @@ class User < ActiveRecord::Base
     self.discussions.each do |d|
       d.destroy
     end
+  end
+  
+  # Compute current correction level
+  def self.compute_correction_level(num_corrections)
+    level = 0
+    a = 1
+    b = 1
+    while num_corrections >= b
+      c = a+b
+      a = b
+      b = c
+      level += 1
+    end
+    return level - User.correction_level_delta
+  end
+  
+  # If F_0 = 0 and F_1 = 1, then a corrector needs F_(delta+1+i) corrections to be "Chevalier d'ordre i"
+  def self.correction_level_delta
+    return (Rails.env.production? ? 8 : 1)
   end
 end

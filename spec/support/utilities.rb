@@ -175,9 +175,9 @@ RSpec::Matchers.define :have_behavior do |behavior|
   end
 end
 
-RSpec::Matchers.define :have_controller_index_behavior do |behavior|
+RSpec::Matchers.define :have_controller_index_behavior do |behavior, params = {}|
   match do |response|
-    get :index
+    get :index, params: params
     expect(response).to have_behavior(behavior)
   end
 end
@@ -189,9 +189,9 @@ RSpec::Matchers.define :have_controller_show_behavior do |obj, behavior, other_p
   end
 end
 
-RSpec::Matchers.define :have_controller_new_behavior do |behavior, other_params = {}|
+RSpec::Matchers.define :have_controller_new_behavior do |behavior, params = {}|
   match do |response|
-    get :new, params: other_params
+    get :new, params: params
     expect(response).to have_behavior(behavior)
   end
 end
@@ -256,6 +256,27 @@ end
 RSpec::Matchers.define :have_controller_get_static_path_behavior do |path, behavior|
   match do |response|
     get path
+    expect(response).to have_behavior(behavior)
+  end
+end
+
+RSpec::Matchers.define :have_controller_put_static_path_behavior do |path, behavior|
+  match do |response|
+    put path
+    expect(response).to have_behavior(behavior)
+  end
+end
+
+RSpec::Matchers.define :have_controller_patch_static_path_behavior do |path, behavior, params = {}|
+  match do |response|
+    patch path, params: params
+    expect(response).to have_behavior(behavior)
+  end
+end
+
+RSpec::Matchers.define :have_controller_post_static_path_behavior do |path, behavior, params = {}|
+  match do |response|
+    post path, params: params
     expect(response).to have_behavior(behavior)
   end
 end

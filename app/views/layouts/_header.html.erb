@@ -28,7 +28,7 @@
         <% num_notifications_new12 = current_user.num_notifications_new([1, 2], @no_new_submission) %>
         <% num_notifications_new345 = current_user.num_notifications_new([3, 4, 5], @no_new_submission) %>
         <% num_notifications_fav = current_user.num_notifications_new([1, 2, 3, 4, 5], @no_new_submission, true) %>
-        <% num_notifications_update = current_user.num_notifications_update %>
+        <% num_notifications_update = current_user.followings.where(:read => false).count %>
         
         <% classe = (num_notifications_new12[0] + num_notifications_new12[1] > 0 ? "success" : "ld-light-dark-er") %>
         <%= link_to allnew_submissions_path(:levels => 3), class: "btn btn-#{classe}" do %>

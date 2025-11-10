@@ -1,12 +1,7 @@
 # -*- coding: utf-8 -*-
 require "spec_helper"
 
-describe "Static pages" do
-
-  let(:user) { FactoryBot.create(:user) }
-  let(:user_wepion) { FactoryBot.create(:user, wepion: true) }
-  let(:corrector) { FactoryBot.create(:corrector) }
-  let(:admin) { FactoryBot.create(:admin) }
+describe "Static pages", static: true do
   
   let(:closure_message) { "Site fermé temporairement !" }
 
@@ -43,60 +38,8 @@ describe "Static pages" do
     end
   end
   
-  describe "When website is temporary closed" do
-    before { Globalvariable.create(:key => "temporary_closure", :value => true, :message => closure_message) }
-    
-    describe "home page should show message" do
-      before { visit root_path }
-      it { should have_info_message(closure_message) }
-    end
-    
-    describe "sign in should NOT work for a random user" do
-      before do
-        visit subjects_path
-        sign_in_with_form(user, false)
-      end
-      it do
-        should have_info_message(closure_message)
-        should have_no_selector("h1", text: "Forum")
-      end
-    end
-    
-    describe "sign in should work for a wepion user" do
-      before do
-        visit subjects_path
-        sign_in_with_form(user_wepion, false)
-      end
-      it do
-        should have_no_content(closure_message)
-        should have_selector("h1", text: "Forum")
-      end
-    end
-    
-    describe "sign in should work for a corrector" do
-      before do
-        visit subjects_path
-        sign_in_with_form(corrector, false)
-      end
-      it do
-        should have_no_content(closure_message)
-        should have_selector("h1", text: "Forum")
-      end
-    end
-    
-    describe "sign in should work for an admin" do
-      before do
-        visit subjects_path
-        sign_in_with_form(admin, false)
-      end
-      it do
-        should have_no_content(closure_message)
-        should have_selector("h1", text: "Forum")
-      end
-    end
-  end
-  
   describe "When website is temporary closed while visiting it" do
+    let(:user) { FactoryBot.create(:user) }
     before do
       sign_in user
       Globalvariable.create(:key => "temporary_closure", :value => true, :message => closure_message)
@@ -108,7 +51,7 @@ describe "Static pages" do
     end
   end
 
-  describe "Any page, starting benchmark" do
+  describe "Any page, starting time benchmark" do
     before { visit root_path(:start_benchmark => 1) }
     it { should have_content("Temps total de chargement") }
 	  

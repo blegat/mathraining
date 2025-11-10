@@ -224,13 +224,15 @@ Rails.application.routes.draw do
   patch '/accept_legal', to: 'users#accept_legal'
   put '/accept_code_of_conduct', to: 'users#accept_code_of_conduct'
   get '/notifs', to: 'users#notifs'
-  get '/signup', to: 'users#new'
   get '/activate', to: 'users#activate'
-  get '/forgot_password', to: 'users#forgot_password'
-  post '/password_forgotten', to: 'users#password_forgotten'
   put '/set_follow_message', to: "users#set_follow_message"
   get '/unset_follow_message', to: "users#unset_follow_message" # Get because it should be doable via email link
   patch '/improve_password', to: 'users#improve_password'
+  
+  # Paths relative to no user (yet)
+  get '/signup', to: 'users#new'
+  get '/forgot_password', to: 'users#forgot_password'
+  post '/password_forgotten', to: 'users#password_forgotten'
   
   # Privacy policies
   resources :privacypolicies, only: [:index, :show, :new, :edit, :update, :destroy] do

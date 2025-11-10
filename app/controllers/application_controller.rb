@@ -179,6 +179,7 @@ class ApplicationController < ActionController::Base
   # Check that the user is signed out
   def signed_out_user
     if signed_in?
+      flash[:danger] = "Vous devez être déconnecté pour accéder à cette page."
       redirect_to root_path
     end
   end

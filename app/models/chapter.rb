@@ -65,6 +65,14 @@ class Chapter < ActiveRecord::Base
       self.update(:nb_tries => real_nb_tries, :nb_completions => real_nb_completions)
     end
   end
+  
+  # Update the nb_tries and nb_completions of each chapter (done every monday at 3 am (see schedule.rb))
+  # NB: They are more or less maintained correct, but not when a user is deleted for instance
+  def self.update_all_stats
+    Chapter.where(:online => true).each do |c|
+      c.update_stats
+    end
+  end
 
   private
 
@@ -75,14 +83,6 @@ class Chapter < ActiveRecord::Base
       current.prerequisites.each do |current_prerequisite|
         recursive_prerequisites_aux(current_prerequisite, visited)
       end
-    end
-  end
-  
-  # Update the nb_tries and nb_completions of each chapter (done every monday at 3 am (see schedule.rb))
-  # NB: They are more or less maintained correct, but not when a user is deleted for instance
-  def self.update_all_stats
-    Chapter.where(:online => true).each do |c|
-      c.update_stats
     end
   end
 end

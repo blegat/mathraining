@@ -250,6 +250,13 @@ class UsersController < ApplicationController
     end
     redirect_to @user
   end
+  
+  # Change the Wépion group of a user
+  def change_group
+    @user.update_attribute(:group, params[:group])
+    flash[:success] = "Utilisateur changé de groupe."
+    redirect_to @user
+  end
 
   # Add a user to correctors
   def set_corrector
@@ -283,13 +290,6 @@ class UsersController < ApplicationController
     redirect_to @user
   end
 
-  # Change the Wépion group of a user
-  def change_group
-    @user.update_attribute(:group, params[:group])
-    flash[:success] = "Utilisateur changé de groupe."
-    redirect_to @user
-  end
-
   # Activate an account
   def activate
     if !@user.email_confirm && @user.key.to_s == params[:key].to_s
@@ -319,8 +319,8 @@ class UsersController < ApplicationController
     end
     
     if @user.email_confirm
-      @user.update_attribute(:key, SecureRandom.urlsafe_base64)
-      @user.update_attribute(:recup_password_date_limit, DateTime.now)
+      @user.update(:key => SecureRandom.urlsafe_base64,
+                   :recup_password_date_limit => DateTime.now)
       UserMailer.forgot_password(@user.id).deliver
       flash[:info] = "Lien (développement uniquement) : localhost:3000/users/#{@user.id}/recup_password?key=#{@user.key}" if !Rails.env.production?
       flash[:success] = "Vous allez recevoir un e-mail d'ici quelques minutes pour que vous puissiez changer de mot de passe. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver."
@@ -342,7 +342,7 @@ class UsersController < ApplicationController
       # If the "signed_out" parameter is not there than we add it
       # This is to avoid the problem that occurs when somebody tries to connect from this page
       # Indeed when we connect, we are redirected to the previous page, and this page automatically disconnects the user
-      if(params[:signed_out].nil?)
+      if params[:signed_out].nil?
         if signed_in?
           sign_out
         end

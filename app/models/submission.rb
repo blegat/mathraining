@@ -209,4 +209,9 @@ class Submission < ActiveRecord::Base
       pb.update_stats
     end
   end
+  
+  # Limit used when showing waiting submissions to correctors
+  def self.limit_waiting_submissions
+    return (Rails.env.production? ? 50 : 2)
+  end
 end

@@ -276,8 +276,8 @@ FactoryBot.define do
   # Solved problem
   factory :solvedproblem do
     association :problem
-    association :submission
     association :user
+    submission { FactoryBot.create(:submission, problem: problem, user: user, status: :correct) }
     correction_time { DateTime.now }
     resolution_time { DateTime.now }
   end
