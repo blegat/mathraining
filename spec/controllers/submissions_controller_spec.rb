@@ -37,7 +37,7 @@ describe SubmissionsController, type: :controller, submission: true do
   context "if the user is a simple user (1)" do
     before { sign_in_controller(user1) }
       
-    it { expect(response).to have_controller_create_behavior('submission', :ok, {:problem_id => problem.id}) } # Allowed but update will be triggered automatically
+    it { expect(response).to have_controller_create_behavior('submission', :ok, {:problem_id => problem.id}) }
     it { expect(response).to have_controller_update_behavior(submission_draft, :ok) }
     it { expect(response).to have_controller_update_behavior(submission_wrong, :danger) } # Not allowed but smooth redirect
     it { expect(response).to have_controller_destroy_behavior(submission_draft, :ok) }
@@ -50,6 +50,12 @@ describe SubmissionsController, type: :controller, submission: true do
     it { expect(response).to have_controller_get_static_path_behavior('allnew', :access_refused) }
     it { expect(response).to have_controller_get_static_path_behavior('allmy', :access_refused) }
     it { expect(response).to have_controller_get_static_path_behavior('allmynew', :access_refused) }
+    
+    context "who didn't solve a prerequisite to write solutions" do
+      let!(:chapter_prereq) { FactoryBot.create(:chapter, online: true, submission_prerequisite: true) }
+      it { expect(response).to have_controller_create_behavior('submission', :access_refused, {:problem_id => problem.id }) }
+      it { expect(response).to have_controller_put_path_behavior('send_draft', submission_draft, :access_refused) }
+    end
   end
   
   context "if the user is a simple user (2)" do

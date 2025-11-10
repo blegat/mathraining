@@ -18,6 +18,11 @@ describe "Section pages", section: true do
   describe "admin" do
     before { sign_in admin }
     
+    describe "visits a section that does not exist" do # to test check_nil_object
+      before { visit section_path(53618) }
+      it { should have_content(error_access_refused) }
+    end
+    
     describe "visits a section" do
       before { visit section_path(section) }
       it do

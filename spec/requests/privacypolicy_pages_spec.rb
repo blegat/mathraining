@@ -25,6 +25,18 @@ describe "Privacy policy pages", privacypolicy: true do
       end
     end
     
+    describe "user" do
+      describe "visits the website" do
+        before do
+          user.update(:consent_time => DateTime.now - 1.year, :last_policy_read => false)
+          sign_in user
+          visit root_path
+          user.reload
+        end
+        specify { expect(user.last_policy_read).to eq(true) }
+      end
+    end
+    
     describe "root" do
       before { sign_in root }
       

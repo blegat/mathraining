@@ -5,6 +5,7 @@ describe "Solvedquestion pages", solvedquestion: true do
 
   subject { page }
 
+  let(:root) { FactoryBot.create(:root) }
   let(:admin) { FactoryBot.create(:admin) }
   let(:user) { FactoryBot.create(:user) }
   let!(:section) { FactoryBot.create(:section) }
@@ -358,6 +359,7 @@ describe "Solvedquestion pages", solvedquestion: true do
         before do
           fill_in "ans", with: exercise_decimal_answer - 0.0005
           click_button "Soumettre"
+          wait_for_ajax # Before reloading user to have correct rating
           admin.reload
         end
         specify do
@@ -375,6 +377,7 @@ describe "Solvedquestion pages", solvedquestion: true do
         before do
           fill_in "ans", with: exercise_decimal_answer - 0.6
           click_button "Soumettre"
+          wait_for_ajax # Before reloading user to have correct rating
           admin.reload
         end
         specify do
@@ -412,9 +415,7 @@ describe "Solvedquestion pages", solvedquestion: true do
       before { visit chapter_question_path(chapter, qcm) }
       
       describe "and does not check any option for fun" do
-        before do
-          click_button "Soumettre"
-        end
+        before { click_button "Soumettre" }
         specify do
           expect(page).to have_info_message("Veuillez cocher une réponse.")
           expect(page).not_to have_content(qcm.explanation)
@@ -432,6 +433,7 @@ describe "Solvedquestion pages", solvedquestion: true do
           check "ans_#{item_multiple_correct.id}"
           uncheck "ans_#{item_multiple_incorrect.id}"
           click_button "Soumettre"
+          wait_for_ajax # Before reloading user to have correct rating
           admin.reload
         end
         specify do
@@ -443,6 +445,29 @@ describe "Solvedquestion pages", solvedquestion: true do
           expect(admin.pointspersections.where(:section_id => section).first.points).to eq(0)
           expect(admin.chapters.exists?(chapter2.id)).to eq(false) # Even if it's the only question of chapter2
         end
+      end
+    end
+  end
+  
+  describe "root", :js => true do
+    let!(:user_rating_before) { user.rating }
+    before { sign_in root }
+    
+    describe "tries to solve a question for fun but is in the skin of a user" do
+      before do
+        visit chapter_question_path(chapter, exercise_decimal)
+        root.update_attribute(:skin, user.id)
+        fill_in "ans", with: exercise_decimal_answer
+        page.accept_alert "Vous ne pouvez pas effectuer cette action dans la peau de quelqu'un." do
+          click_button "Soumettre"
+        end
+        wait_for_ajax
+        user.reload
+        root.reload
+      end
+      specify do
+        expect(user.rating).to eq(0)
+        expect(root.rating).to eq(0)
       end
     end
   end
