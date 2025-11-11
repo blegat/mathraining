@@ -65,7 +65,7 @@ class ProblemsController < ApplicationController
 
     nombre = 0
     loop do
-      nombre = @problem.level*100 + @problem.section.id*1000+rand(100)
+      nombre = @problem.section.id * 1000 + @problem.level * 100 + rand(100)
       break if Problem.where(:number => nombre).count == 0
     end
     @problem.number = nombre

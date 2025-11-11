@@ -48,7 +48,7 @@ class VirtualtestsController < ApplicationController
 
     nombre = 0
     loop do
-      nombre = rand(100)
+      nombre = 10 + rand(90) # Between 10 and 99
       break if Virtualtest.where(:number => nombre).count == 0
     end
     @virtualtest.number = nombre
