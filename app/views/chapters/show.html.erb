@@ -1,12 +1,12 @@
 <%= render 'chapters/before', active: 'show' %>
 
-<%= render 'intro', allow_edit: true %>
+<%= render 'chapters/intro', allow_edit: true %>
 
 <% if !user_can_see_chapter_exercises(current_user, @chapter) %>
   <p class="text-color-red">Pour pouvoir accéder aux exercices de ce chapitre et ainsi le compléter, vous devez d'abord compléter :
   <% prems = true %>
   <% @chapter.prerequisites.order(:level, :position).each do |p| %>
-    <% if (!p.section.fondation && (!signed_in? || !current_user.chapters.exists?(p.id))) %>
+    <% if (!signed_in? || !current_user.chapters.exists?(p.id)) %>
       <%= " - " if !prems %>
       <%= p.name %>
       <% prems = false %>

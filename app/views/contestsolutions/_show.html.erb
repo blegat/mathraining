@@ -1,24 +1,15 @@
-<% can_see_correction = false %>
-
 <h3>
 <% if contestsolution.official? %>
   Solution officielle
-  <% can_see_correction = true %>
 <% elsif contestsolution.user == current_user %>
   Votre solution
   <% if @contestproblem.in_progress? %>
     (modifiable)
   <% elsif @contestproblem.in_correction? %>
     (en attente de correction)
-  <% elsif @contestproblem.at_least(:corrected) %>
-    <% if contestsolution.star %>
-      <%= image_tag contestsolution.icon, :class => "svg-black-white" %>
-    <% end %>
-    <% can_see_correction = true %>
   <% end %>
 <% else %>
   Solution de <%= raw contestsolution.user.linked_name %>
-  <% can_see_correction = true %>
 <% end %>
 
 <% if @contest.is_organized_by_or_root(current_user) %>
@@ -35,9 +26,6 @@
 </h3>
 
 <% if (contestsolution.official? || @contestproblem.in_correction? || @contestproblem.in_recorrection?) && @contest.is_organized_by(current_user) %>
-
-  <% can_edit_correction = true %>
-
   <script type="text/javascript">
   var reserve = function () {
     $.getScript("<%= reserve_contestsolution_url(contestsolution) %>");
@@ -48,43 +36,32 @@
   </script>
 
   <% res = contestsolution.reservation %>
-  <% if res == 0 %>
-    <% can_edit_correction = false %>
-    <% reservation_case = 1 %>
-  <% elsif res == current_user.id %>
-    <% reservation_case = 3 %>
-  <% else %>
-    <% can_edit_correction = false %>
-    <% reservation_case = 2 %>
-    <% other_name = User.find(res).name %>
-  <% end %>
-
-  <div id="div_reserved_by_nobody" class="mb-2 p-2 ps-3 bg-as-table-ld-warning" style="<%= "display:none;" if reservation_case != 1 %>">
+  <div id="div_reserved_by_nobody" class="mb-2 p-2 ps-3 bg-as-table-ld-warning" style="<%= "display:none;" if res != 0 %>">
     Cliquez ici pour réserver.
     <button id="button-reserve" class="btn btn-ld-light-dark ms-5" onclick="javascript:reserve()" <%= "disabled" if in_skin? %>>Réserver</button>
   </div>
 
-  <div id="div_reserved_by_other" class="mb-2 p-2 ps-3 bg-as-table-ld-warning-reder" style="<%= "display:none;" if reservation_case != 2 %>">
-    Réservé par <b><%= other_name %></b>.
+  <div id="div_reserved_by_other" class="mb-2 p-2 ps-3 bg-as-table-ld-warning-reder" style="<%= "display:none;" if res == 0 || res == current_user.id %>">
+    Réservé par <b><%= res > 0 ? User.find(res).name : "" %></b>.
   </div>
 
-  <div id="div_reserved_by_me" class="mb-2 p-2 ps-3 bg-as-table-ld-warning-greener" style="<%= "display:none;" if reservation_case != 3 %>">
+  <div id="div_reserved_by_me" class="mb-2 p-2 ps-3 bg-as-table-ld-warning-greener" style="<%= "display:none;" if res != current_user.id %>">
     Cliquez ici pour annuler votre réservation.
     <button id="button-unreserve" class="btn btn-ld-light-dark ms-5" onclick="javascript:unreserve()" <%= "disabled" if in_skin? %>>Annuler</button>
   </div>
 <% end %>
 
-<!-- Affichage de la soumission (on ajoute 'fake' à l'id si on ne peut pas modifier la solution) -->
+<!-- Affichage de la soumission (on ajoute 'fake' à l'id si on ne peut pas modifier la solution, pour laisser l'id "the" à contestcorrections/show) -->
 <% if !contestsolution.official %>
   <% can_edit = (contestsolution.user == current_user && @contestproblem.in_progress?) %>
 
-  <div id="the<%= 'fake' if contestsolution.user != current_user %>" class="content-part">
+  <div id="the<%= 'fake' if !can_edit %>" class="content-part">
     <%= render 'shared/post', ms: contestsolution, kind: "contestsolution", can_edit: can_edit %>
   </div>
 
   <% if can_edit %>    
     <div id="form" class="form-part px-1" style="height:0px;">
-    <%= render 'contestsolutions/edit', contestsolution: contestsolution %>
+      <%= render 'contestsolutions/edit', contestsolution: contestsolution %>
     </div>
     
     <% if contestsolution.errors.any? %>
@@ -93,6 +70,6 @@
   <% end %>
 <% end %>
 
-<% if can_see_correction %>
-  <%= render 'contestcorrections/show', contestsolution: contestsolution, contestcorrection: contestsolution.contestcorrection, can_edit_correction: can_edit_correction %>
+<% if @contestproblem.at_least(:corrected) || @contest.is_organized_by_or_root(current_user) %>
+  <%= render 'contestcorrections/show', contestsolution: contestsolution, contestcorrection: contestsolution.contestcorrection %>
 <% end %>

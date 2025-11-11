@@ -41,6 +41,34 @@ describe "users/index.html.erb", user: true do
   let!(:user16) { FactoryBot.create(:user, country: country2, rating: 0) }
   let!(:user17) { FactoryBot.create(:user, country: country2, rating: 0, email_confirm: false) }
   
+  RSpec::Matchers.define :have_user_line do |line_id, rank_str, user|
+    match do |page|
+      expect(page).to have_selector("#rank_#{line_id}", text: rank_str, exact_text: true)
+      expect(page).to have_selector("#name_#{line_id}", text: user.name)
+      expect(page).to have_css("img[id=flag_#{line_id}_#{user.country.id}]")
+      expect(page).to have_selector("#score_#{line_id}", text: user.rating.to_s, exact_text: true)
+      
+      Section.where(:fondation => false).each do |s|
+        if s.max_score > 0
+          pps = Pointspersection.where(:section => s, :user => user).first
+          if !pps.nil?
+            expect(page).to have_selector("#pct_section_#{line_id}_#{s.id}", text: (pps.points == 0 ? "-" : (100*pps.points/s.max_score).to_s + "%"), exact_text: true)
+          end
+        end
+      end
+      
+      recent_points = 0
+      twoweeksago = (Date.today - 13.days).in_time_zone.to_datetime
+      user.solvedproblems.includes(:problem).where("resolution_time >= ?", twoweeksago).each do |s|
+        recent_points += s.problem.value
+      end
+      user.solvedquestions.includes(:question).where("resolution_time >= ?", twoweeksago).each do |s|
+        recent_points += s.question.value
+      end
+      expect(page).to have_selector("#recent_#{line_id}", text: (recent_points == 0 ? "" : "+ " + recent_points.to_s), exact_text: true)
+    end
+  end
+  
   before(:all) do
     Color.create_defaults
   end

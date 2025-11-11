@@ -16,7 +16,7 @@ var showFalse = function () {
 <% mine_is_star = false %>
 
 <!-- Votre solution -->
-<% if !@contest.is_organized_by_or_admin(current_user) && @contestproblem.at_least(:in_correction) %>
+<% if !@contest.is_organized_by_or_admin(current_user) %>
   <% sol = @contestproblem.contestsolutions.where(:user => current_user).first %>
   <% if !sol.nil? %>
     <h3>Votre solution</h3>
@@ -24,13 +24,13 @@ var showFalse = function () {
       <% if sol.star %>
         <% mine_is_star = true %>
       <% end %>
-      <%= render 'contestsolutions/line', sol: sol %>
+      <%= render 'contestsolutions/line', sol: sol, type: "mine" %>
     </table>
   <% end %>
 <% end %>
 
 <!-- Solutions étoilées + correctes (7/7) -->
-<% if @contestproblem.at_least(:corrected) || (@contestproblem.in_correction? && @contest.is_organized_by_or_root(current_user)) %>
+<% if @contestproblem.at_least(:corrected) || @contest.is_organized_by_or_root(current_user) %>
   <h3>
   <% if mine_is_star %>
     Autres solutions étoilées
@@ -42,14 +42,14 @@ var showFalse = function () {
   <% if starred.count > 0 %>
     <table class="table table-bordered" style="width:auto;">
     <% starred.each do |sol| %>
-      <%= render 'contestsolutions/line', sol: sol %>
+      <%= render 'contestsolutions/line', sol: sol, type: "starred" %>
     <% end %>
     </table>
   <% else %>
     <% if @contest.is_organized_by_or_root(current_user) %>
       <p>Aucune solution étoilée. <span class="text-color-orange">Il en faut au minimum une !</span></p>
     <% else %>
-      <p>Aucune <% "autre" if mine_is_star %> solution étoilée.</p>
+      <p>Aucune <%= "autre" if mine_is_star %> solution étoilée.</p>
     <% end %>
   <% end %>
   
@@ -60,7 +60,7 @@ var showFalse = function () {
     <table class="table table-bordered fixed-scroll" style="width:auto; display:none;" id="all_correct">
     <tbody>
     <% good.each do |sol| %>
-      <%= render 'contestsolutions/line', sol: sol %>
+      <%= render 'contestsolutions/line', sol: sol, type: "good" %>
     <% end %>
     </tbody>
     </table>
@@ -70,7 +70,7 @@ var showFalse = function () {
 <% end %>
 
 <!-- Solutions erronées -->
-<% if @contestproblem.at_least(:in_correction) && @contest.is_organized_by_or_root(current_user) %>
+<% if @contest.is_organized_by_or_root(current_user) %>
   <h3>Solutions erronées / non-publiques</h3>
   <% bad = @contestproblem.contestsolutions.where("score < 7 AND corrected = ?", true).order(:user_id).includes(:user) %>
   <% if bad.count > 0 %>
@@ -78,7 +78,7 @@ var showFalse = function () {
     <table class="table table-bordered fixed-scroll" style="width:auto; display:none;" id="all_false">
     <tbody>
     <% bad.each do |sol| %>
-      <%= render 'contestsolutions/line', sol: sol %>
+      <%= render 'contestsolutions/line', sol: sol, type: "bad" %>
     <% end %>
     </tbody>
     </table>
@@ -95,17 +95,14 @@ var showFalse = function () {
     <table class="table table-bordered fixed-scroll" style="width:auto;">
     <tbody>
     <% tocorrect.each do |sol| %>
-      <%= render 'contestsolutions/line', sol: sol %>
+      <%= render 'contestsolutions/line', sol: sol, type: "tocorrect" %>
     <% end %>
     </tbody>
     </table>
   <% else %>
     <p>Aucune solution à corriger.</p>
-  <% end %>
-  
-  <% if tocorrect.count == 0 %>
     <% if @contestproblem.contestsolutions.where(:star => true).count == 0 %>
-      <p class="text-center fst-italic">Il faut au minimum une solution étoilée pour publier les résultats</p>
+      <p class="text-center fst-italic">Il faut au minimum une solution étoilée pour publier les résultats.</p>
     <% else %>
       <p class="text-center">
         <%= link_to "Publier les résultats", publish_results_contestproblem_path(@contestproblem), :method => :put, class: 'btn btn-danger', data: { confirm: "Êtes-vous #{current_user.sure} de vouloir publier les corrections ? Attention ! Il ne sera plus possible de modifier les corrections après cela." } %>

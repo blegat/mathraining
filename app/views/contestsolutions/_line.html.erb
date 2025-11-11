@@ -1,6 +1,6 @@
 <!-- Couleur -->
-<% cansee_score = (sol.contestproblem.at_least(:corrected) || @contest.is_organized_by_or_root(current_user)) %>
-<% if !sol.corrected || !cansee_score %>
+<% can_see_score = (sol.contestproblem.at_least(:corrected) || @contest.is_organized_by_or_root(current_user)) %>
+<% if !sol.corrected || !can_see_score %>
   <% if @contest.is_organized_by_or_root(current_user) && (sol.contestproblem.in_correction? || sol.contestproblem.in_recorrection?) %>
     <% res = sol.reservation %>
     <% if res == 0 %>
@@ -23,7 +23,7 @@
 
 <!-- Icone -->
 <td class="text-center" style="width:50px;">
-  <% if !cansee_score %>
+  <% if !can_see_score %>
     <%= image_tag dash_icon, :class => "svg-black-white" %>
   <% else %>
     <%= image_tag sol.icon, :class => "svg-black-white" %>
@@ -31,7 +31,7 @@
 </td>
 
 <!-- Qui -->
-<td style="width:200px;">
+<td id="user_<%= sol.id %>" style="width:200px;">
   <% if sol.official %>
     <b>Solution officielle</b>
   <% else %>
@@ -39,8 +39,8 @@
   <% end %>
 </td>
 
-<td class="text-center" style="width:40px;">
-  <% if cansee_score && !sol.official? && sol.score >= 0 %>
+<td id="score_<%= sol.id %>" class="text-center" style="width:40px;">
+  <% if can_see_score && !sol.official? && sol.score >= 0 %>
     <%= sol.score %>
   <% else %>
     -

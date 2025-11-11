@@ -29,10 +29,6 @@ describe "Myfile pages", myfile: true do
   let(:contestsolutionmyfile) { FactoryBot.create(:contestsolutionmyfile, myfiletable: contestsolution) }
   let(:contestcorrectionmyfile) { FactoryBot.create(:contestcorrectionmyfile, myfiletable: contestcorrection) }
   let(:tchatmessagemyfile) { FactoryBot.create(:tchatmessagemyfile, myfiletable: tchatmessage) }
-  
-  let(:attachments_folder) { "./spec/attachments/" }
-  let(:new_image) { "Smiley1.gif" }
-  let(:exe_attachment) { "hack.exe" }
 
   describe "root" do
     before { sign_in root }

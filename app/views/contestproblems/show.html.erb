@@ -46,8 +46,10 @@
   </p>
 <% end %>
 
-<!-- Les solutions -->
-<%= render 'contestsolutions/index' %>
+<% if @contestproblem.at_least(:in_correction) %>
+  <!-- Les solutions -->
+  <%= render 'contestsolutions/index' %>
+<% end %>
 
 <!-- Nouvelle solution -->
 <% if !@contestsolution.nil? && @contestsolution.new_record? %>

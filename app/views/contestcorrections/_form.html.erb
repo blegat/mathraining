@@ -2,7 +2,7 @@
 <%= render 'shared/error_messages', object: f.object %>
 <%= render 'shared/preview' %>
 <%= render 'shared/smiley' %>
-<%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :disabled => !can_edit_correction %>
+<%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :disabled => !has_reserved_correction %>
 <script>initAndUpdatePreviewSafeWhenPossible()</script>
 <script>initLeavingFormWhenPossible()</script>
 </div>
@@ -11,6 +11,6 @@
   <div class="mb-2">
   <label for="score" class="form-label">Score attribué (sur 7)</label>
   <%= val = (!params.has_key?(:score) ? (contestsolution.score >= 0 ? contestsolution.score : nil) : params[:score]) %>
-  <%= number_field_tag "score", val, :min => 0, :max => 7, :class => "form-control", :style => "width:70px;", :disabled => !can_edit_correction %>
+  <%= number_field_tag "score", val, :min => 0, :max => 7, :class => "form-control", :style => "width:70px;", :disabled => !has_reserved_correction %>
   </div>
 <% end %>

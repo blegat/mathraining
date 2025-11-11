@@ -2,7 +2,7 @@
 </div>
 
 <!-- Ajouter quelque chose -->
-<% if signed_in? && (current_user.admin? || (!@chapter.online && current_user.creating_chapters.exists?(@chapter.id))) %>
+<% if signed_in? && (current_user.admin? || !@chapter.online) %>
   <div class="noprint">
     <p class="text-center">
       Ajouter un :

@@ -386,51 +386,50 @@ module ApplicationHelper
   end
   
   def x_icon
-    return 'x-mid.svg' # 'X.gif'
+    return 'x-mid.svg'
   end
   
   def v_icon
-    return 'check-lg.svg' # 'V.gif'
+    return 'check-lg.svg'
   end
   
   def dash_icon
-    return 'dash-mid.svg' # 'tiret.gif'
+    return 'dash-mid.svg'
   end
   
   def star_icon
-    return 'star-fill-small.svg' # 'star1.png'
+    return 'star-fill-small.svg'
   end
   
   def warning_icon
-    return 'exclamation-triangle.svg' # 'X.gif'
+    return 'exclamation-triangle.svg'
   end
   
   def blocked_icon
     return 'x-circle.svg'
   end
   
-def ruby_to_javascript(arr)
-  t = "["
-  prems = true
-  arr.each do |a|
-    t << "," if !prems
-    prems = false
-    t << a.to_s
+  def ruby_to_javascript(arr)
+    t = "["
+    prems = true
+    arr.each do |a|
+      t << "," if !prems
+      prems = false
+      t << a.to_s
+    end
+    t << "]"
+    return t.html_safe
   end
-  t << "]"
-  return t.html_safe
-end
 
-def ruby_to_javascript_string(arr)
-  t = "["
-  prems = true
-  arr.each do |a|
-    t << "," if !prems
-    prems = false
-    t << "'" << a << "'"
+  def ruby_to_javascript_string(arr)
+    t = "["
+    prems = true
+    arr.each do |a|
+      t << "," if !prems
+      prems = false
+      t << "'" << a << "'"
+    end
+    t << "]"
+    return t.html_safe
   end
-  t << "]"
-  return t.html_safe
-end
-
 end

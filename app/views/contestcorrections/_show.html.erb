@@ -12,7 +12,7 @@
 
 <% if can_edit %>  
   <div id="form" class="form-part px-1" style="height:0px;">
-  <%= render 'contestcorrections/edit', contestsolution: contestsolution, contestcorrection: contestcorrection, can_edit_correction: can_edit_correction %>
+  <%= render 'contestcorrections/edit', contestsolution: contestsolution, contestcorrection: contestcorrection %>
   </div>
   
   <% if contestcorrection.errors.any? %>

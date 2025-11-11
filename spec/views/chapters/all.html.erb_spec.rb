@@ -47,6 +47,7 @@ describe "chapters/all.html.erb", type: :view, chapter: true do
       should have_no_content("Des questions ? N'hésitez pas à demander de l'aide")
       expect(response).to render_template(:partial => "chapters/_before", :locals => {active: 'all'})
       expect(response).to render_template(:partial => "chapters/_intro")
+      expect(response).to render_template(:partial => "chapters/_after")
     end
   end
   
@@ -60,6 +61,7 @@ describe "chapters/all.html.erb", type: :view, chapter: true do
       should have_content("Des questions ? N'hésitez pas à demander de l'aide")
       expect(response).to render_template(:partial => "chapters/_before", :locals => {active: 'all'})
       expect(response).to render_template(:partial => "chapters/_intro")
+      expect(response).to render_template(:partial => "chapters/_after")
     end
   end
   
@@ -71,6 +73,7 @@ describe "chapters/all.html.erb", type: :view, chapter: true do
       should have_no_content("Des questions ? N'hésitez pas à demander de l'aide")
       expect(response).to render_template(:partial => "chapters/_before", :locals => {active: 'all'})
       expect(response).to render_template(:partial => "chapters/_intro")
+      expect(response).to render_template(:partial => "chapters/_after")
     end
   end
 end
