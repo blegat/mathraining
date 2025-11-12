@@ -36,7 +36,7 @@ describe "chapters/show.html.erb", type: :view, chapter: true do
     context "who didn't solve any prerequisite" do
       it "renders warning about exercises" do
         render template: "chapters/show"
-        should have_text("Pour pouvoir accéder aux exercices de ce chapitre et ainsi le compléter, vous devez d'abord compléter : #{chapter_prerequisite.name} - #{chapter_prerequisite2.name}", normalize_ws: true)
+        should have_content("Pour pouvoir accéder aux exercices de ce chapitre et ainsi le compléter, vous devez d'abord compléter : #{chapter_prerequisite.name} - #{chapter_prerequisite2.name}", normalize_ws: true)
         expect(response).to render_template(:partial => "chapters/_before", :locals => {active: 'show'})
         expect(response).to render_template(:partial => "chapters/_intro", :locals => {allow_edit: true})
         expect(response).to render_template(:partial => "chapters/_after")
@@ -47,7 +47,7 @@ describe "chapters/show.html.erb", type: :view, chapter: true do
       before { user.chapters << chapter_prerequisite }
       it "renders warning about exercises" do
         render template: "chapters/show"
-        should have_text("Pour pouvoir accéder aux exercices de ce chapitre et ainsi le compléter, vous devez d'abord compléter : #{chapter_prerequisite2.name}", normalize_ws: true)
+        should have_content("Pour pouvoir accéder aux exercices de ce chapitre et ainsi le compléter, vous devez d'abord compléter : #{chapter_prerequisite2.name}", normalize_ws: true)
       end
     end
     
@@ -66,7 +66,7 @@ describe "chapters/show.html.erb", type: :view, chapter: true do
   context "if the user is not signed in" do
     it "renders warning about exercises" do
       render template: "chapters/show"
-      should have_text("Pour pouvoir accéder aux exercices de ce chapitre et ainsi le compléter, vous devez d'abord compléter : #{chapter_prerequisite.name} - #{chapter_prerequisite2.name}", normalize_ws: true)
+      should have_content("Pour pouvoir accéder aux exercices de ce chapitre et ainsi le compléter, vous devez d'abord compléter : #{chapter_prerequisite.name} - #{chapter_prerequisite2.name}", normalize_ws: true)
       expect(response).to render_template(:partial => "chapters/_before", :locals => {active: 'show'})
       expect(response).to render_template(:partial => "chapters/_intro", :locals => {allow_edit: true})
       expect(response).to render_template(:partial => "chapters/_after")

@@ -207,7 +207,7 @@ describe "Virtualtest pages", virtualtest: true do
               specify do
                 expect(problem.submissions.order(:id).last.created_at).to be_within(1.second).of(takentest.taken_time + virtualtest.duration.minutes)
                 expect(page).to have_selector("h1", text: "Tests virtuels")
-                expect(page).to have_link("Problème 1", href: problem_path(problem, :sub => problem.submissions.where(:user => user_with_rating_200).first))
+                expect(page).to have_link("Problème 1", href: problem_submission_path(problem, problem.submissions.where(:user => user_with_rating_200).first))
                 expect(page).to have_link("Problème 2", href: problem_path(problem_with_prerequisite))
                 expect(page).to have_content("? / 7") # Problème 1
                 expect(page).to have_content("0 / 7") # Problème 2 (no submission)

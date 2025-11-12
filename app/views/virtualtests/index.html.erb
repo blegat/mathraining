@@ -154,7 +154,7 @@
               <% elsif sub_id < 0 %>
                 <%= link_to "Problème #{h+1}", problem_path(p) %>
               <% else %>
-                <%= link_to "Problème #{h+1}", problem_path(p, :sub => sub_id) %>
+                <%= link_to "Problème #{h+1}", problem_submission_path(p, sub_id) %>
               <% end %>
               </h5></center>
               <!-- Déplacer -->

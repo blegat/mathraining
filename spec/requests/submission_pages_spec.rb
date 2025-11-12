@@ -50,7 +50,7 @@ describe "Submission pages", submission: true do
     end
       
     describe "visits new submission page" do
-      before { visit problem_path(problem, :sub => 0) }
+      before { visit new_problem_submission_path(problem) }
       it do
         should have_selector("h3", text: "Énoncé")
         should have_selector("h3", text: "Nouvelle soumission")
@@ -131,7 +131,7 @@ describe "Submission pages", submission: true do
     
     describe "visits draft page" do
       let!(:draft_submission) { FactoryBot.create(:submission, problem: problem, user: user, status: :draft, content: newsubmission) }
-      before { visit problem_path(problem, :sub => 0) }
+      before { visit new_problem_submission_path(problem) }
       it do
         should have_selector("h3", text: "Énoncé")
         should have_selector("h3", text: "Nouvelle soumission")
@@ -245,7 +245,7 @@ describe "Submission pages", submission: true do
     end
      
     describe "visits waiting submission" do
-      before { visit problem_path(problem_with_submissions, :sub => waiting_submission) }
+      before { visit problem_submission_path(problem_with_submissions, waiting_submission) }
       it do
         should have_no_selector("h3", text: "Soumission (en attente de correction)")
         should have_no_selector("div", text: waiting_submission.content)
@@ -268,14 +268,14 @@ describe "Submission pages", submission: true do
     describe "visits problem with waiting submission" do
       before { visit problem_path(problem_with_submissions) }
       it do
-        should have_link("Voir", href: problem_path(problem_with_submissions, :sub => good_corrector_submission))
-        should have_link("Voir", href: problem_path(problem_with_submissions, :sub => waiting_submission))
-        should have_no_link("Voir", href: problem_path(problem_with_submissions, :sub => wrong_submission))
+        should have_link("Voir", href: problem_submission_path(problem_with_submissions, good_corrector_submission))
+        should have_link("Voir", href: problem_submission_path(problem_with_submissions, waiting_submission))
+        should have_no_link("Voir", href: problem_submission_path(problem_with_submissions, wrong_submission))
       end
     end
     
     describe "visits waiting submission" do
-      before { visit problem_path(problem_with_submissions, :sub => waiting_submission) }
+      before { visit problem_submission_path(problem_with_submissions, waiting_submission) }
       it do
         should have_selector("h3", text: "Soumission (en attente de correction)")
         should have_selector("div", text: waiting_submission.content)
@@ -287,7 +287,7 @@ describe "Submission pages", submission: true do
     describe "visits reserved waiting submission" do
       before do
         FactoryBot.create(:following, user: good_corrector, submission: waiting_submission, read: true, kind: :reservation)
-        visit problem_path(problem_with_submissions, :sub => waiting_submission) # Reload
+        visit problem_submission_path(problem_with_submissions, waiting_submission) # Reload
       end
       it do
         should have_button("Poster et refuser la soumission")
@@ -423,7 +423,7 @@ describe "Submission pages", submission: true do
           before do
             sign_out
             sign_in admin
-            visit problem_path(problem_with_submissions, :sub => waiting_submission)
+            visit problem_submission_path(problem_with_submissions, waiting_submission)
             fill_in "MathInput", with: newcorrection2
             click_button "Poster et accepter la soumission"
             waiting_submission.reload
@@ -449,12 +449,12 @@ describe "Submission pages", submission: true do
             before { visit notifs_path }
             it do
               should have_selector("h1", text: "Nouvelles réponses")
-              should have_link("Voir", href: problem_path(problem_with_submissions, :sub => waiting_submission))
+              should have_link("Voir", href: problem_submission_path(problem_with_submissions, waiting_submission))
             end
           end
           
           describe "reads correction" do
-            before { visit problem_path(problem_with_submissions, :sub => waiting_submission) }
+            before { visit problem_submission_path(problem_with_submissions, waiting_submission) }
             it do
               should have_selector("h3", text: "Soumission (erronée)")
               should have_selector("div", text: newcorrection)
@@ -467,7 +467,7 @@ describe "Submission pages", submission: true do
               before { visit notifs_path }
               it do
                 should have_selector("h1", text: "Nouvelles réponses")
-                should have_no_link("Voir", href: problem_path(problem_with_submissions, :sub => waiting_submission))
+                should have_no_link("Voir", href: problem_submission_path(problem_with_submissions, waiting_submission))
               end
             end
             
@@ -504,7 +504,7 @@ describe "Submission pages", submission: true do
                 end
                 
                 describe "reads answer" do
-                  before { visit problem_path(problem_with_submissions, :sub => waiting_submission) }
+                  before { visit problem_submission_path(problem_with_submissions, waiting_submission) }
                   it do
                     should have_selector("h3", text: "Soumission (erronée)")
                     should have_selector("div", text: newanswer)
@@ -570,7 +570,7 @@ describe "Submission pages", submission: true do
     # -- TESTS THAT REQUIRE JAVASCRIPT --
     
     describe "wants to correct a submission", :js => true do
-      before { visit problem_path(problem_with_submissions, :sub => waiting_submission) }
+      before { visit problem_submission_path(problem_with_submissions, waiting_submission) }
       it do
         should have_selector("h3", text: "Soumission (en attente de correction)")
         should have_selector("div", text: waiting_submission.content)
@@ -582,7 +582,7 @@ describe "Submission pages", submission: true do
       describe "and hacks the system to unreserve a submission we did not reserve" do
         before do
           f = Following.create(:user => good_corrector, :submission => waiting_submission, :read => true, :kind => :reservation)
-          visit problem_path(problem_with_submissions, :sub => waiting_submission)
+          visit problem_submission_path(problem_with_submissions, waiting_submission)
           f.update_attribute(:user, admin)
           click_button "Annuler ma réservation"
           wait_for_ajax
@@ -655,7 +655,7 @@ describe "Submission pages", submission: true do
     
     describe "visits next good submission" do
       before do
-        visit problem_path(problem_with_submissions, :sub => good_submission)
+        visit problem_submission_path(problem_with_submissions, good_submission)
         click_link("Bonne solution suivante")
       end
       it { should have_content(good_corrector_submission.content) }
@@ -671,7 +671,7 @@ describe "Submission pages", submission: true do
     
     describe "visits previous good submission" do
       before do
-        visit problem_path(problem_with_submissions, :sub => good_corrector_submission)
+        visit problem_submission_path(problem_with_submissions, good_corrector_submission)
         click_link("Bonne solution précédente")
       end
       it { should have_content(good_submission.content) }
@@ -686,7 +686,7 @@ describe "Submission pages", submission: true do
     end
      
     describe "visits wrong submission" do
-      before { visit problem_path(problem_with_submissions, :sub => wrong_submission) }
+      before { visit problem_submission_path(problem_with_submissions, wrong_submission) }
       specify do
         expect(page).to have_link("Modifier la solution")
         expect(page).to have_link("Supprimer cette soumission")
@@ -710,7 +710,7 @@ describe "Submission pages", submission: true do
     
     describe "gives a star to a submission" do
       before do
-        visit problem_path(problem_with_submissions, :sub => good_submission)
+        visit problem_submission_path(problem_with_submissions, good_submission)
         click_link "Étoiler cette solution"
         good_submission.reload
       end
@@ -720,7 +720,7 @@ describe "Submission pages", submission: true do
     describe "removes a star from a submission" do
       before do
         good_submission.update_attribute(:star, true)
-        visit problem_path(problem_with_submissions, :sub => good_submission)
+        visit problem_submission_path(problem_with_submissions, good_submission)
         click_link "Ne plus étoiler cette solution"
         good_submission.reload
       end
@@ -731,7 +731,7 @@ describe "Submission pages", submission: true do
       let!(:rating_before) { good_corrector.rating }
     
       before do
-        visit problem_path(problem_with_submissions, :sub => good_corrector_submission)
+        visit problem_submission_path(problem_with_submissions, good_corrector_submission)
         click_link "Marquer comme erronée"
         good_corrector_submission.reload
         good_corrector.reload
@@ -750,7 +750,7 @@ describe "Submission pages", submission: true do
       before do
         Takentest.create(:user => user, :virtualtest => virtualtest, :taken_time => DateTime.now - 2.weeks)
         Following.create(:user => root, :submission => waiting_submission_in_test, :read => true, :kind => :reservation)
-        visit problem_path(problem_in_test, :sub => waiting_submission_in_test)
+        visit problem_submission_path(problem_in_test, waiting_submission_in_test)
       end
       it do
         should have_button("Poster et refuser la soumission")
@@ -830,7 +830,7 @@ describe "Submission pages", submission: true do
     describe "visits a solution reserved by somebody else" do
       before do
         Following.create(:user => good_corrector, :submission => waiting_submission, :read => true, :kind => :reservation)
-        visit problem_path(problem_with_submissions, :sub => waiting_submission)
+        visit problem_submission_path(problem_with_submissions, waiting_submission)
       end
       specify do
         expect(page).to have_content("Cette soumission est en train d'être corrigée par #{good_corrector.name}.")
@@ -871,7 +871,7 @@ describe "Submission pages", submission: true do
   
     describe "creates a draft with a file" do
       before do
-        visit problem_path(problem, :sub => 0)
+        visit new_problem_submission_path(problem)
         fill_in "MathInput", with: newsubmission
         wait_for_js_imports
         click_button "Ajouter une pièce jointe" # We don't fill file1
@@ -916,7 +916,7 @@ describe "Submission pages", submission: true do
     describe "creates a correction with a file" do
       let!(:numfiles_before) { Myfile.count }
       before do
-        visit problem_path(problem_with_submissions, :sub => waiting_submission)
+        visit problem_submission_path(problem_with_submissions, waiting_submission)
         wait_for_js_imports
         click_button "Réserver cette soumission"
         wait_for_ajax
@@ -946,8 +946,8 @@ describe "Submission pages", submission: true do
       end
       it do
         should have_link(good_corrector.name, href: user_path(good_corrector))
-        should have_link("Voir", href: problem_path(problem_with_submissions, :sub => good_corrector_submission))
-        should have_no_link("Voir", href: problem_path(problem_with_submissions, :sub => wrong_submission))
+        should have_link("Voir", href: problem_submission_path(problem_with_submissions, good_corrector_submission))
+        should have_no_link("Voir", href: problem_submission_path(problem_with_submissions, wrong_submission))
       end
     end
     
@@ -960,8 +960,8 @@ describe "Submission pages", submission: true do
       end
       it do
         should have_link(other_user.name, href: user_path(other_user))
-        should have_link("Voir", href: problem_path(problem_with_submissions, :sub => wrong_submission))
-        should have_no_link("Voir", href: problem_path(problem_with_submissions, :sub => good_corrector_submission))
+        should have_link("Voir", href: problem_submission_path(problem_with_submissions, wrong_submission))
+        should have_no_link("Voir", href: problem_submission_path(problem_with_submissions, good_corrector_submission))
       end
     end
     
@@ -971,7 +971,7 @@ describe "Submission pages", submission: true do
         wrong_submission.update_attribute(:content, "Voici une autre solution")
         Correction.create(user: other_user, submission: wrong_submission, content: "Bonjour, ceci est ma correction")
         good_corrector_submission.update_attribute(:content, "Salut, ceci est ma solution")
-        visit problem_path(problem_with_submissions, :sub => waiting_submission)
+        visit problem_submission_path(problem_with_submissions, waiting_submission)
         wait_for_js_imports
         click_link "Effectuer une recherche dans toutes les soumissions"
         wait_for_ajax
@@ -983,13 +983,13 @@ describe "Submission pages", submission: true do
       it do
         should have_link(user.name, href: user_path(user))
         should have_content("Bonjour, voici une solution")
-        should have_link("Voir", href: problem_path(problem_with_submissions, :sub => waiting_submission))
+        should have_link("Voir", href: problem_submission_path(problem_with_submissions, waiting_submission))
         should have_link(other_user.name, href: user_path(other_user))
         should have_content("Bonjour, ceci est ma correction")
-        should have_link("Voir", href: problem_path(problem_with_submissions, :sub => wrong_submission))
+        should have_link("Voir", href: problem_submission_path(problem_with_submissions, wrong_submission))
         should have_no_link(good_corrector.name, href: user_path(good_corrector))
         should have_no_content("Salut, ceci est ma solution")
-        should have_no_link("Voir", href: problem_path(problem_with_submissions, :sub => good_corrector_submission))
+        should have_no_link("Voir", href: problem_submission_path(problem_with_submissions, good_corrector_submission))
       end
     end
   end

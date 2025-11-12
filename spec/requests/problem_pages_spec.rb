@@ -84,7 +84,7 @@ describe "Problem pages", problem: true do
       let!(:solvedproblem) { FactoryBot.create(:solvedproblem, :user => user_with_rating_200, :problem => online_problem, :submission => correct_submission) }
       before { visit problem_path(online_problem, :auto => 1) }
       it do
-        should have_current_path(problem_path(online_problem, :sub => correct_submission))
+        should have_current_path(problem_submission_path(online_problem, correct_submission))
         should have_content(correct_submission.content)
       end
     end

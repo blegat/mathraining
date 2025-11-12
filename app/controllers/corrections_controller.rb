@@ -27,14 +27,14 @@ class CorrectionsController < ApplicationController
     @correction.user = current_user
     
     # Invalid CSRF token
-    render_with_error('problems/show', @correction, get_csrf_error_message) and return if @invalid_csrf_token
+    render_with_error('submissions/show', @correction, get_csrf_error_message) and return if @invalid_csrf_token
 
     # If a score is needed, we check that the score is set and appropriate
     if @submission.waiting? && @submission.intest && @submission.score == -1
       if (params[:score].nil? || params[:score].blank?)
-        render_with_error('problems/show', @correction, "Veuillez donner un score à cette solution.") and return
+        render_with_error('submissions/show', @correction, "Veuillez donner un score à cette solution.") and return
       elsif (params[:score].to_i != 6 && params[:score].to_i != 7 && params[:commit] == "Poster et accepter la soumission")
-        render_with_error('problems/show', @correction, "Vous ne pouvez pas accepter une solution sans lui donner un score de 6 ou 7.") and return
+        render_with_error('submissions/show', @correction, "Vous ne pouvez pas accepter une solution sans lui donner un score de 6 ou 7.") and return
       end
     end
 
@@ -46,15 +46,15 @@ class CorrectionsController < ApplicationController
 
     # New comment meanwhile
     if lastid != params[:last_comment_id].to_i
-      render_with_error('problems/show', @correction, "Un nouveau commentaire a été posté avant le vôtre ! Veuillez en prendre connaissance et reposter votre commentaire si nécessaire.") and return
+      render_with_error('submissions/show', @correction, "Un nouveau commentaire a été posté avant le vôtre ! Veuillez en prendre connaissance et reposter votre commentaire si nécessaire.") and return
     end
     
     # Invalid correction
-    render_with_error('problems/show') and return if !@correction.valid?
+    render_with_error('submissions/show') and return if !@correction.valid?
 
     # Attached files
     attach = create_files
-    render_with_error('problems/show', @correction, @file_error) and return if !@file_error.nil?
+    render_with_error('submissions/show', @correction, @file_error) and return if !@file_error.nil?
     
     @correction.save
     
@@ -142,7 +142,7 @@ class CorrectionsController < ApplicationController
     end
 
     flash[:success] = m
-    redirect_to problem_path(@problem, :sub => @submission)
+    redirect_to problem_submission_path(@problem, @submission)
   end
 
   private
@@ -176,7 +176,7 @@ class CorrectionsController < ApplicationController
   def submission_not_plagiarized_or_closed
     if @submission.plagiarized? || @submission.closed?
       flash[:danger] = "Cette solution ne peut plus être commentée."
-      redirect_to problem_path(@problem, :sub => @submission)
+      redirect_to problem_submission_path(@problem, @submission)
     end
   end
   
@@ -191,7 +191,7 @@ class CorrectionsController < ApplicationController
   def submission_has_recent_activity
     if @submission.user == current_user && @submission.wrong? && !@submission.has_recent_activity
       flash[:danger] = "Cette soumission ne peut plus être commentée."
-      redirect_to problem_path(@problem, :sub => @submission)
+      redirect_to problem_submission_path(@problem, @submission)
     end
   end
 end

@@ -94,7 +94,7 @@ describe "solvedproblems/index.html.erb", solvedproblem: true do
       should have_selector("h1", text: "Résolutions récentes")
       
       should have_link(user1.name, href: user_path(user1))
-      should have_link("Problème ##{problem1.number}", href: problem_path(problem1, :sub => submission1))
+      should have_link("Problème ##{problem1.number}", href: problem_submission_path(problem1, submission1))
       
       should have_link(user2.name, href: user_path(user2))
       should have_no_link("Problème ##{problem2_with_prerequisite.number}") # No access to this problem
@@ -114,10 +114,10 @@ describe "solvedproblems/index.html.erb", solvedproblem: true do
       should have_selector("h1", text: "Résolutions récentes")
       
       should have_link(user1.name, href: user_path(user1))
-      should have_link("Problème ##{problem1.number}", href: problem_path(problem1, :sub => submission1))
+      should have_link("Problème ##{problem1.number}", href: problem_submission_path(problem1, submission1))
       
       should have_link(user2.name, href: user_path(user2))
-      should have_link("Problème ##{problem2_with_prerequisite.number}", href: problem_path(problem2_with_prerequisite, :sub => submission2))
+      should have_link("Problème ##{problem2_with_prerequisite.number}", href: problem_submission_path(problem2_with_prerequisite, submission2))
       
       should have_no_link(user3.name) # Incorrect date
       should have_no_content("Problème ##{problem3.number}")
@@ -137,10 +137,10 @@ describe "solvedproblems/index.html.erb", solvedproblem: true do
       should have_link(write_date_only_small(date_today - 1.day))
       
       should have_link(user1.name, href: user_path(user1))
-      should have_link("Problème ##{problem1.number}", href: problem_path(problem1, :sub => submission1))
+      should have_link("Problème ##{problem1.number}", href: problem_submission_path(problem1, submission1))
       
       should have_link(user2.name, href: user_path(user2))
-      should have_link("Problème ##{problem2_with_prerequisite.number}", href: problem_path(problem2_with_prerequisite, :sub => submission2))
+      should have_link("Problème ##{problem2_with_prerequisite.number}", href: problem_submission_path(problem2_with_prerequisite, submission2))
       
       should have_no_link(user3.name) # Incorrect date
       should have_no_content("Problème ##{problem3.number}")
@@ -156,10 +156,10 @@ describe "solvedproblems/index.html.erb", solvedproblem: true do
         should have_link(write_date_only_small(date_today - 2.days))
       
         should have_no_link(user1.name, href: user_path(user1))
-        should have_no_link("Problème ##{problem1.number}", href: problem_path(problem1, :sub => submission1))
+        should have_no_link("Problème ##{problem1.number}", href: problem_submission_path(problem1, submission1))
       
         should have_no_link(user2.name, href: user_path(user2))
-        should have_no_link("Problème ##{problem2_with_prerequisite.number}", href: problem_path(problem2_with_prerequisite, :sub => submission2))
+        should have_no_link("Problème ##{problem2_with_prerequisite.number}", href: problem_submission_path(problem2_with_prerequisite, submission2))
       
         should have_link(user3.name) # Correct date now!
         should have_content("Problème ##{problem3.number}")

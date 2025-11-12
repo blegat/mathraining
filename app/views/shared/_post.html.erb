@@ -43,7 +43,8 @@
     <% theid = -ms.id if kind == "submission" || kind == "contestsolution" %>
     <% theid = ms.id if kind == "message" || kind == "correction" || kind == "contestcorrection" %>
   
-    <%= render '/shared/text_show_hide_code', content: ms.content, id: theid, replace_indice: (kind == "message") %>
+    <!-- NB: We use ms.content_was to get the content before it was possibly changed (useful in case of error when updating a draft submission) -->
+    <%= render '/shared/text_show_hide_code', content: (ms.new_record? ? ms.content : ms.content_was), id: theid, replace_indice: (kind == "message") %>
   
     <!-- Pièces jointes -->
     <%= render 'shared/show_files', s: ms %>

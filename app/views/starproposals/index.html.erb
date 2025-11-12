@@ -42,7 +42,7 @@
     <% if show_all %>
       <td class="text-center" style="width:110px;"><%= s.status_string %></td>
     <% end %>
-    <td class="text-center" style="width:54px;"><%= link_to "Voir", problem_path(s.submission.problem_id, :sub => s.submission_id) %></td>
+    <td class="text-center" style="width:54px;"><%= link_to "Voir", problem_submission_path(s.submission.problem_id, s.submission_id) %></td>
     </tr>
   <% end %>
   </table>

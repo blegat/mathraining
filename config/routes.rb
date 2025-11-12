@@ -78,7 +78,7 @@ Rails.application.routes.draw do
       put :mark_reviewed
       put :unmark_reviewed
     end
-    resources :submissions, only: [:create, :index] # 'index' only via JS
+    resources :submissions, only: [:show, :new, :create, :index] # 'index' only via JS
     resources :externalsolutions, only: [:create]
   end
   

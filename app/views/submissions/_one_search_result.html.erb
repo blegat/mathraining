@@ -12,5 +12,5 @@
 <td class="sub-date d-none d-lg-table-cell"><%= write_date(r[0].created_at) %></td>
 <td class="sub-user"><%= r[0].user.linked_name %></td>
 <td class="sub-preview"><%= r[1][0] %><b><u><%= r[1][1] %></u></b><%= r[1][2] %></td>
-<td class="sub-link"><%= link_to "Voir", problem_path(r[0].problem, :sub => r[0].id) %></td>
+<td class="sub-link"><%= link_to "Voir", problem_submission_path(r[0].problem, r[0].id) %></td>
 </tr>

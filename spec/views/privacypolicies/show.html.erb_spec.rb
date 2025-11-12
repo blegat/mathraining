@@ -34,7 +34,7 @@ describe "privacypolicies/show.html.erb", type: :view, privacypolicy: true do
         render template: "privacypolicies/show"
         should have_selector("b", text: "Version du #{write_date_only(privacypolicy1.publication_time)}")
         should have_link("Version du #{write_date_only(privacypolicy2.publication_time)}", href: privacypolicy_path(privacypolicy2))
-        should have_no_text("(dernière version)")
+        should have_no_content("(dernière version)")
         should have_content(privacypolicy1.content)
         should have_no_link("Mettre à jour la politique de confidentialité")
       end
@@ -48,7 +48,7 @@ describe "privacypolicies/show.html.erb", type: :view, privacypolicy: true do
         should have_link("Version du #{write_date_only(privacypolicy1.publication_time)}", href: privacypolicy_path(privacypolicy1))
         should have_selector("b", text: "Version du #{write_date_only(privacypolicy2.publication_time)}")
         should have_link("Version du #{write_date_only(privacypolicy3.publication_time)}", href: privacypolicy_path(privacypolicy3))
-        should have_no_text("(dernière version)")
+        should have_no_content("(dernière version)")
         should have_content(privacypolicy2.content)
       end
     end
@@ -60,7 +60,7 @@ describe "privacypolicies/show.html.erb", type: :view, privacypolicy: true do
         render template: "privacypolicies/show"
         should have_link("Version du #{write_date_only(privacypolicy2.publication_time)}", href: privacypolicy_path(privacypolicy2))
         should have_selector("b", text: "Version du #{write_date_only(privacypolicy3.publication_time)}")
-        should have_text("(dernière version)")
+        should have_content("(dernière version)")
         should have_content(privacypolicy3.content)
       end
     end

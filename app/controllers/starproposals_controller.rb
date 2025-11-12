@@ -32,7 +32,7 @@ class StarproposalsController < ApplicationController
   def destroy
     @starproposal.destroy
     flash[:success] = "Proposition d'étoile supprimée."
-    redirect_to problem_path(@submission.problem, :sub => @submission)
+    redirect_to problem_submission_path(@submission.problem, @submission)
   end
   
   # Create a star proposal
@@ -44,7 +44,7 @@ class StarproposalsController < ApplicationController
     else
       flash[:danger] = error_list_for(starproposal)
     end
-    redirect_to problem_path(@submission.problem, :sub => @submission)
+    redirect_to problem_submission_path(@submission.problem, @submission)
   end
   
   # Update a star proposal (for example its status, to confirm it)
@@ -57,7 +57,7 @@ class StarproposalsController < ApplicationController
       end
       flash[:success] = "Proposition d'étoile modifiée."
     end
-    redirect_to problem_path(@submission.problem, :sub => @submission)
+    redirect_to problem_submission_path(@submission.problem, @submission)
   end
 
   private
@@ -85,7 +85,7 @@ class StarproposalsController < ApplicationController
   def correct_submission
     unless @submission.correct?
       flash[:danger] = "La soumission n'est pas correcte."
-      redirect_to problem_path(@submission.problem, :sub => @submission)
+      redirect_to problem_submission_path(@submission.problem, @submission)
     end
   end
 end

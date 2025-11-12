@@ -25,8 +25,8 @@
     <td class="d-none d-md-table-cell">Niv. <%= s.level %></td>
     <td>
     <% if non_accessible_problems_set != "all" && !non_accessible_problems_set.include?(s.problem_id) %>
-      <span class="d-none d-lg-inline"><%= link_to "Problème ##{s.problem_number}", problem_path(s.problem_id, :sub => s.submission_id) %></span>
-      <span class="d-inline d-lg-none"><%= link_to "##{s.problem_number}", problem_path(s.problem_id, :sub => s.submission_id) %></span>
+      <span class="d-none d-lg-inline"><%= link_to "Problème ##{s.problem_number}", problem_submission_path(s.problem_id, s.submission_id) %></span>
+      <span class="d-inline d-lg-none"><%= link_to "##{s.problem_number}", problem_submission_path(s.problem_id, s.submission_id) %></span>
     <% else %>
       <span class="d-none d-md-inline">Problème </span>#<%= s.problem_number %>
     <% end %>

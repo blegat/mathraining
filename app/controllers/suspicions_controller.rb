@@ -32,7 +32,7 @@ class SuspicionsController < ApplicationController
     unless @suspicion.confirmed?
       @suspicion.destroy
       flash[:success] = "Suspicion supprimée."
-      redirect_to problem_path(@submission.problem, :sub => @submission)
+      redirect_to problem_submission_path(@submission.problem, @submission)
     end
   end
   
@@ -44,7 +44,7 @@ class SuspicionsController < ApplicationController
     else
       flash[:danger] = error_list_for(suspicion)
     end
-    redirect_to problem_path(@submission.problem, :sub => @submission)
+    redirect_to problem_submission_path(@submission.problem, @submission)
   end
   
   # Update a suspicion (for example its status, to confirm it)
@@ -84,7 +84,7 @@ class SuspicionsController < ApplicationController
       end
       flash[:success] = "Suspicion modifiée."
     end
-    redirect_to problem_path(@submission.problem, :sub => @submission)
+    redirect_to problem_submission_path(@submission.problem, @submission)
   end
 
   private

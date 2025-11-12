@@ -390,7 +390,7 @@
           - <%= a[:chapter_name] %>
         <% elsif a[:type] == "P" %>
           <% if a[:peutvoir] %>
-            <%= link_to "Problème ##{a[:number]}", problem_path(a[:id], :sub => a[:sub]) %>
+            <%= link_to "Problème ##{a[:number]}", problem_submission_path(a[:id], a[:sub]) %>
           <% else %>
             Problème #<%= a[:number] %>
           <% end %>

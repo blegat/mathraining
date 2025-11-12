@@ -23,7 +23,7 @@ describe "Star proposal pages", starproposal: true do
     before { sign_in corrector }
     
     describe "visits wrong submission" do
-      before { visit problem_path(problem, :sub => wrong_submission) }
+      before { visit problem_submission_path(problem, wrong_submission) }
       it do
         should have_selector("h1", text: "Problème ##{problem.number}")
         should have_selector("div", text: wrong_submission.content)
@@ -32,7 +32,7 @@ describe "Star proposal pages", starproposal: true do
     end
     
     describe "visits correct submission" do
-      before { visit problem_path(problem, :sub => correct_submission) }
+      before { visit problem_submission_path(problem, correct_submission) }
       it do
         should have_selector("h1", text: "Problème ##{problem.number}")
         should have_selector("div", text: correct_submission.content)
@@ -88,9 +88,9 @@ describe "Star proposal pages", starproposal: true do
         should have_selector("h1", text: "Propositions d'étoiles")
         should have_no_link("Tout voir")
         should have_no_link("Voir nouvelles propositions")
-        should have_link("Voir", href: problem_path(starproposal1.submission.problem, :sub => starproposal1.submission))
-        should have_link("Voir", href: problem_path(starproposal2.submission.problem, :sub => starproposal2.submission))
-        should have_no_link("Voir", href: problem_path(starproposal_root.submission.problem, :sub => starproposal_root.submission))
+        should have_link("Voir", href: problem_submission_path(starproposal1.submission.problem, starproposal1.submission))
+        should have_link("Voir", href: problem_submission_path(starproposal2.submission.problem, starproposal2.submission))
+        should have_no_link("Voir", href: problem_submission_path(starproposal_root.submission.problem, starproposal_root.submission))
       end
     end
   end
@@ -106,8 +106,8 @@ describe "Star proposal pages", starproposal: true do
         should have_selector("h1", text: "Propositions d'étoiles")
         should have_link("Tout voir")
         should have_no_link("Voir nouvelles propositions")
-        should have_link("Voir", href: problem_path(starproposal1.submission.problem, :sub => starproposal1.submission))
-        should have_no_link("Voir", href: problem_path(starproposal2.submission.problem, :sub => starproposal2.submission))
+        should have_link("Voir", href: problem_submission_path(starproposal1.submission.problem, starproposal1.submission))
+        should have_no_link("Voir", href: problem_submission_path(starproposal2.submission.problem, starproposal2.submission))
       end
       
       describe "and then visits all proposals" do
@@ -116,15 +116,15 @@ describe "Star proposal pages", starproposal: true do
           should have_selector("h1", text: "Propositions d'étoiles")
           should have_no_link("Tout voir")
           should have_link("Nouvelles propositions uniquement")
-          should have_link("Voir", href: problem_path(starproposal1.submission.problem, :sub => starproposal1.submission))
-          should have_link("Voir", href: problem_path(starproposal2.submission.problem, :sub => starproposal2.submission))
+          should have_link("Voir", href: problem_submission_path(starproposal1.submission.problem, starproposal1.submission))
+          should have_link("Voir", href: problem_submission_path(starproposal2.submission.problem, starproposal2.submission))
         end
       end
     end
     
     describe "visits a submission with waiting star proposal" do
       let!(:starproposal) { FactoryBot.create(:starproposal, :user => corrector, :submission => correct_submission, :status => :waiting_treatment) }
-      before { visit problem_path(problem, :sub => correct_submission) }
+      before { visit problem_submission_path(problem, correct_submission) }
       specify do
         expect(page).to have_selector("td", text: starproposal.reason)
         expect(page).to have_selector("td", text: "En attente")

@@ -14,11 +14,11 @@ class ProblemsController < ApplicationController
   before_action :offline_problem, only: [:destroy, :put_online, :add_prerequisite, :delete_prerequisite, :add_virtualtest]
   before_action :user_can_see_problem, only: [:show]
   before_action :problem_can_be_online, only: [:put_online]
+  
+  before_action :show_flash_info_if_no_new_submission, only: [:index, :show]
 
   # Show problems of a section
   def index
-    flash.now[:info] = current_user.last_sanction_of_type(:no_submission).message if signed_in? && current_user.has_sanction_of_type(:no_submission)
-    flash.now[:info] = @no_new_submission_message if @no_new_submission
   end
 
   # Show one problem
@@ -28,22 +28,14 @@ class ProblemsController < ApplicationController
       if s.nil?
         redirect_to problem_path(@problem) and return
       else
-        redirect_to problem_path(@problem, :sub => s.submission_id) and return
+        redirect_to problem_submission_path(@problem, s.submission_id) and return
       end
     end
     
-    flash.now[:info] = current_user.last_sanction_of_type(:no_submission).message if current_user.has_sanction_of_type(:no_submission)
-    if params.has_key?("sub")
-      if params[:sub].to_i == 0 # New submission
-        flash.now[:info] = @no_new_submission_message if @no_new_submission
-        @submission = @problem.submissions.where(:user => current_user, :status => :draft).first # In case there is a draft
-        @submission = Submission.new if @submission.nil? # In case there is no draft
-      else # See existing submission
-        @submission = Submission.find_by_id(params[:sub].to_i)
-        if @submission.nil? || @submission.problem != @problem || !@submission.can_be_seen_by(current_user)
-          redirect_to problem_path(@problem) and return
-        end
-        @correction = Correction.new unless @submission.draft?
+    if params.has_key?("sub") # Old submission paths were of the form '/problems/problem_id?sub=submission_id'
+      submission = Submission.find_by_id(params[:sub].to_i)
+      if !submission.nil?
+        redirect_to problem_submission_path(@problem, submission)
       end
     end
   end

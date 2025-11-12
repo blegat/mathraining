@@ -9,6 +9,7 @@ describe ProblemsController, type: :controller, problem: true do
   let(:chapter) { FactoryBot.create(:chapter, online: true) }
   let(:online_problem) { FactoryBot.create(:problem, online: true) }
   let(:offline_problem) { FactoryBot.create(:problem, online: false) }
+  let(:submission) { FactoryBot.create(:submission, problem: online_problem, user: user, status: :waiting) }
   
   before { online_problem.chapters << chapter }
   
@@ -59,5 +60,10 @@ describe ProblemsController, type: :controller, problem: true do
     it { expect(response).to have_controller_post_path_behavior('add_prerequisite', online_problem, :access_refused) }
     it { expect(response).to have_controller_put_path_behavior('delete_prerequisite', online_problem, :access_refused) }
     it { expect(response).to have_controller_post_path_behavior('add_virtualtest', online_problem, :access_refused) }
+    
+    it "redirects to new format when trying to see a submission" do
+      get :show, params: {id: online_problem.id, sub: submission.id}
+      expect(response).to redirect_to problem_submission_path(online_problem, submission)
+    end
   end
 end

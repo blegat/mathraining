@@ -23,7 +23,7 @@ describe "questions/_admin.html.erb", type: :view, question: true do
       should have_no_link("Modifier les réponses") # qcm only
       should have_link("Modifier l'explication")
       should have_link("Supprimer cet exercice")
-      should have_no_text("Déplacer cet exercice")
+      should have_no_content("Déplacer cet exercice")
       should have_link("Mettre en ligne")
     end
   end
@@ -38,7 +38,7 @@ describe "questions/_admin.html.erb", type: :view, question: true do
       should have_link("Modifier les réponses")
       should have_link("Modifier l'explication")
       should have_no_link("Supprimer cet exercice") # because online
-      should have_text("Déplacer cet exercice")
+      should have_content("Déplacer cet exercice")
       should have_link("haut", :href => order_question_path(question, :new_position => 1))
       should have_no_link("bas")
       should have_no_link("Mettre en ligne") # because online
@@ -49,7 +49,7 @@ describe "questions/_admin.html.erb", type: :view, question: true do
       
       it "renders the link 'bas' too" do
         render partial: "questions/admin", locals: {question: question}
-        should have_text("Déplacer cet exercice")
+        should have_content("Déplacer cet exercice")
         should have_link("haut", :href => order_question_path(question, :new_position => 1))
         should have_link("bas", :href => order_question_path(question, :new_position => 4))
       end

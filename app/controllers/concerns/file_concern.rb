@@ -7,37 +7,52 @@ module FileConcern
   
   # Method called from several locations to create files from a form
   def create_files
+    # Add new files to 'attach'
     attach = Array.new
     totalsize = add_new_files(attach)
-    return [] if !@file_error.nil?
+    destroy_files(attach) and return [] if !@file_error.nil?
+    
+    # Check total size of files
     check_files_total_size(totalsize)
     destroy_files(attach) and return [] if !@file_error.nil?
+    
+    # Return 'attach': one should call attach_files(attach, object) after having saved the object
     return attach
   end
 
   # Method called from several locations to update files from a form: we should be sure that the object is valid
   def update_files(object)
+    # Compute total size of checked existing files
     totalsize = 0
     postfix = (params["postfix"].nil? ? "" : params["postfix"]);
     object.myfiles.each do |f|
-      if params["prevFile#{postfix}_#{f.id}".to_sym].nil?
-        f.destroy # Should automatically purge the file
-      else
+      if !params["prevFile#{postfix}_#{f.id}".to_sym].nil?
         totalsize = totalsize + f.file.blob.byte_size
       end
     end
-
+    
+    # Add new files to 'attach'
+    attach = Array.new
+    totalsize += add_new_files(attach)
+    destroy_files(attach) and return if !@file_error.nil?
+    
+    # Check total size of files
+    check_files_total_size(totalsize)
+    destroy_files(attach) and return if !@file_error.nil?
+    
+    # Delete unchecked files (only at the end if there is no error with other files)
+    object.myfiles.each do |f|
+      if params["prevFile#{postfix}_#{f.id}".to_sym].nil?
+        f.destroy # Should automatically purge the file
+      end
+    end
     object.fakefiles.each do |f|
       if params["prevFakeFile#{postfix}_#{f.id}".to_sym].nil?
         f.destroy
       end
     end
     
-    attach = Array.new
-    totalsize += add_new_files(attach)
-    return if !@file_error.nil?
-    check_files_total_size(totalsize)
-    destroy_files(attach) and return if !@file_error.nil?
+    # Actually attach the files to the object
     attach_files(attach, object)
   end
   
@@ -51,7 +66,6 @@ module FileConcern
         attach.push(Myfile.new(:file => params["file#{postfix}_#{k}".to_sym]))
         if !attach.last.save
           attach.pop()
-          destroy_files(attach)
           nom = params["file#{postfix}_#{k}".to_sym].original_filename
           @file_error = "Votre pièce jointe '#{nom}' ne respecte pas les conditions."
           return 0;

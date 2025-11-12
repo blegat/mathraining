@@ -19,7 +19,7 @@ describe "Savedreply pages", savedreply: true do
     before { sign_in root }
     
     describe "visits submission" do
-      before { visit problem_path(problem, :sub => submission) }
+      before { visit problem_submission_path(problem, submission) }
       specify do
         expect(page).to have_link("1 rép. gén.")
         expect(page).to have_link("1 rép. A. B.")
@@ -148,17 +148,17 @@ describe "Savedreply pages", savedreply: true do
     
     describe "visits path associated to generic saved reply" do
       before { visit savedreply_path(savedreply_generic) }
-      it { should have_current_path(problem_path(problem, :sub => submission)) }
+      it { should have_current_path(problem_submission_path(problem, submission)) }
     end
     
     describe "visits path associated to section saved reply" do
       before { visit savedreply_path(savedreply_section) }
-      it { should have_current_path(problem_path(problem, :sub => submission)) }
+      it { should have_current_path(problem_submission_path(problem, submission)) }
     end
     
     describe "visits path associated to problem saved reply" do
       before { visit savedreply_path(savedreply_problem) }
-      it { should have_current_path(problem_path(problem, :sub => submission)) }
+      it { should have_current_path(problem_submission_path(problem, submission)) }
     end
   end
   

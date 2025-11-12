@@ -16,9 +16,9 @@ class MyfilesController < ApplicationController
     type = @myfile.myfiletable_type
     about = @myfile.myfiletable
     if type == "Submission"
-      redirect_to problem_path(about.problem, :sub => about)
+      redirect_to problem_submission_path(about.problem, about)
     elsif type == "Correction"
-      redirect_to problem_path(about.submission.problem, :sub => about.submission)
+      redirect_to problem_submission_path(about.submission.problem, about.submission)
     elsif type == "Message"
       redirect_to subject_path(about.subject, :page => about.page, :msg => about.id)
     elsif type == "Contestsolution"
@@ -44,10 +44,10 @@ class MyfilesController < ApplicationController
       redirect_to myfiles_path
     elsif @fakething.fakefiletable_type == "Submission"
       @submission = @fakething.fakefiletable
-      redirect_to problem_path(@submission.problem, :sub => @submission)
+      redirect_to problem_submission_path(@submission.problem, @submission)
     elsif @fakething.fakefiletable_type == "Correction"
       @submission = @fakething.fakefiletable.submission
-      redirect_to problem_path(@submission.problem, :sub => @submission)
+      redirect_to problem_submission_path(@submission.problem, @submission)
     elsif @fakething.fakefiletable_type == "Contestsolution"
       @contestsolution = @fakething.fakefiletable
       redirect_to contestproblem_path(@contestsolution.contestproblem, :sol => @contestsolution)

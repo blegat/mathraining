@@ -88,5 +88,5 @@
     <td class="sub-match"><%= image_tag v_icon, :class => "svg-black-white" if m %></td>
   <% end %>
 <% end %>
-<td class="sub-link"><%= link_to "Voir", problem_path(s.problem_id, :sub => s.id) if !hidden_sub %></td>
+<td class="sub-link"><%= link_to "Voir", problem_submission_path(s.problem_id, s.id) if !hidden_sub %></td>
 </tr>

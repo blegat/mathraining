@@ -24,7 +24,7 @@ class SavedrepliesController < ApplicationController
     else
       submission = Submission.where.not(:status => [:closed, :plagiarized, :draft]).where(:problem_id => @savedreply.problem_id).order(:created_at).last
     end
-    redirect_to (submission.nil? ? root_path : problem_path(submission.problem, :sub => submission))
+    redirect_to (submission.nil? ? root_path : problem_submission_path(submission.problem, submission))
   end
   
   # Create a saved reply (show the form)
@@ -49,7 +49,7 @@ class SavedrepliesController < ApplicationController
         @savedreply.update_attribute(:content, "(Proposé par #{current_user.name})\n\n" + @savedreply.content)
       end
       flash[:success] = "Réponse ajoutée."
-      redirect_to problem_path(@submission.problem, :sub => @submission)
+      redirect_to problem_submission_path(@submission.problem, @submission)
     else
       render 'new'
     end
@@ -65,7 +65,7 @@ class SavedrepliesController < ApplicationController
         @savedreply.update_attribute(:content, "(Proposé par #{current_user.name})\n\n" + @savedreply.content)
       end
       flash[:success] = "Réponse modifiée."
-      redirect_to problem_path(@submission.problem, :sub => @submission)
+      redirect_to problem_submission_path(@submission.problem, @submission)
     else
       render 'edit'
     end

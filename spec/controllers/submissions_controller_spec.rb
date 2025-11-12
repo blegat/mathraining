@@ -28,15 +28,17 @@ describe SubmissionsController, type: :controller, submission: true do
     bad_corrector.chapters << chapter
   end
   
+  # TODO: Add lines for 'show' and 'new' (but there are many smooth redirections leading to result 'ok')
+  
   context "if the user did not solve the prerequisite" do
     before { sign_in_controller(bad_user) }
     
-     it { expect(response).to have_controller_create_behavior('submission', :access_refused, {:problem_id => problem.id}) }
+    it { expect(response).to have_controller_create_behavior('submission', :access_refused, {:problem_id => problem.id}) }
   end
   
   context "if the user is a simple user (1)" do
     before { sign_in_controller(user1) }
-      
+    
     it { expect(response).to have_controller_create_behavior('submission', :ok, {:problem_id => problem.id}) }
     it { expect(response).to have_controller_update_behavior(submission_draft, :ok) }
     it { expect(response).to have_controller_update_behavior(submission_wrong, :danger) } # Not allowed but smooth redirect

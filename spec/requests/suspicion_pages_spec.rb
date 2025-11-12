@@ -24,7 +24,7 @@ describe "Suspicion pages", suspicion: true do
     before { sign_in corrector }
     
     describe "visits wrong submission" do
-      before { visit problem_path(problem, :sub => wrong_submission) }
+      before { visit problem_submission_path(problem, wrong_submission) }
       it do
         should have_selector("h1", text: "Problème ##{problem.number}")
         should have_selector("div", text: wrong_submission.content)
@@ -68,9 +68,9 @@ describe "Suspicion pages", suspicion: true do
         should have_selector("h1", text: "Suspicions de plagiat")
         should have_no_link("Tout voir")
         should have_no_link("Voir nouvelles suspicions")
-        should have_link("Voir", href: problem_path(suspicion1.submission.problem, :sub => suspicion1.submission))
-        should have_link("Voir", href: problem_path(suspicion2.submission.problem, :sub => suspicion2.submission))
-        should have_no_link("Voir", href: problem_path(suspicion_root.submission.problem, :sub => suspicion_root.submission))
+        should have_link("Voir", href: problem_submission_path(suspicion1.submission.problem, suspicion1.submission))
+        should have_link("Voir", href: problem_submission_path(suspicion2.submission.problem, suspicion2.submission))
+        should have_no_link("Voir", href: problem_submission_path(suspicion_root.submission.problem, suspicion_root.submission))
       end
     end
   end
@@ -87,9 +87,9 @@ describe "Suspicion pages", suspicion: true do
         should have_selector("h1", text: "Suspicions de plagiat")
         should have_link("Tout voir")
         should have_no_link("Voir nouvelles suspicions")
-        should have_link("Voir", href: problem_path(suspicion1.submission.problem, :sub => suspicion1.submission))
-        should have_link("Voir", href: problem_path(suspicion2.submission.problem, :sub => suspicion2.submission))
-        should have_no_link("Voir", href: problem_path(suspicion3.submission.problem, :sub => suspicion3.submission))
+        should have_link("Voir", href: problem_submission_path(suspicion1.submission.problem, suspicion1.submission))
+        should have_link("Voir", href: problem_submission_path(suspicion2.submission.problem, suspicion2.submission))
+        should have_no_link("Voir", href: problem_submission_path(suspicion3.submission.problem, suspicion3.submission))
       end
       
       describe "and then visits all suspicions" do
@@ -98,16 +98,16 @@ describe "Suspicion pages", suspicion: true do
           should have_selector("h1", text: "Suspicions de plagiat")
           should have_no_link("Tout voir")
           should have_link("Nouvelles suspicions uniquement")
-          should have_link("Voir", href: problem_path(suspicion1.submission.problem, :sub => suspicion1.submission))
-          should have_link("Voir", href: problem_path(suspicion2.submission.problem, :sub => suspicion2.submission))
-          should have_link("Voir", href: problem_path(suspicion3.submission.problem, :sub => suspicion3.submission))
+          should have_link("Voir", href: problem_submission_path(suspicion1.submission.problem, suspicion1.submission))
+          should have_link("Voir", href: problem_submission_path(suspicion2.submission.problem, suspicion2.submission))
+          should have_link("Voir", href: problem_submission_path(suspicion3.submission.problem, suspicion3.submission))
         end
       end
     end
     
     describe "visits a submission with waiting suspicion" do
       let!(:suspicion) { FactoryBot.create(:suspicion, :user => corrector, :submission => wrong_submission, :status => :waiting_confirmation) }
-      before { visit problem_path(problem, :sub => wrong_submission) }
+      before { visit problem_submission_path(problem, wrong_submission) }
       specify do
         expect(page).to have_selector("td", text: suspicion.source)
         expect(page).to have_selector("td", text: "À confirmer")
@@ -143,7 +143,7 @@ describe "Suspicion pages", suspicion: true do
       let!(:reservation) { FactoryBot.create(:following, :user => corrector, :submission => waiting_submission, :kind => :reservation) }
       before do
         waiting_submission.update(:intest => true, :score => -1)
-        visit problem_path(problem, :sub => waiting_submission)
+        visit problem_submission_path(problem, waiting_submission)
       end
       it do
         should have_selector("div", text: "Cette soumission est en train d'être corrigée par #{corrector.name}")
@@ -190,7 +190,7 @@ describe "Suspicion pages", suspicion: true do
       let!(:solvedproblem) { FactoryBot.create(:solvedproblem, :user => correct_submission.user, :problem => problem, :submission => correct_submission) }
       before do
         correct_submission.user.update_attribute(:rating, 200)
-        visit problem_path(problem, :sub => correct_submission)
+        visit problem_submission_path(problem, correct_submission)
         select "Confirmé", from: "edit_status_field_#{suspicion.id}"
         click_button "edit_button_#{suspicion.id}"
         suspicion.reload
@@ -209,7 +209,7 @@ describe "Suspicion pages", suspicion: true do
       let!(:suspicion) { FactoryBot.create(:suspicion, :user => corrector, :submission => plagiarized_submission, :status => :confirmed) }
       let!(:auto_following) { FactoryBot.create(:following, :user => corrector, :submission => plagiarized_submission, :kind => :first_corrector) }
       before do
-        visit problem_path(problem, :sub => plagiarized_submission)
+        visit problem_submission_path(problem, plagiarized_submission)
         select "Rejeté", from: "edit_status_field_#{suspicion.id}"
         click_button "edit_button_#{suspicion.id}"
         suspicion.reload
@@ -226,7 +226,7 @@ describe "Suspicion pages", suspicion: true do
       let!(:suspicion) { FactoryBot.create(:suspicion, :user => corrector, :submission => plagiarized_submission, :status => :confirmed) }
       let!(:correction) { FactoryBot.create(:correction, :user => root, :submission => plagiarized_submission) }
       before do
-        visit problem_path(problem, :sub => plagiarized_submission)
+        visit problem_submission_path(problem, plagiarized_submission)
         select "Pardonné", from: "edit_status_field_#{suspicion.id}"
         click_button "edit_button_#{suspicion.id}"
         suspicion.reload

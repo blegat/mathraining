@@ -64,7 +64,7 @@ describe "Myfile pages", myfile: true do
     describe "visits one submission file" do
       before { visit myfile_path(submissionmyfile) }
       it do
-        should have_current_path(problem_path(problem, :sub => submission))
+        should have_current_path(problem_submission_path(problem, submission))
         should have_link(submissionmyfile.file.filename.to_s, href: rails_blob_url(submissionmyfile.file, :only_path => true, :disposition => 'attachment'))
         should have_link("Supprimer le contenu", href: fake_delete_myfile_path(submissionmyfile))
       end
@@ -72,7 +72,7 @@ describe "Myfile pages", myfile: true do
       describe "and fake deletes it" do
         before { click_link("Supprimer le contenu", href: fake_delete_myfile_path(submissionmyfile)) }
         it do
-          should have_current_path(problem_path(problem, :sub => submission))
+          should have_current_path(problem_submission_path(problem, submission))
           should have_success_message("Contenu de la pièce jointe supprimé.")
           should have_content("désactivée")
         end
@@ -82,7 +82,7 @@ describe "Myfile pages", myfile: true do
     describe "visits one correction file" do
       before { visit myfile_path(correctionmyfile) }
       it do
-        should have_current_path(problem_path(problem, :sub => submission))
+        should have_current_path(problem_submission_path(problem, submission))
         should have_link(correctionmyfile.file.filename.to_s, href: rails_blob_url(correctionmyfile.file, :only_path => true, :disposition => 'attachment'))
         should have_link("Supprimer le contenu", href: fake_delete_myfile_path(correctionmyfile))
       end
@@ -90,7 +90,7 @@ describe "Myfile pages", myfile: true do
       describe "and fake deletes it" do
         before { click_link("Supprimer le contenu", href: fake_delete_myfile_path(correctionmyfile)) }
         it do
-          should have_current_path(problem_path(problem, :sub => submission))
+          should have_current_path(problem_submission_path(problem, submission))
           should have_success_message("Contenu de la pièce jointe supprimé.")
           should have_content("désactivée")
         end

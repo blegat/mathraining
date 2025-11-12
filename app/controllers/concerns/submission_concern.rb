@@ -17,17 +17,17 @@ module SubmissionConcern
     if @submission.nil? || @submission.user == current_user
       if current_user.has_sanction_of_type(:no_submission)
         flash[:danger] = "Action impossible en raison de votre sanction actuelle."
-        redirect_to problem_path(@problem, :sub => @submission) and return
+        redirect_to problem_submission_path(@problem, @submission) and return
       end
       s = current_user.submissions.where(:problem => @problem, :status => :plagiarized).order(:last_comment_time).last
       if !s.nil? && s.date_new_submission_allowed > Date.today
         flash[:danger] = "Action impossible en raison d'une solution plagiée sur ce problème."
-        redirect_to problem_path(@problem, :sub => @submission) and return
+        redirect_to problem_submission_path(@problem, @submission) and return
       end
       s = current_user.submissions.where(:problem => @problem, :status => :closed).order(:last_comment_time).last
       if !s.nil? && s.date_new_submission_allowed > Date.today
         flash[:danger] = "Action impossible en raison d'une solution clôturée sur ce problème."
-        redirect_to problem_path(@problem, :sub => @submission) and return
+        redirect_to problem_submission_path(@problem, @submission) and return
       end
     end
   end
