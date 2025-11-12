@@ -1,61 +1,10 @@
-<% provide(:title, "Problème ##{ @contestproblem.number }") %>
-
-<h1><%= title_contest(@contest, "Problème&nbsp;##{@contestproblem.number}".html_safe) %></h1>
-
-<p class="text-center fst-italic pt-1">
-  Solutions acceptées du <%= write_date_with_link(@contestproblem.start_time, @contest, @contestproblem) %> au <%= write_date_with_link(@contestproblem.end_time, @contest, @contestproblem) %> (heures belges)
-</p>
-
-<!-- Enoncé -->
-<h3>Énoncé</h3>
-<div class="mb-3">
-  <%= htmlise(@contestproblem.statement) %>
-</div>
-
-<!-- Origine si organisateur ou root ou problème terminé -->
-<% if @contest.is_organized_by_or_root(current_user) || @contestproblem.at_least(:in_correction) %>
-  <p class="fst-italic">Origine du problème :
-  <% if @contestproblem.origin.nil? || @contestproblem.origin.size == 0 %>
-    Inconnue
-  <% else %>
-    <b><%= @contestproblem.origin %></b>
-  <% end %>
-  </p>
-<% end %>
-
-<!-- Chronomètre -->
-<% if @contestproblem.in_progress? %>
-  <%= render 'shared/clock', text: "Temps restant", date_limit: @contestproblem.end_time.to_i, message_zero: "Temps écoulé", classes: "mb-3" %>
-<% elsif @contestproblem.at_most(:not_started_yet) && !@contest.in_construction? %>
-  <%= render 'shared/clock', text: "Temps avant publication", date_limit: @contestproblem.start_time.to_i, message_zero: "En ligne", classes: "mb-3" %>
-<% end %>
-
-<% if @contest.is_organized_by_or_root(current_user) %>
-  <p class="text-center">
-    <%= link_to "Modifier ce problème", edit_contestproblem_path(@contestproblem) %>
-    <% if @contest.in_construction? %>
-      | <%= link_to "Supprimer ce problème", @contestproblem, method: :delete, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer ce problème ?" } %>
-    <% end %>
-    <% if current_user.root? %>
-      <% if @contestproblem.corrected? %>
-        | <%= link_to "Autoriser nouvelles corrections", authorize_corrections_contestproblem_path(@contestproblem), :method => :put %>
-      <% elsif @contestproblem.in_recorrection? %>
-        | <%= link_to "Stopper nouvelles corrections", unauthorize_corrections_contestproblem_path(@contestproblem), :method => :put %>
-      <% end %>
-    <% end %>
-  </p>
-<% end %>
-
-<% if @contestproblem.at_least(:in_correction) %>
-  <!-- Les solutions -->
-  <%= render 'contestsolutions/index' %>
-<% end %>
+<%= render 'contestproblems/show' %>
 
 <!-- Nouvelle solution -->
-<% if !@contestsolution.nil? && @contestsolution.new_record? %>
+<% if !@contestsolution.nil? %>
   <hr>
   <% if current_user.can_write_submission? %>
-    <%= render 'contestsolutions/new' %>
+    <%= render 'contestsolutions/show_in_progress' %>
   <% else %>
     <p class="mb-2">Pour pouvoir rédiger une solution à un problème, vous devez d'abord compléter les chapitres suivants :</p>
     <%= render 'submissions/chapters_to_write_submission' %>
@@ -66,27 +15,15 @@
   <hr><p class="text-center">Ce problème est en cours de correction.</p>
 <% end %>
 
-<% if @contest.is_organized_by_or_admin(current_user) %>
+<% if @contest.is_organized_by_or_admin(current_user) && @contestproblem.at_most(:in_progress) %>
   <% official_sol = @contestproblem.contestsolutions.where(:official => true).first %>
   <% if @contestproblem.at_most(:not_started_yet) %>
-    <hr><p class="text-center">Ce problème n'est pas encore en ligne. Pour modifier sa solution, <%= link_to "cliquer ici", contestproblem_path(@contestproblem, :sol => official_sol) %>.</p>
-  <% elsif @contestproblem.in_progress? %>
-    <hr><p class="text-center">Ce problème est en train d'être résolu par les participants. Pour modifier sa solution, <%= link_to "cliquer ici", contestproblem_path(@contestproblem, :sol => official_sol) %>.</p>
+    <hr><p class="text-center">Ce problème n'est pas encore en ligne. Pour modifier sa solution, <%= link_to "cliquer ici", contestproblem_contestsolution_path(@contestproblem, official_sol) %>.</p>
+  <% else %>
+    <hr><p class="text-center">Ce problème est en train d'être résolu par les participants. Pour modifier sa solution, <%= link_to "cliquer ici", contestproblem_contestsolution_path(@contestproblem, official_sol) %>.</p>
   <% end %>
 <% end %>
 
-<!-- Si on veut voir une solution -->
-<% if !@contestsolution.nil? && !@contestsolution.new_record? %>
-  <% if signed_in? && @contestsolution.contestproblem == @contestproblem %>
-    <% if @contestsolution.user == current_user || current_user.root? || (@contestproblem.at_least(:corrected) && @contestsolution.score == 7) || ((@contestproblem.at_least(:in_correction) || @contestsolution.official?) && @contest.is_organized_by(current_user)) %>
-      <hr>
-      <%= render 'contestsolutions/show', contestsolution: @contestsolution %>
-    <% end %>
-  <% end %>
-<% end %>
-
-<% if @contestproblem.in_progress? %>
-  <% if !has_enough_points(current_user) %>
-    <hr><p class="text-center">Pour pouvoir participer aux concours, il faut avoir au moins 200 points.</p>
-  <% end %>
+<% if @contestproblem.in_progress? && !has_enough_points(current_user) %>
+  <hr><p class="text-center">Pour pouvoir participer aux concours, il faut avoir au moins 200 points.</p>
 <% end %>

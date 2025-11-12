@@ -22,9 +22,9 @@ class MyfilesController < ApplicationController
     elsif type == "Message"
       redirect_to subject_path(about.subject, :page => about.page, :msg => about.id)
     elsif type == "Contestsolution"
-      redirect_to contestproblem_path(about.contestproblem, :sol => about)
+      redirect_to contestproblem_contestsolution_path(about.contestproblem, about)
     elsif type == "Contestcorrection"
-      redirect_to contestproblem_path(about.contestsolution.contestproblem, :sol => about.contestsolution)
+      redirect_to contestproblem_contestsolution_path(about.contestsolution.contestproblem, about.contestsolution)
     elsif type == "Tchatmessage"
       redirect_to myfiles_path
     end
@@ -50,10 +50,10 @@ class MyfilesController < ApplicationController
       redirect_to problem_submission_path(@submission.problem, @submission)
     elsif @fakething.fakefiletable_type == "Contestsolution"
       @contestsolution = @fakething.fakefiletable
-      redirect_to contestproblem_path(@contestsolution.contestproblem, :sol => @contestsolution)
+      redirect_to contestproblem_contestsolution_path(@contestsolution.contestproblem, @contestsolution)
     elsif @fakething.fakefiletable_type == "Contestcorrection"
       @contestsolution = @fakething.fakefiletable.contestsolution
-      redirect_to contestproblem_path(@contestsolution.contestproblem, :sol => @contestsolution)
+      redirect_to contestproblem_contestsolution_path(@contestsolution.contestproblem, @contestsolution)
     end
   end
 

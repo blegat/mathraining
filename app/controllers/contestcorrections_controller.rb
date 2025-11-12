@@ -19,14 +19,14 @@ class ContestcorrectionsController < ApplicationController
     @contestcorrection.content = params[:contestcorrection][:content]
     
     # Invalid CSRF token
-    render_with_error('contestproblems/show', @contestcorrection, get_csrf_error_message) and return if @invalid_csrf_token
+    render_with_error('contestsolutions/show', @contestcorrection, get_csrf_error_message) and return if @invalid_csrf_token
     
     # Invalid contestcorrection
-    render_with_error('contestproblems/show') and return if !@contestcorrection.valid?
+    render_with_error('contestsolutions/show') and return if !@contestcorrection.valid?
     
     # Attached files
     update_files(@contestcorrection)
-    render_with_error('contestproblems/show', @contestcorrection, @file_error) and return if !@file_error.nil?
+    render_with_error('contestsolutions/show', @contestcorrection, @file_error) and return if !@file_error.nil?
     
     @contestcorrection.save
     
@@ -80,7 +80,7 @@ class ContestcorrectionsController < ApplicationController
       flash[:success] = "Correction enregistrée."
     end
     
-    redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)
+    redirect_to contestproblem_contestsolution_path(@contestproblem, @contestsolution)
   end
 
   private
@@ -102,7 +102,7 @@ class ContestcorrectionsController < ApplicationController
   def user_can_update_correction
     if !@contestproblem.in_correction? && !@contestproblem.in_recorrection? && !@contestsolution.official
       flash[:danger] = "Vous ne pouvez pas modifier cette correction."
-      redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)
+      redirect_to contestproblem_contestsolution_path(@contestproblem, @contestsolution)
     end
   end
   
@@ -110,7 +110,7 @@ class ContestcorrectionsController < ApplicationController
   def user_has_reserved_solution
     if @contestsolution.reservation != current_user.id
       flash[:danger] = "Vous n'avez pas réservé."
-      redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)
+      redirect_to contestproblem_contestsolution_path(@contestproblem, @contestsolution)
     end
   end
 end

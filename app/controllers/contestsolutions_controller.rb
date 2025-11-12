@@ -9,18 +9,27 @@ class ContestsolutionsController < ApplicationController
   
   before_action :check_contests, only: [:create, :update, :destroy]
   
-  before_action :get_contestsolution, only: [:update, :destroy, :reserve, :unreserve]
-  before_action :get_contestproblem, only: [:create]
+  before_action :get_contestsolution, only: [:show, :update, :destroy, :reserve, :unreserve]
+  before_action :get_contestproblem, only: [:show, :create]
   
+  before_action :contestsolution_of_contestproblem, only: [:show]
+  before_action :user_can_see_solution, only: [:show]
+  before_action :author_of_solution, only: [:update]
   before_action :user_can_send_solution, only: [:create, :update]
   before_action :user_can_write_submission, only: [:create]
   before_action :user_can_delete_solution, only: [:destroy]
   before_action :organizer_of_contest, only: [:reserve, :unreserve]
   before_action :solution_can_be_reserved, only: [:reserve, :unreserve]
+  
+  # Show a solution
+  def show
+  end
 
   # Create a solution (send the form)
   def create
-    if @send_solution == 2 # Can happen if we have two windows and we try to create twice a solution to a same problem
+    oldsol = @contestproblem.contestsolutions.where(:user => current_user).first
+    if !oldsol.nil? # Can happen if we have two windows and we try to create twice a solution to a same problem
+      @contestsolution = oldsol
       update and return
     end
   
@@ -43,7 +52,7 @@ class ContestsolutionsController < ApplicationController
 
     attach_files(attach, @contestsolution)
     flash[:success] = "Solution enregistrée."
-    redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)
+    redirect_to contestproblem_contestsolution_path(@contestproblem, @contestsolution)
   end
 
   # Update a solution (send the form)
@@ -64,7 +73,7 @@ class ContestsolutionsController < ApplicationController
     @contestsolution.save
     
     flash[:success] = "Solution enregistrée."
-    redirect_to contestproblem_path(@contestproblem, :sol => @contestsolution)
+    redirect_to contestproblem_contestsolution_path(@contestproblem, @contestsolution)
   end
 
   # Delete a solution
@@ -111,28 +120,35 @@ class ContestsolutionsController < ApplicationController
   
   ########## CHECK METHODS ##########
   
+  # Check that solution belongs to problem
+  def contestsolution_of_contestproblem
+    if @contestsolution.contestproblem != @contestproblem
+      render 'errors/access_refused'
+    end
+  end
+  
+  # Check that current user is the author of the solution
+  def author_of_solution
+    if @contestsolution.user != current_user
+      render 'errors/access_refused'
+    end
+  end
+  
+  # Check if current user can see a solution
+  def user_can_see_solution
+    if !signed_in? || !@contestsolution.can_be_seen_by(current_user)
+      redirect_to contestproblem_path(@contestproblem)
+    end
+  end
+  
   # Check if current user can send a solution
   def user_can_send_solution
-    @send_solution = 0 # Cannot send a solution
-    mycontestsolution = nil
-    if !@contest.is_organized_by_or_admin(current_user) && @contestproblem.in_progress?
-      mycontestsolution = @contestproblem.contestsolutions.where(:user => current_user).first
-      if !mycontestsolution.nil?
-        @send_solution = 2 # A solution already exists
-      elsif current_user.rating >= 200
-        @send_solution = 1 # No solution exists and user has >= 200 points
-      end
+    if @contest.is_organized_by_or_admin(current_user) || current_user.rating < 200 || @contestproblem.at_most(:not_started_yet)
+      render 'errors/access_refused' and return
     end
-    
-    if @send_solution == 0
-      flash[:danger] = "Vous ne pouvez pas enregistrer cette solution."
+    if !@contestproblem.in_progress?
+      flash[:danger] = "Vous ne pouvez plus enregistrer cette solution."
       redirect_to @contestproblem
-    elsif @send_solution == 2
-      if @contestsolution.nil? # Can happen in "create" case when a solution was sent in the meantime
-        @contestsolution = mycontestsolution
-      elsif mycontestsolution != @contestsolution
-        render 'errors/access_refused'
-      end
     end
   end
   

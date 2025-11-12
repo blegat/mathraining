@@ -26,8 +26,8 @@ class ContestproblemsController < ApplicationController
     if signed_in? && @contestproblem.in_progress? && has_enough_points(current_user) && !@contest.is_organized_by_or_admin(current_user)
       @contestsolution = @contestproblem.contestsolutions.where(:user => current_user).first
       @contestsolution = Contestsolution.new if @contestsolution.nil?
-    elsif params.has_key?(:sol)
-      @contestsolution = Contestsolution.find_by_id(params[:sol].to_i)
+    elsif params.has_key?(:sol) # Old paths were /contestproblems/contestproblem_id?sol=contestsolution_id
+      redirect_to contestproblem_contestsolution_path(@contestproblem, params[:sol].to_i)
     end
   end
 

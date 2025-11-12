@@ -54,6 +54,21 @@ class Contestsolution < ActiveRecord::Base
     end
   end
   
+  # Tell if the solution can be seen by the given user
+  def can_be_seen_by(user)
+    return true if user.root?                                                     # Roots can see all solutions
+    contestproblem = self.contestproblem
+    contest = contestproblem.contest
+    if contest.is_organized_by(user)                                              # For organizers:
+      return true if self.official?                                               # - They can always see the official solution
+      return true if contestproblem.at_least(:in_correction)                      # - They can see all user solutions when problem is in correction
+    else                                                                          # For other users:
+      return true if self.user == user && contestproblem.at_least(:in_correction) # - They can see their own solution, whatever the score, when time is finished
+      return true if self.score == 7 && contestproblem.at_least(:corrected)       # - They can see other solutions with score 7, when correction is over
+    end
+    return false
+  end
+  
   private
   
   # Create the correction just after the creation

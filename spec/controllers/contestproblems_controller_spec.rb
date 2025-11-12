@@ -133,6 +133,11 @@ describe ContestproblemsController, type: :controller, contestproblem: true do
       
       it { expect(response).to have_controller_put_path_behavior('authorize_corrections', contestproblem, :ok) }
       it { expect(response).to have_controller_put_path_behavior('unauthorize_corrections', contestproblem, :ok) }
+      
+      it "redirects to new format when trying to see a solution" do
+        get :show, params: {id: contestproblem.id, sol: contestproblem.contestsolutions.where(:official => true).first.id}
+        expect(response).to redirect_to contestproblem_contestsolution_path(contestproblem, contestproblem.contestsolutions.where(:official => true).first)
+      end
     end
   end
 end

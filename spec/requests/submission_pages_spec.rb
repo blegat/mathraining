@@ -211,6 +211,11 @@ describe "Submission pages", submission: true do
       end
     end
     
+    describe "tries to see a submission he cannot see" do
+      before { visit problem_submission_path(problem_with_submissions, wrong_submission) }
+      it { should have_current_path(problem_path(problem_with_submissions)) }
+    end
+    
     describe "sends a submission to a virtualtest problem (later)" do
       let!(:virtualtest) { FactoryBot.create(:virtualtest, online: true) }
       let!(:takentest) { Takentest.create(virtualtest: virtualtest, user: user, status: :finished, taken_time: DateTime.now - 2.days) }

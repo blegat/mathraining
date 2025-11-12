@@ -72,6 +72,11 @@ describe "Contestsolution pages" do
       before { visit contestproblem_path(contestproblem_not_started) }
       it { should have_content(error_access_refused) }
     end
+    
+    describe "tries to see the official solution of a running contestproblem" do
+      before { visit contestproblem_contestsolution_path(contestproblem_running, officialsol_running) }
+      it { should have_current_path(contestproblem_path(contestproblem_running)) }
+    end
 
     describe "visits a running contestproblem page" do
       before { visit contestproblem_path(contestproblem_running) }
@@ -98,7 +103,7 @@ describe "Contestsolution pages" do
           click_button "Enregistrer"
         end
         specify do
-          expect(page).to have_error_message("Vous ne pouvez pas enregistrer cette solution.")
+          expect(page).to have_error_message("Vous ne pouvez plus enregistrer cette solution.")
           expect(contestproblem_running.contestsolutions.where(:user => user_with_rating_200).count).to eq(0)
         end
       end
@@ -163,7 +168,7 @@ describe "Contestsolution pages" do
             click_button "Enregistrer"
           end
           specify do
-            expect(page).to have_error_message("Vous ne pouvez pas enregistrer cette solution.")
+            expect(page).to have_error_message("Vous ne pouvez plus enregistrer cette solution.")
             expect(newcontestsolution.content).to eq(newsolution)
           end
         end
@@ -189,7 +194,7 @@ describe "Contestsolution pages" do
       before { visit contestproblem_path(contestproblem_not_started) }
       it do
         should have_content("Ce problème n'est pas encore en ligne.")
-        should have_link("cliquer ici", :href => contestproblem_path(contestproblem_not_started, :sol => officialsol_not_started))
+        should have_link("cliquer ici", :href => contestproblem_contestsolution_path(contestproblem_not_started, officialsol_not_started))
         should have_no_button("Enregistrer")
       end
     end
@@ -199,7 +204,7 @@ describe "Contestsolution pages" do
       it do
         should have_selector("h1", text: "Problème ##{contestproblem_running.number}")
         should have_content("Ce problème est en train d'être résolu par les participants.")
-        should have_link("cliquer ici", :href => contestproblem_path(contestproblem_running, :sol => officialsol_running))
+        should have_link("cliquer ici", :href => contestproblem_contestsolution_path(contestproblem_running, officialsol_running))
         should have_no_button("Enregistrer")
       end
     end
@@ -215,7 +220,7 @@ describe "Contestsolution pages" do
       it do
         should have_selector("h1", text: "Problème ##{contestproblem_finished.number}")
         should have_selector("h3", text: "Solutions étoilées")
-        should have_link("Voir", :href => contestproblem_path(contestproblem_finished, :sol => officialsol_finished))
+        should have_link("Voir", :href => contestproblem_contestsolution_path(contestproblem_finished, officialsol_finished))
       end
     end
   end
@@ -266,7 +271,7 @@ describe "Contestsolution pages" do
       let!(:usercontestsolution) { FactoryBot.create(:contestsolution, contestproblem: contestproblem_running, user: user_with_rating_200) }
       let!(:contestsolutionmyfile) { FactoryBot.create(:contestsolutionmyfile, myfiletable: usercontestsolution) }
       before do
-        visit contestproblem_path(contestproblem_running, :sol => usercontestsolution)
+        visit contestproblem_contestsolution_path(contestproblem_running, usercontestsolution)
         wait_for_js_imports
         click_link("Modifier la solution")
         wait_for_ajax
@@ -289,7 +294,7 @@ describe "Contestsolution pages" do
       let!(:usercontestsolution) { FactoryBot.create(:contestsolution, contestproblem: contestproblem_running, user: user_with_rating_200) }
       let!(:contestsolutionmyfile) { FactoryBot.create(:contestsolutionmyfile, myfiletable: usercontestsolution) }
       before do
-        visit contestproblem_path(contestproblem_running, :sol => usercontestsolution)
+        visit contestproblem_contestsolution_path(contestproblem_running, usercontestsolution)
         wait_for_js_imports
         click_link("Modifier la solution")
         wait_for_ajax

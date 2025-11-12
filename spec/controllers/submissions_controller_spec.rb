@@ -5,6 +5,7 @@ describe SubmissionsController, type: :controller, submission: true do
 
   let(:chapter) { FactoryBot.create(:chapter, online: true) }
   let(:problem) { FactoryBot.create(:problem, online: true) }
+  let(:other_problem) { FactoryBot.create(:problem, online: true) }
   
   let(:user1) { FactoryBot.create(:advanced_user) }
   let(:user2) { FactoryBot.create(:advanced_user) }
@@ -28,17 +29,20 @@ describe SubmissionsController, type: :controller, submission: true do
     bad_corrector.chapters << chapter
   end
   
-  # TODO: Add lines for 'show' and 'new' (but there are many smooth redirections leading to result 'ok')
-  
   context "if the user did not solve the prerequisite" do
     before { sign_in_controller(bad_user) }
     
+    it { expect(response).to have_controller_show_behavior(submission_wrong, :access_refused, {:problem_id => problem.id}) }
+    it { expect(response).to have_controller_new_behavior(:access_refused, {:problem_id => problem.id}) }
     it { expect(response).to have_controller_create_behavior('submission', :access_refused, {:problem_id => problem.id}) }
   end
   
   context "if the user is a simple user (1)" do
     before { sign_in_controller(user1) }
     
+    it { expect(response).to have_controller_show_behavior(submission_wrong, :ok, {:problem_id => problem.id}) }
+    it { expect(response).to have_controller_show_behavior(submission_wrong, :access_refused, {:problem_id => other_problem.id}) } # Wrong problem id
+    it { expect(response).to have_controller_new_behavior(:ok, {:problem_id => problem.id}) }
     it { expect(response).to have_controller_create_behavior('submission', :ok, {:problem_id => problem.id}) }
     it { expect(response).to have_controller_update_behavior(submission_draft, :ok) }
     it { expect(response).to have_controller_update_behavior(submission_wrong, :danger) } # Not allowed but smooth redirect
@@ -94,9 +98,11 @@ describe SubmissionsController, type: :controller, submission: true do
     it { expect(response).to have_controller_put_path_behavior('mark_correct', submission_wrong, :danger) } # Danger message because of wrong timing
   end
   
-  context "if the user is a admin" do
+  context "if the user is an admin" do
     before { sign_in_controller(admin) }
     
+    it { expect(response).to have_controller_show_behavior(submission_wrong, :ok, {:problem_id => problem.id}) }
+    it { expect(response).to have_controller_new_behavior(:ok, {:problem_id => problem.id}) } # Will not show the form
     it { expect(response).to have_controller_create_behavior('submission', :access_refused, {:problem_id => problem.id}) }
     it { expect(response).to have_controller_update_behavior(submission_correct, :access_refused) }
     it { expect(response).to have_controller_destroy_behavior(submission_wrong, :access_refused) }

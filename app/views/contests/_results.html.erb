@@ -76,12 +76,12 @@
       <% if p.at_least(:corrected) && score > 0 %>
         <% if score == 7 %>
           <td id="<%= td_id %>" class="text-center contest-score-green">
-          <%= link_to "7", contestproblem_path(p, :sol => id) %>
+          <%= link_to "7", contestproblem_contestsolution_path(p, id) %>
           </td>
         <% else %>
           <td id="<%= td_id %>" class="text-center contest-score-orange">
           <% if organizer %>
-            <%= link_to score, contestproblem_path(p, :sol => id) %>
+            <%= link_to score, contestproblem_contestsolution_path(p, id) %>
           <% else %>
             <%= score %>
           <% end %>
@@ -90,7 +90,7 @@
       <% elsif p.at_least(:corrected) %>
         <td id="<%= td_id %>" class="text-center contest-score-red">
           <% if !id.nil? and organizer %>
-            <%= link_to "0", contestproblem_path(p, :sol => id) %>
+            <%= link_to "0", contestproblem_contestsolution_path(p, id) %>
           <% end %>
         </td>
       <% else %>

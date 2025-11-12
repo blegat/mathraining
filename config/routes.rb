@@ -156,7 +156,7 @@ Rails.application.routes.draw do
       put :authorize_corrections
       put :unauthorize_corrections
     end
-    resources :contestsolutions, only: [:create]
+    resources :contestsolutions, only: [:show, :create]
   end
   
   # Contest solutions

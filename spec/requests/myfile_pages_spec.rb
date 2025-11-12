@@ -100,7 +100,7 @@ describe "Myfile pages", myfile: true do
     describe "visits one contestsolution file" do
       before { visit myfile_path(contestsolutionmyfile) }
       it do
-        should have_current_path(contestproblem_path(contestproblem, :sol => contestsolution))
+        should have_current_path(contestproblem_contestsolution_path(contestproblem, contestsolution))
         should have_link(contestsolutionmyfile.file.filename.to_s, href: rails_blob_url(contestsolutionmyfile.file, :only_path => true, :disposition => 'attachment'))
         should have_link("Supprimer le contenu", href: fake_delete_myfile_path(contestsolutionmyfile))
       end
@@ -108,7 +108,7 @@ describe "Myfile pages", myfile: true do
       describe "and fake deletes it" do
         before { click_link("Supprimer le contenu", href: fake_delete_myfile_path(contestsolutionmyfile)) }
         it do
-          should have_current_path(contestproblem_path(contestproblem, :sol => contestsolution))
+          should have_current_path(contestproblem_contestsolution_path(contestproblem, contestsolution))
           should have_success_message("Contenu de la pièce jointe supprimé.")
           should have_content("désactivée")
         end
@@ -118,7 +118,7 @@ describe "Myfile pages", myfile: true do
     describe "visits one contestcorrection file" do
       before { visit myfile_path(contestcorrectionmyfile) }
       it do
-        should have_current_path(contestproblem_path(contestproblem, :sol => contestsolution))
+        should have_current_path(contestproblem_contestsolution_path(contestproblem, contestsolution))
         should have_link(contestcorrectionmyfile.file.filename.to_s, href: rails_blob_url(contestcorrectionmyfile.file, :only_path => true, :disposition => 'attachment'))
         should have_link("Supprimer le contenu", href: fake_delete_myfile_path(contestcorrectionmyfile))
       end
@@ -126,7 +126,7 @@ describe "Myfile pages", myfile: true do
       describe "and fake deletes it" do
         before { click_link("Supprimer le contenu", href: fake_delete_myfile_path(contestcorrectionmyfile)) }
         it do
-          should have_current_path(contestproblem_path(contestproblem, :sol => contestsolution))
+          should have_current_path(contestproblem_contestsolution_path(contestproblem, contestsolution))
           should have_success_message("Contenu de la pièce jointe supprimé.")
           should have_content("désactivée")
         end

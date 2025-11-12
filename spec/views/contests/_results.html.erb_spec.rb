@@ -75,9 +75,9 @@ describe "contests/_results.html.erb", type: :view, contest: true do
         should have_no_selector("td", id: "medal-#{user1.id}")
         should have_selector("td", id: "name-#{user1.id}", text: user1.name)
         should have_selector("td", id: "score-#{user1.id}-#{contestproblem1.id}", text: "7", class: "contest-score-green")
-        should have_link("7", href: contestproblem_path(contestproblem1, :sol => contestsolution11))
+        should have_link("7", href: contestproblem_contestsolution_path(contestproblem1, contestsolution11))
         should have_selector("td", id: "score-#{user1.id}-#{contestproblem2.id}", text: "0", class: "contest-score-red")
-        should have_link("0", href: contestproblem_path(contestproblem2, :sol => contestsolution21))
+        should have_link("0", href: contestproblem_contestsolution_path(contestproblem2, contestsolution21))
         should have_no_selector("td", id: "score-#{user1.id}-#{contestproblem3.id}")
         should have_selector("td", id: "total-score-#{user1.id}", text: "7")
         
@@ -86,7 +86,7 @@ describe "contests/_results.html.erb", type: :view, contest: true do
         should have_no_selector("td", id: "medal-#{user2.id}")
         should have_selector("td", id: "name-#{user2.id}", text: user2.name)
         should have_selector("td", id: "score-#{user2.id}-#{contestproblem1.id}", text: "4", class: "contest-score-orange")
-        should have_link("4", href: contestproblem_path(contestproblem1, :sol => contestsolution12))
+        should have_link("4", href: contestproblem_contestsolution_path(contestproblem1, contestsolution12))
         should have_selector("td", id: "score-#{user2.id}-#{contestproblem2.id}", text: "", class: "contest-score-red")
         should have_no_selector("td", id: "score-#{user2.id}-#{contestproblem3.id}")
         should have_selector("td", id: "total-score-#{user2.id}", text: "11")
@@ -107,9 +107,9 @@ describe "contests/_results.html.erb", type: :view, contest: true do
         should have_no_selector("td", id: "medal-#{user1.id}")
         should have_selector("td", id: "name-#{user1.id}", text: user1.name)
         should have_selector("td", id: "score-#{user1.id}-#{contestproblem1.id}", text: "7", class: "contest-score-green")
-        should have_link("7", href: contestproblem_path(contestproblem1, :sol => contestsolution11))
+        should have_link("7", href: contestproblem_contestsolution_path(contestproblem1, contestsolution11))
         should have_selector("td", id: "score-#{user1.id}-#{contestproblem2.id}", text: "", class: "contest-score-red") # 0 not visible for a participant
-        should have_no_link("0", href: contestproblem_path(contestproblem2, :sol => contestsolution21)) # idem
+        should have_no_link("0", href: contestproblem_contestsolution_path(contestproblem2, contestsolution21)) # idem
         should have_no_selector("td", id: "score-#{user1.id}-#{contestproblem3.id}")
         should have_selector("td", id: "total-score-#{user1.id}", text: "7")
         
@@ -118,7 +118,7 @@ describe "contests/_results.html.erb", type: :view, contest: true do
         should have_no_selector("td", id: "medal-#{user2.id}")
         should have_selector("td", id: "name-#{user2.id}", text: user2.name)
         should have_selector("td", id: "score-#{user2.id}-#{contestproblem1.id}", text: "4", class: "contest-score-orange")
-        should have_no_link("4", href: contestproblem_path(contestproblem1, :sol => contestsolution12)) # no link
+        should have_no_link("4", href: contestproblem_contestsolution_path(contestproblem1, contestsolution12)) # no link
         should have_selector("td", id: "score-#{user2.id}-#{contestproblem2.id}", text: "", class: "contest-score-red")
         should have_no_selector("td", id: "score-#{user2.id}-#{contestproblem3.id}")
         should have_selector("td", id: "total-score-#{user2.id}", text: "11")

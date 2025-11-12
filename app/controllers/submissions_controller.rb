@@ -17,7 +17,7 @@ class SubmissionsController < ApplicationController
   before_action :get_virtualtest_if_any, only: [:create, :update, :destroy]
   
   before_action :submission_of_problem, only: [:show]
-  before_action :user_can_see_problem, only: [:show]
+  before_action :user_can_see_problem, only: [:show, :new]
   before_action :user_can_see_submission, only: [:show]
   before_action :user_can_see_problem_or_in_test, only: [:create]
   before_action :user_did_not_solve_problem, only: [:create]
@@ -63,8 +63,7 @@ class SubmissionsController < ApplicationController
     oldsub = @problem.submissions.where(user_id: current_user.id, status: :draft).first
     if !oldsub.nil?
       @submission = oldsub
-      update
-      return
+      update and return
     end
     
     intest = !@virtualtest.nil?

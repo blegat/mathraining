@@ -43,14 +43,14 @@ describe "Contestcorrection pages", contestcorrection: true do
       before { visit contestproblem_path(contestproblem_finished) }
       it do
         should have_selector("h1", text: "Problème ##{contestproblem_finished.number}")
-        should have_no_link("Voir", :href => contestproblem_path(contestproblem_finished, :sol => officialsol_finished)) # We should not see it because it is non-public by default
-        should have_link("Voir", :href => contestproblem_path(contestproblem_finished, :sol => usersol_finished))
-        should have_no_link("Voir", :href => contestproblem_path(contestproblem_finished, :sol => usersol2_finished)) # Already corrected
+        should have_no_link("Voir", :href => contestproblem_contestsolution_path(contestproblem_finished, officialsol_finished)) # We should not see it because it is non-public by default
+        should have_link("Voir", :href => contestproblem_contestsolution_path(contestproblem_finished, usersol_finished))
+        should have_no_link("Voir", :href => contestproblem_contestsolution_path(contestproblem_finished, usersol2_finished)) # Already corrected
       end
     end
     
     describe "visits an official solution without having reserved" do
-      before { visit contestproblem_path(contestproblem_finished, :sol => officialsol_finished) }
+      before { visit contestproblem_contestsolution_path(contestproblem_finished, officialsol_finished) }
       it do
         should have_selector("h3", text: "Solution officielle (non-publique)")
         should have_link("Modifier la solution")
@@ -63,7 +63,7 @@ describe "Contestcorrection pages", contestcorrection: true do
     describe "visits an official solution after having reserved" do
       before do
         officialsol_finished.update_attribute(:reservation, user_organizer.id)
-        visit contestproblem_path(contestproblem_finished, :sol => officialsol_finished)
+        visit contestproblem_contestsolution_path(contestproblem_finished, officialsol_finished)
       end
       it do
         should have_content("Aucune solution étoilée")
@@ -85,7 +85,7 @@ describe "Contestcorrection pages", contestcorrection: true do
           expect(officialsol_finished.star).to eq(true)
           expect(officialsol_finished.contestcorrection.content).to eq(newcorrection)
           expect(page).to have_no_content("Aucune solution étoilée")
-          expect(page).to have_link("Voir", :href => contestproblem_path(contestproblem_finished, :sol => officialsol_finished))
+          expect(page).to have_link("Voir", :href => contestproblem_contestsolution_path(contestproblem_finished, officialsol_finished))
         end
       end
       
@@ -121,7 +121,7 @@ describe "Contestcorrection pages", contestcorrection: true do
     describe "visits a user solution after having reserved" do
       before do
         usersol_finished.update_attribute(:reservation, user_organizer.id)
-        visit contestproblem_path(contestproblem_finished, :sol => usersol_finished)
+        visit contestproblem_contestsolution_path(contestproblem_finished, usersol_finished)
       end
       it do
         should have_selector("h3", text: "Solution de #{user_participating.name}")
@@ -145,7 +145,7 @@ describe "Contestcorrection pages", contestcorrection: true do
           expect(usersol_finished.star).to eq(false)
           expect(usersol_finished.corrected).to eq(true)
           expect(usersol_finished.contestcorrection.content).to eq(newcorrection)
-          expect(page).to have_no_link("Voir", :href => contestproblem_path(contestproblem_finished, :sol => usersol_finished)) # We should not see it anymore without javascript
+          expect(page).to have_no_link("Voir", :href => contestproblem_contestsolution_path(contestproblem_finished, usersol_finished)) # We should not see it anymore without javascript
           expect(page).to have_content("2 / 7")
         end
       end
@@ -265,7 +265,7 @@ describe "Contestcorrection pages", contestcorrection: true do
           before do
             contestproblem_finished.in_recorrection!
             usersol2_finished.update_attribute(:reservation, user_organizer.id)
-            visit contestproblem_path(contestproblem_finished, :sol => usersol2_finished)
+            visit contestproblem_contestsolution_path(contestproblem_finished, usersol2_finished)
           end
           it do
             should have_selector("h3", text: "Solution de #{user2_participating.name}")
@@ -310,7 +310,7 @@ describe "Contestcorrection pages", contestcorrection: true do
     
     describe "wants to modify the correction", :js => true do
       before do
-        visit contestproblem_path(contestproblem_finished, :sol => usersol_finished)
+        visit contestproblem_contestsolution_path(contestproblem_finished, usersol_finished)
         wait_for_js_imports
         click_link("Modifier la correction")
         wait_for_ajax
@@ -397,7 +397,7 @@ describe "Contestcorrection pages", contestcorrection: true do
     
     describe "modifies a solution by adding a file", :js => true do
       before do
-        visit contestproblem_path(contestproblem_finished, :sol => usersol_finished)
+        visit contestproblem_contestsolution_path(contestproblem_finished, usersol_finished)
         wait_for_js_imports
         click_link("Modifier la correction")
         wait_for_ajax
@@ -422,7 +422,7 @@ describe "Contestcorrection pages", contestcorrection: true do
     
     describe "modifies a solution with a exe file", :js => true do
       before do
-        visit contestproblem_path(contestproblem_finished, :sol => usersol_finished)
+        visit contestproblem_contestsolution_path(contestproblem_finished, usersol_finished)
         wait_for_js_imports
         click_link("Modifier la correction")
         wait_for_ajax

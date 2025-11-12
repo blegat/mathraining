@@ -1,0 +1,24 @@
+<h3>Votre solution <%= "(modifiable)" if !@contestsolution.new_record? %></h3>
+
+<!-- Si un brouillon a déjà été enregistré -->
+<% if !@contestsolution.new_record? %>
+  <div id="the" class="content-part">
+    <%= render 'shared/post', ms: @contestsolution, kind: "contestsolution", can_edit: true %>
+  </div>
+<% end %>
+
+<div id="form" class="form-part px-1" style="<%= 'height:0px;' if !@contestsolution.new_record? %>">
+<% if @contestsolution.new_record? %>
+  <%= render 'contestsolutions/new' %>
+<% else %>
+  <%= render 'contestsolutions/edit' %>
+<% end %>
+
+<p class="fst-italic">
+  Vous pouvez modifier votre solution jusqu'à la date limite de résolution du problème.
+</p>
+</div>
+
+<% if @contestsolution.errors.any? %>
+  <script>rollingDevelopQuickWhenPossible("")</script>
+<% end %>

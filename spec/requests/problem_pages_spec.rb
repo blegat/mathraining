@@ -71,6 +71,12 @@ describe "Problem pages", problem: true do
       end
     end
     
+    describe "visits problems of a section while not allowed to write new submissions" do
+      let!(:sanction) { FactoryBot.create(:sanction, user: user_with_rating_200, sanction_type: :no_submission, start_time: DateTime.now - 10.days, duration: 14) }
+      before { visit section_problems_path(section) }
+      it { should have_info_message(sanction.message) }
+    end
+    
     describe "visits online problem" do
       before { visit problem_path(online_problem) }
       it do
