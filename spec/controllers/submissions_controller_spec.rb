@@ -127,6 +127,7 @@ describe SubmissionsController, type: :controller, submission: true do
     
     it { expect(response).to have_controller_update_behavior(submission_correct, :ok) }
     it { expect(response).to have_controller_destroy_behavior(submission_wrong, :ok) }
+    it { expect(response).to have_controller_put_path_behavior('send_draft', submission_draft, :access_refused) }
     it { expect(response).to have_controller_put_path_behavior('star', submission_correct, :ok) }
     it { expect(response).to have_controller_put_path_behavior('unstar', submission_correct, :ok) }
     it { expect(response).to have_controller_put_path_behavior('update_score', submission_correct, :ok, {:new_score => 7}) }

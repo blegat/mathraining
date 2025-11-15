@@ -22,13 +22,15 @@ class SubmissionsController < ApplicationController
   before_action :user_can_see_problem_or_in_test, only: [:create]
   before_action :user_did_not_solve_problem, only: [:create]
   before_action :user_can_write_submission_to_problem, only: [:create, :send_draft]
-  before_action :author_of_submission_or_root, only: [:update, :destroy, :send_draft]
-  before_action :draft_submission_or_root, only: [:update, :destroy, :send_draft]
+  before_action :author_of_submission_or_root, only: [:update, :destroy]
+  before_action :author_of_submission, only: [:send_draft]
+  before_action :draft_submission_or_root, only: [:update, :destroy]
+  before_action :draft_submission, only: [:send_draft]
   before_action :new_submissions_allowed_or_in_test, only: [:create, :update, :send_draft]
   before_action :user_has_no_recent_plagiarism_or_closure, only: [:create, :update, :send_draft]
   before_action :user_can_write_submission_or_in_test, only: [:create, :send_draft]
   before_action :user_can_send_today, only: [:send_draft]
-  before_action :user_not_in_test, only: [:send_draft] 
+  before_action :user_not_in_test, only: [:send_draft]
   before_action :user_can_see_submissions, only: [:index]
   before_action :user_can_correct_submission, only: [:read, :unread, :reserve, :unreserve, :search_script, :mark_wrong, :mark_correct]
   before_action :user_can_mark_submission_as_wrong, only: [:mark_wrong]
@@ -95,15 +97,13 @@ class SubmissionsController < ApplicationController
   # Update a draft submission (in test or not), or any submission for a root
   def update
     intest = !@virtualtest.nil?
-    if intest
-      rendered_page_in_case_of_error = 'virtualtests/show' # Update a submission during a test
+    if current_user.root?
+      @correction = Correction.new unless @submission.draft?
+      rendered_page_in_case_of_error = 'submissions/show'
+    elsif intest
+      rendered_page_in_case_of_error = 'virtualtests/show'
     else
-      if current_user.root?
-        @correction = Correction.new unless @submission.draft?
-        rendered_page_in_case_of_error = 'submissions/show'
-      else
-        rendered_page_in_case_of_error = 'submissions/new'
-      end
+      rendered_page_in_case_of_error = 'submissions/new'
     end
     
     params[:submission][:content].strip! if !params[:submission][:content].nil?
@@ -114,16 +114,16 @@ class SubmissionsController < ApplicationController
       return
     end
 
-    if intest
+    if current_user.root?
+      flash[:success] = "Solution modifiée."
+      redirect_to problem_submission_path(@problem, @submission)
+    elsif intest
       flash[:success] = "Votre solution a bien été enregistrée."
       redirect_to virtualtest_path(@virtualtest, :p => @problem.id)
-    elsif !current_user.root?
+    else
       update_draft_dates
       flash[:success] = "Votre solution a bien été enregistrée."
       redirect_to new_problem_submission_path(@problem)
-    else
-      flash[:success] = "Solution modifiée."
-      redirect_to problem_submission_path(@problem, @submission)
     end
   end
   
@@ -131,15 +131,14 @@ class SubmissionsController < ApplicationController
   def destroy
     intest = @submission.intest?
     @submission.destroy
-    if intest
+    if current_user.root?
+      flash[:success] = "Solution supprimée."
+      redirect_to problem_path(@problem)
+    elsif intest
       flash[:success] = "Votre solution a bien été supprimée."
       redirect_to virtualtest_path(@virtualtest, :p => @problem.id)
     else
-      if current_user.root?
-        flash[:success] = "Solution supprimée."
-      else
-        flash[:success] = "Votre solution a bien été supprimée."
-      end
+      flash[:success] = "Votre solution a bien été supprimée."
       redirect_to problem_path(@problem)
     end
   end
@@ -394,18 +393,32 @@ class SubmissionsController < ApplicationController
     end
   end
   
-  # Check that the submission is a draft, or current user is a root
-  def draft_submission_or_root
-    if !@submission.draft? && !current_user.root?
+  # Check that the submission is a draft
+  def draft_submission
+    if !@submission.draft?
       flash[:danger] = "Vous ne pouvez plus modifier cette solution."
       redirect_to problem_submission_path(@problem, @submission)
     end
   end
   
+  # Check that the submission is a draft, or current user is a root
+  def draft_submission_or_root
+    if !current_user.root?
+      draft_submission
+    end
+  end
+  
+  # Check that current user is the author of the submission
+  def author_of_submission
+    if @submission.user != current_user
+      render 'errors/access_refused'
+    end
+  end
+  
   # Check that current user is the author of the submission, or a root
   def author_of_submission_or_root
-    if @submission.user != current_user && !current_user.root?
-      render 'errors/access_refused'
+    if !current_user.root?
+      author_of_submission
     end
   end
   
