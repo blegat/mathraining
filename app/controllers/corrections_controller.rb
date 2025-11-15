@@ -26,39 +26,31 @@ class CorrectionsController < ApplicationController
     @correction = @submission.corrections.build(params.require(:correction).permit(:content))
     @correction.user = current_user
     
-    # Invalid CSRF token
-    render_with_error('submissions/show', @correction, get_csrf_error_message) and return if @invalid_csrf_token
-
+    # Check if new comment was posted meanwhile
+    last_id = -1
+    @submission.corrections.order(:created_at).each do |c|
+      last_id = c.id
+    end
+    if last_id != params[:last_id].to_i
+      render_with_error('submissions/show', @correction, "Un nouveau commentaire a été posté avant le vôtre ! Veuillez en prendre connaissance et reposter votre commentaire si nécessaire.") 
+      return
+    end
+    
     # If a score is needed, we check that the score is set and appropriate
     if @submission.waiting? && @submission.intest && @submission.score == -1
       if (params[:score].nil? || params[:score].blank?)
-        render_with_error('submissions/show', @correction, "Veuillez donner un score à cette solution.") and return
+        render_with_error('submissions/show', @correction, "Veuillez donner un score à cette solution.")
+        return
       elsif (params[:score].to_i != 6 && params[:score].to_i != 7 && params[:commit] == "Poster et accepter la soumission")
-        render_with_error('submissions/show', @correction, "Vous ne pouvez pas accepter une solution sans lui donner un score de 6 ou 7.") and return
+        render_with_error('submissions/show', @correction, "Vous ne pouvez pas accepter une solution sans lui donner un score de 6 ou 7.")
+        return
       end
     end
-
-    # We check that no new message was posted
-    lastid = -1
-    @submission.corrections.order(:created_at).each do |c|
-      lastid = c.id
+    
+    # Save correction, handling usual errors
+    if !save_object_handling_errors(@correction, 'submissions/show')
+      return
     end
-
-    # New comment meanwhile
-    if lastid != params[:last_comment_id].to_i
-      render_with_error('submissions/show', @correction, "Un nouveau commentaire a été posté avant le vôtre ! Veuillez en prendre connaissance et reposter votre commentaire si nécessaire.") and return
-    end
-    
-    # Invalid correction
-    render_with_error('submissions/show') and return if !@correction.valid?
-
-    # Attached files
-    attach = create_files
-    render_with_error('submissions/show', @correction, @file_error) and return if !@file_error.nil?
-    
-    @correction.save
-    
-    attach_files(attach, @correction)
 
     # Give the score to the submission
     if @submission.waiting? && @submission.intest && @submission.score == -1

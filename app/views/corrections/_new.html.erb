@@ -28,7 +28,7 @@
   
   <%= render 'shared/edit_files', disable: disable_correction %>
 
-  <%= hidden_field_tag "last_comment_id", @lastid %>
+  <%= hidden_field_tag "last_id", @last_id %>
 
   <!-- Si administrateur ou correcteur : tous les boutons différents -->
   <% if current_user != @submission.user %>

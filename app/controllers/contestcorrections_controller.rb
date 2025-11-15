@@ -18,17 +18,10 @@ class ContestcorrectionsController < ApplicationController
     params[:contestcorrection][:content].strip! if !params[:contestcorrection][:content].nil?
     @contestcorrection.content = params[:contestcorrection][:content]
     
-    # Invalid CSRF token
-    render_with_error('contestsolutions/show', @contestcorrection, get_csrf_error_message) and return if @invalid_csrf_token
-    
-    # Invalid contestcorrection
-    render_with_error('contestsolutions/show') and return if !@contestcorrection.valid?
-    
-    # Attached files
-    update_files(@contestcorrection)
-    render_with_error('contestsolutions/show', @contestcorrection, @file_error) and return if !@file_error.nil?
-    
-    @contestcorrection.save
+    # Save correction, handling usual errors
+    if !save_object_handling_errors(@contestcorrection, 'contestsolutions/show')
+      return
+    end
     
     old_score = @contestsolution.score
     

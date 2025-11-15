@@ -23,33 +23,24 @@ class MessagesController < ApplicationController
     @message = Message.new(params.require(:message).permit(:content))
     @message.user = current_user
     @message.subject = @subject
-
-    # Check that no new message was posted
-    lastid = -1
-    lastmessage = @subject.messages.order("id DESC").first
-    if !lastmessage.nil?
-      lastid = lastmessage.id
-    end
-
+    
     @page = @subject.last_page # Used in case of error
 
-    if lastid != params[:lastmessage].to_i
-      render_with_error('subjects/show', @message, "Un nouveau message a été posté avant le vôtre ! Veuillez en prendre connaissance avant de poster votre message.") and return
+    # Check if new message was posted meanwhile
+    last_id = -1
+    last_message = @subject.messages.order("id DESC").first
+    if !last_message.nil?
+      last_id = last_message.id
+    end
+    if last_id != params[:last_id].to_i
+      render_with_error('subjects/show', @message, "Un nouveau message a été posté avant le vôtre ! Veuillez en prendre connaissance avant de poster votre message.")
+      return
     end
     
-    # Invalid CSRF token
-    render_with_error('subjects/show', @message, get_csrf_error_message) and return if @invalid_csrf_token
-    
-    # Invalid message
-    render_with_error('subjects/show') and return if !@message.valid?
-
-    # Attached files
-    attach = create_files
-    render_with_error('subjects/show', @message, @file_error) and return if !@file_error.nil?
-
-    @message.save
-    
-    attach_files(attach, @message)
+    # Save message, handling usual errors
+    if !save_object_handling_errors(@message, 'subjects/show')
+      return
+    end
 
     # Send an email to users following the subject
     @subject.following_users.each do |u|
@@ -81,17 +72,10 @@ class MessagesController < ApplicationController
     
     @page = @message.page # Used in case of error
     
-    # Invalid CSRF token
-    render_with_error('subjects/show', @message, get_csrf_error_message) and return if @invalid_csrf_token
-    
-    # Invalid message
-    render_with_error('subjects/show') and return if !@message.valid?
-    
-    # Attached files
-    update_files(@message)
-    render_with_error('subjects/show', @message, @file_error) and return if !@file_error.nil?
-    
-    @message.save
+    # Save message, handling usual errors
+    if !save_object_handling_errors(@message, 'subjects/show')
+      return
+    end
     
     flash[:success] = "Votre message a bien été modifié."
     @message.reload # To get correct page

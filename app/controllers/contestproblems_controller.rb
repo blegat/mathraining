@@ -46,14 +46,16 @@ class ContestproblemsController < ApplicationController
     @contestproblem.contest = @contest
     @contestproblem.number = 1
     
-    # Invalid CSRF token
-    render_with_error('contestproblems/new', @contestproblem, get_csrf_error_message) and return if @invalid_csrf_token
+    # Check invalid dates
+    if !@date_error.nil?
+      render_with_error('contestproblems/new', @contestproblem, @date_error)
+      return
+    end
     
-    # Invalid dates
-    render_with_error('contestproblems/new', @contestproblem, @date_error) and return if !@date_error.nil?
-
-    # Invalid contestproblem
-    render_with_error('contestproblems/new') and return if !@contestproblem.save
+    # Save problem, handling usual errors
+    if !save_object_handling_errors(@contestproblem, 'contestproblems/new')
+      return
+    end
     
     flash[:success] = "Problème ajouté."
       
@@ -73,14 +75,16 @@ class ContestproblemsController < ApplicationController
       @contestproblem.end_time = params[:contestproblem][:end_time]
     end
     
-    # Invalid CSRF token
-    render_with_error('contestproblems/edit', @contestproblem, get_csrf_error_message) and return if @invalid_csrf_token
+    # Check invalid dates
+    if !@date_error.nil?
+      render_with_error('contestproblems/edit', @contestproblem, @date_error)
+      return
+    end
     
-    # Invalid dates
-    render_with_error('contestproblems/edit', @contestproblem, @date_error) and return if !@date_error.nil?
-    
-    # Invalid contestproblem
-    render_with_error('contestproblems/edit') and return if !@contestproblem.save
+    # Save problem, handling usual errors
+    if !save_object_handling_errors(@contestproblem, 'contestproblems/edit')
+      return
+    end
     
     flash[:success] = "Problème modifié."
     

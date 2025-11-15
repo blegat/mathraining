@@ -46,9 +46,6 @@ function checkWepion() {
 </script>
 
 <%= render 'shared/error_messages', object: f.object %>
-<% unless is_edit %>
-  <%= render 'shared/error_messages', object: @message %>
-<% end %>
 
 <!-- Calcul de la liste des catégories et sections -->
 <% liste = Array.new %>

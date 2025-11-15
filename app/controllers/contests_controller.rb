@@ -57,11 +57,10 @@ class ContestsController < ApplicationController
   def create
     @contest = Contest.new(params.require(:contest).permit(:number, :description, :medal))
     
-    # Invalid CSRF token
-    render_with_error('contests/new', @contest, get_csrf_error_message) and return if @invalid_csrf_token
-
-    # Invalid contest
-    render_with_error('contests/new') and return if !@contest.save
+    # Save contest, handling usual errors
+    if !save_object_handling_errors(@contest, 'contests/new')
+      return
+    end
     
     flash[:success] = "Concours ajouté."
     redirect_to @contest
@@ -71,11 +70,10 @@ class ContestsController < ApplicationController
   def update
     @contest.assign_attributes(params.require(:contest).permit(:number, :description, :medal))
     
-    # Invalid CSRF token
-    render_with_error('contests/edit', @contest, get_csrf_error_message) and return if @invalid_csrf_token
-    
-    # Invalid contest
-    render_with_error('contests/edit') and return if !@contest.save
+    # Save contest, handling usual errors
+    if !save_object_handling_errors(@contest, 'contests/edit')
+      return
+    end
 
     flash[:success] = "Concours modifié."
     redirect_to contest_path

@@ -4,7 +4,7 @@
   <p>Aucun commentaire.</p>
 <% end %>
 
-<% @lastid = -1 %>
+<% @last_id = -1 %>
 <% last_correction_user = nil %>
 
 <% corrections = @submission.corrections.includes(:user).order(:created_at).to_a %>
@@ -12,7 +12,7 @@
 <% @fakefiles = Fakefile.where(:fakefiletable => corrections).to_a %>
 
 <% corrections.each do |correction| %>
-  <% @lastid = correction.id %>
+  <% @last_id = correction.id %>
   <% last_correction_user = correction.user %>
   <%= render 'shared/post', ms: correction %>  
 <% end %>

@@ -155,8 +155,73 @@ class ApplicationController < ActionController::Base
   
   # Render a view after having added an error to an object if needed
   def render_with_error(view, obj = nil, error = nil)
-    obj.errors.add(:base, error) unless obj.nil? || error.nil?
+    unless obj.nil? || error.nil?
+      if error.is_a?(Array)
+        error.each do |e|
+          obj.errors.add(:base, e)
+        end
+      else
+        obj.errors.add(:base, error)
+      end
+    end
     render view
+  end
+  
+  # Helper method to save an object, checking first CSRF token and attaching files if applicable
+  def save_object_handling_errors(obj, error_path, child_obj = nil)
+    is_creation = obj.new_record?
+    is_subject_creation = obj.is_a?(Subject) && is_creation
+    has_files = is_subject_creation || obj.is_a?(Message) || obj.is_a?(Submission) || obj.is_a?(Correction) || obj.is_a?(Contestsolution) || obj.is_a?(Contestcorrection)
+    obj_for_files = (is_subject_creation ? child_obj : obj)
+  
+    # Check CSRF token
+    if @invalid_csrf_token
+      render_with_error(error_path, obj, get_csrf_error_message)
+      return false
+    end
+    
+    # Check validity of object
+    if !obj.valid?
+      render_with_error(error_path)
+      return false
+    end
+    
+    # Check validity of child object (message, for a new subject)
+    if is_subject_creation
+      if !child_obj.valid?
+        render_with_error(error_path, obj, child_obj.errors.full_messages)
+        return false
+      end
+    end
+    
+    # Create or update files
+    if has_files
+      if is_creation
+        attach = create_files
+      else
+        update_files(obj_for_files)
+      end
+      if !@file_error.nil?
+        render_with_error(error_path, obj, @file_error)
+        return false
+      end
+    end
+    
+    # Save object
+    obj.save
+    
+    # Save child object (message, for a new subject)
+    if is_subject_creation
+      child_obj.subject_id = obj.id
+      child_obj.save
+    end
+    
+    # Attach files to object
+    if has_files && is_creation
+      attach_files(attach, obj_for_files)
+    end
+    
+    return true
   end
   
   ########## CHECK METHODS ##########

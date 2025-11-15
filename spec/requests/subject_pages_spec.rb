@@ -152,6 +152,16 @@ describe "Subject pages", subject: true do
         end
         it { should have_error_message("Titre doit être rempli") }
       end
+      
+      describe "and tries to create a subject with empty content" do # Special code for that since content does not directly belong to the subject
+        before do
+          select category.name, from: "Catégorie"
+          fill_in "Titre", with: title
+          fill_in "MathInput", with: ""
+          click_button "Créer"
+        end
+        it { should have_error_message("Message doit être rempli") }
+      end
     end
     
     describe "visits a subject page" do
@@ -645,6 +655,18 @@ describe "Subject pages", subject: true do
     let!(:other_chapter) { FactoryBot.create(:chapter, section: section, online: true) }
     let!(:other_question) { FactoryBot.create(:question, chapter: other_chapter, online: true) }
     let!(:other_problem) { FactoryBot.create(:problem, section: section, online: true) }
+    
+    describe "tries to update a subject with empty title" do
+      before do
+        visit subject_path(sub_nothing)
+        wait_for_js_imports
+        click_link "Modifier ce sujet"
+        wait_for_ajax
+        fill_in "Titre", with: ""
+        click_button "Modifier"
+      end
+      specify { expect(page).to have_error_message("Titre doit être rempli") }
+    end
     
     describe "updates a subject, from a question to a section" do
       before do

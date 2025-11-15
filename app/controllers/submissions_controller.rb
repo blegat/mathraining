@@ -79,19 +79,11 @@ class SubmissionsController < ApplicationController
                                              :intest  => intest,
                                              :status  => :draft)
     
-    # Invalid CSRF token
-    render_with_error(rendered_page_in_case_of_error, @submission, get_csrf_error_message) and return if @invalid_csrf_token
+    # Save submission, handling usual errors
+    if !save_object_handling_errors(@submission, rendered_page_in_case_of_error)
+      return
+    end
     
-    # Invalid submission
-    render_with_error(rendered_page_in_case_of_error) and return if !@submission.valid?
-    
-    # Attached files
-    attach = create_files
-    render_with_error(rendered_page_in_case_of_error, @submission, @file_error) and return if !@file_error.nil?
-
-    @submission.save
-
-    attach_files(attach, @submission)
     flash[:success] = "Votre solution a bien été enregistrée."
     if intest
       redirect_to virtualtest_path(@virtualtest, :p => @problem.id)
@@ -117,17 +109,10 @@ class SubmissionsController < ApplicationController
     params[:submission][:content].strip! if !params[:submission][:content].nil?
     @submission.content = params[:submission][:content]
     
-    # Invalid CSRF token
-    render_with_error(rendered_page_in_case_of_error, @submission, get_csrf_error_message) and return if @invalid_csrf_token
-    
-    # Invalid submission
-    render_with_error(rendered_page_in_case_of_error) and return if !@submission.valid?
-
-    # Attached files
-    update_files(@submission)
-    render_with_error(rendered_page_in_case_of_error, @submission, @file_error) and return if !@file_error.nil?
-    
-    @submission.save
+    # Save submission, handling usual errors
+    if !save_object_handling_errors(@submission, rendered_page_in_case_of_error)
+      return
+    end
 
     if intest
       flash[:success] = "Votre solution a bien été enregistrée."

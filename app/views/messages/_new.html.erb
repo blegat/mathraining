@@ -12,12 +12,12 @@
   <%= render 'messages/form', f: f, message: message, postfix: postfix, show_mail_checkboxes: true %>
   <%= render 'shared/edit_files', postfix: postfix %>
   
-  <% lastid = -1 %>
-  <% lastmessage = subject.messages.order("id DESC").first %>
-  <% if !lastmessage.nil? %>
-    <% lastid = lastmessage.id %>
+  <% last_id = -1 %>
+  <% last_message = subject.messages.order("id DESC").first %>
+  <% if !last_message.nil? %>
+    <% last_id = last_message.id %>
   <% end %>
-  <%= hidden_field_tag "lastmessage", lastid %>
+  <%= hidden_field_tag "last_id", last_id %>
 
   <%= f.submit "Poster", class: "btn btn-lg btn-primary", :disabled => in_skin? %>
   <button class="btn btn-lg btn-ld-light-dark" onclick="return Rolling.hideActual();">Annuler</button>

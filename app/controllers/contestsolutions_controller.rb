@@ -38,19 +38,11 @@ class ContestsolutionsController < ApplicationController
     @contestsolution = @contestproblem.contestsolutions.build(content: params[:contestsolution][:content],
                                                               user:    current_user)
     
-    # Invalid CSRF token
-    render_with_error('contestproblems/show', @contestsolution, get_csrf_error_message) and return if @invalid_csrf_token
+    # Save solution, handling usual errors
+    if !save_object_handling_errors(@contestsolution, 'contestproblems/show')
+      return
+    end
     
-    # Invalid contestsolution
-    render_with_error('contestproblems/show') and return if !@contestsolution.valid? 
-    
-    # Attached files
-    attach = create_files
-    render_with_error('contestproblems/show', @contestsolution, @file_error) and return if !@file_error.nil?
-
-    @contestsolution.save
-
-    attach_files(attach, @contestsolution)
     flash[:success] = "Solution enregistrée."
     redirect_to contestproblem_contestsolution_path(@contestproblem, @contestsolution)
   end
@@ -60,17 +52,10 @@ class ContestsolutionsController < ApplicationController
     params[:contestsolution][:content].strip! if !params[:contestsolution][:content].nil?
     @contestsolution.content = params[:contestsolution][:content]
     
-    # Invalid CSRF token
-    render_with_error('contestproblems/show', @contestsolution, get_csrf_error_message) and return if @invalid_csrf_token
-
-    # Invalid contestsolution
-    render_with_error('contestproblems/show') and return if !@contestsolution.valid? 
-
-    # Attached files
-    update_files(@contestsolution)
-    render_with_error('contestproblems/show', @contestsolution, @file_error) and return if !@file_error.nil?
-    
-    @contestsolution.save
+    # Save solution, handling usual errors
+    if !save_object_handling_errors(@contestsolution, 'contestproblems/show')
+      return
+    end
     
     flash[:success] = "Solution enregistrée."
     redirect_to contestproblem_contestsolution_path(@contestproblem, @contestsolution)

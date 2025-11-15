@@ -132,28 +132,14 @@ class SubjectsController < ApplicationController
       @subject.title = @subject.title.slice(0,1).capitalize + @subject.title.slice(1..-1)
     end
     
-    # Invalid CSRF token
-    render_with_error('subjects/new', @subject, get_csrf_error_message) and return if @invalid_csrf_token
-
     # Set associated object (category, section, chapter, exercise, problem)
     err = set_associated_object
     render_with_error('subjects/new', @subject, err) and return if !err.empty?
     
-    # Invalid subject
-    render_with_error('subjects/new') and return if !@subject.valid?
-    
-    # Invalid message
-    render_with_error('subjects/new') and return if !@message.valid?
-
-    # Attached files
-    attach = create_files
-    render_with_error('subjects/new', @subject, @file_error) and return if !@file_error.nil?
-
-    @subject.save
-    @message.subject_id = @subject.id
-    @message.save
-    
-    attach_files(attach, @message)
+    # Save subject and message, handling usual errors
+    if !save_object_handling_errors(@subject, 'subjects/new', @message)
+      return
+    end
 
     if current_user.root?
       if params.has_key?("emailWepion")
@@ -179,17 +165,14 @@ class SubjectsController < ApplicationController
       @subject.title = @subject.title.slice(0,1).capitalize + @subject.title.slice(1..-1)
     end
     
-    # Invalid CSRF token
-    render_with_error('subjects/show', @subject, get_csrf_error_message) and return if @invalid_csrf_token
-    
     # Set associated object (category, section, chapter, exercise, problem)
     err = set_associated_object
     render_with_error('subjects/show', @subject, err) and return if !err.empty?
     
-    # Invalid subject
-    render_with_error('subjects/show') and return if !@subject.valid?
-      
-    @subject.save
+    # Save subject, handling usual errors
+    if !save_object_handling_errors(@subject, 'subjects/show')
+      return
+    end
     
     flash[:success] = "Le sujet a bien été modifié."
     redirect_to subject_path(@subject, :q => @q, :msg => 0)
