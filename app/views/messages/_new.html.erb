@@ -6,7 +6,8 @@
 
 <div id="form<%= postfix %>" class="form-part px-1" style="height:0px;">
 
-<% message = Message.new %>
+<% error = !@message.nil? && @message.new_record? %>
+<% message = (error ? @message : Message.new) %>
 <%= form_for [subject, message], :url => subject_messages_path(subject, message, :action => :create, :q => @q), :html => { :multipart => true, :class => "mb-3" } do |f| %>
   <%= render 'messages/form', f: f, message: message, postfix: postfix, show_mail_checkboxes: true %>
   <%= render 'shared/edit_files', postfix: postfix %>
@@ -23,3 +24,7 @@
 <% end %>
 
 </div>
+
+<% if error %>
+  <script>rollingDevelopQuickWhenPossible("<%= postfix %>")</script>
+<% end %>

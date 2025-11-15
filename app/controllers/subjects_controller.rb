@@ -113,6 +113,7 @@ class SubjectsController < ApplicationController
   # Create a subject (show form)
   def new
     @subject = Subject.new
+    @message = Message.new
   end
 
   # Create a subject (send form)
@@ -132,21 +133,21 @@ class SubjectsController < ApplicationController
     end
     
     # Invalid CSRF token
-    error_create([get_csrf_error_message]) and return if @invalid_csrf_token
+    render_with_error('subjects/new', @subject, get_csrf_error_message) and return if @invalid_csrf_token
 
     # Set associated object (category, section, chapter, exercise, problem)
     err = set_associated_object
-    error_create([err]) and return if !err.empty?
+    render_with_error('subjects/new', @subject, err) and return if !err.empty?
     
     # Invalid subject
-    error_create(@subject.errors.full_messages) and return if !@subject.valid?
+    render_with_error('subjects/new') and return if !@subject.valid?
     
     # Invalid message
-    error_create(@message.errors.full_messages) and return if !@message.valid?
+    render_with_error('subjects/new') and return if !@message.valid?
 
     # Attached files
     attach = create_files
-    error_create([@file_error]) and return if !@file_error.nil?
+    render_with_error('subjects/new', @subject, @file_error) and return if !@file_error.nil?
 
     @subject.save
     @message.subject_id = @subject.id
@@ -179,14 +180,14 @@ class SubjectsController < ApplicationController
     end
     
     # Invalid CSRF token
-    error_update([get_csrf_error_message]) and return if @invalid_csrf_token
-    
-    # Invalid subject
-    error_update(@subject.errors.full_messages) and return if !@subject.valid?
+    render_with_error('subjects/show', @subject, get_csrf_error_message) and return if @invalid_csrf_token
     
     # Set associated object (category, section, chapter, exercise, problem)
     err = set_associated_object
-    error_update([err]) and return if !err.empty?
+    render_with_error('subjects/show', @subject, err) and return if !err.empty?
+    
+    # Invalid subject
+    render_with_error('subjects/show') and return if !@subject.valid?
       
     @subject.save
     
@@ -298,21 +299,5 @@ class SubjectsController < ApplicationController
     end
     
     return "" # Return empty string when no error
-  end
-  
-  # Helper method when an error occurred during create
-  def error_create(err)
-    @error_case = "errorSubject"
-    @error_msgs = err
-    @error_params = params[:subject]
-    render 'new'
-  end
-  
-  # Helper method when an error occurred during update
-  def error_update(err)
-    @error_case = "errorSubject"
-    @error_msgs = err
-    @error_params = params[:subject]
-    render 'show'
   end
 end

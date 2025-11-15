@@ -45,11 +45,9 @@ function checkWepion() {
 }
 </script>
 
-<% erreur = false %>
-
-<% if @error_case == "errorSubject" %>
-  <% erreur = true %>
-  <%= render 'shared/error_messages', errors: @error_msgs %>
+<%= render 'shared/error_messages', object: f.object %>
+<% unless is_edit %>
+  <%= render 'shared/error_messages', object: @message %>
 <% end %>
 
 <!-- Calcul de la liste des catégories et sections -->
@@ -69,10 +67,9 @@ function checkWepion() {
 <% selected_category = 0 %>
 <% q_what = "" %>
 <% q_id = 0 %>
+<% use_subject_obj = is_edit || @subject.errors.any? %>
 
-<% if erreur %>
-  <% selected_category = @error_params[:category_id].to_i if @error_params.has_key?(:category_id) %>
-<% elsif is_edit %>
+<% if use_subject_obj %>
   <% if !@subject.section_id.nil? %>
     <% selected_category = -@subject.section_id %>
   <% elsif !@subject.category_id.nil? %>
@@ -105,11 +102,7 @@ function checkWepion() {
 <!-- Chapitre (visible lorsque catégorie choisie est une section) -->
 <% if selected_category < 0 %>
   <% section_id = -selected_category %>
-  <% if erreur %>
-    <% sect = Section.find(section_id) %>
-    <% seechap = true %>
-    <% selected_chapter = @error_params[:chapter_id].to_i if @error_params.has_key?(:chapter_id) %>
-  <% elsif is_edit %>
+  <% if use_subject_obj %>
     <% sect = @subject.section %>
     <% seechap = true %>
     <% if !@subject.chapter_id.nil? %>
@@ -149,19 +142,12 @@ function checkWepion() {
 
 <!-- Exercice (visible lorsque chapitre choisi) -->
 <% if selected_chapter > 0 %>
-  <% if erreur %>
-    <% seeexo = true %>
-    <% chap = Chapter.find(selected_chapter) %>
-    <% selected_exercise = @error_params[:question_id].to_i if @error_params.has_key?(:question_id) %>
-  <% elsif is_edit %>
-    <% seeexo = true %>
-    <% chap = @subject.chapter %>
+  <% seeexo = true %>
+  <% chap = Chapter.find(selected_chapter) %>
+  <% if use_subject_obj %>
     <% if !@subject.question_id.nil? %>
       <% selected_exercise = @subject.question_id %>
     <% end %>
-  <% elsif !@q.nil? %>
-    <% seeexo = true %>
-    <% chap = Chapter.find(selected_chapter) %>
   <% end %>
 <% end %>
 
@@ -186,10 +172,10 @@ function checkWepion() {
   <% if exovisibles %>
     <% i = 1 %>
     <% visible_questions = chap.questions.select(:id).where(:online => true).order(:position).to_a %>
-    <% questions_with_subject = Subject.select(:question_id).where(:question_id => visible_questions.map(&:id)).to_a.map!(&:question_id) %>
+    <% questions_with_subject = Subject.select(:question_id).where.not(:id => @subject.id).where(:question_id => visible_questions.map(&:id)).to_a.map!(&:question_id) %>
     
     <% visible_questions.each do |e| %>
-      <% if (e.id == selected_exercise || !questions_with_subject.include?(e.id)) %>
+      <% if !questions_with_subject.include?(e.id) %>
         <% listeexo.push(["Exercice #{i}", e.id]) %>
         <% if selected_exercise == e.id %>
           <% forced_title = "Exercice #{i}" %>
@@ -204,8 +190,8 @@ function checkWepion() {
 
 <div class="mb-2">
   <%= f.label :question_id, :class => "form-label", :style => "#{ 'display:none;' if !seeexo }", :id => "label_exo" %>
-  <p id="alert-no-exercise-access" style="<%= 'display:none;' if exovisibles %>" class="mb-2 text-color-red">Vous n'avez pas accès aux exercices de ce chapitre.</p>
-  <p id="alert-some-exercise-hidden" style="<%= 'display:none;' if !some_exo_hidden %>" class="mb-2 text-color-orange">Certains exercices n'apparaissent pas dans la liste suivante car un sujet a déjà été ouvert à leur propos.</p>
+  <p id="alert-no-exercise-access" style="<%= 'display:none;' if exovisibles %>" class="text-color-red mb-1">Vous n'avez pas accès aux exercices de ce chapitre.</p>
+  <p id="alert-some-exercise-hidden" style="<%= 'display:none;' if !some_exo_hidden %>" class="text-color-orange mb-1">Certains exercices n'apparaissent pas dans la liste suivante car un sujet a déjà été ouvert à leur propos.</p>
   <%= f.select(:question_id, options_for_select(listeexo, selected_exercise), {}, { :class => "form-select", :style => "width:100%; max-width:400px; #{ 'display:none;' if !seeexo }", :onchange => ("javascript: checkQuestion();")}) %>
 </div>
 
@@ -215,16 +201,11 @@ function checkWepion() {
 
 <!-- Problème (visible lorsque chapitre choisi est 'Problèmes de ...') -->
 <% if selected_chapter == -1 %>
-  <% if erreur %>
-    <% seeprob = true %>
-    <% selected_problem = @error_params[:problem_id].to_i if @error_params.has_key?(:problem_id) %>
-  <% elsif is_edit %>
-    <% seeprob = true %>
+  <% seeprob = true %>
+  <% if use_subject_obj %>
     <% if !@subject.problem_id.nil? %>
       <% selected_problem = @subject.problem_id %>
     <% end %>
-  <% elsif !@q.nil? %>
-    <% seeprob = true %>
   <% end %>
 <% end %>
 
@@ -239,10 +220,10 @@ function checkWepion() {
 
   <% if probvisibles %>
     <% access_prob = accessible_problems_from_section(current_user, sect, ["id", "number"]).to_a %>
-    <% prob_with_subject = Subject.select(:problem_id).where(:problem_id => access_prob.map(&:id)).to_a.map!(&:problem_id) %>
+    <% prob_with_subject = Subject.select(:problem_id).where.not(:id => @subject.id).where(:problem_id => access_prob.map(&:id)).to_a.map!(&:problem_id) %>
   
     <% access_prob.each do |p| %>
-      <% if (p.id == selected_problem || !prob_with_subject.include?(p.id)) %>
+      <% if !prob_with_subject.include?(p.id) %>
         <% listeprob.push(["Problème ##{p.number}", p.id]) %>
         <% if selected_problem == p.id %>
           <% forced_title = "Problème ##{p.number}" %>
@@ -257,8 +238,8 @@ function checkWepion() {
 
 <div class="mb-2">
   <%= f.label :problem_id, :class => "form-label", :style => "#{ 'display:none;' if !seeprob }", :id => "label_prob" %>
-  <p id="alert-no-problem-access" class="text-color-red" style="<%= 'display:none;' if probvisibles %>">Vous n'avez pas accès aux problèmes.</p>
-  <p id="alert-some-problem-hidden" class="text-color-orange" style="<%= 'display:none;' if !some_prob_hidden %>">Certains problèmes n'apparaissent pas dans la liste suivante car un sujet a déjà été ouvert à leur propos.</p>
+  <p id="alert-no-problem-access" class="text-color-red mb-1" style="<%= 'display:none;' if probvisibles %>">Vous n'avez pas accès aux problèmes.</p>
+  <p id="alert-some-problem-hidden" class="text-color-orange mb-1" style="<%= 'display:none;' if !some_prob_hidden %>">Certains problèmes n'apparaissent pas dans la liste suivante car un sujet a déjà été ouvert à leur propos.</p>
   <%= f.select(:problem_id, options_for_select(listeprob, selected_problem), {}, { :class => "form-select", :style => "width:100%; max-width:400px; #{ 'display:none;' if !seeprob }", :onchange => ("javascript: checkProblem();")}) %>
 </div>
 
@@ -271,15 +252,9 @@ function checkWepion() {
     <%= hidden_field_tag "subject[title]", forced_title, :id => "hidden_title" %>
   </div>
 <% else %>
-  <% tit = "" %>
-  <% if erreur %>
-    <% tit = @error_params[:title] if @error_params.has_key?(:title) %>
-  <% elsif is_edit %>
-    <% tit = @subject.title %>
-  <% end %>
   <div class="mb-2">
     <%= f.label :title, :class => "form-label" %>
-    <%= f.text_field :title, :class => "form-control", :maxlength => "255", :style => "width:100%; max-width:400px;", :value => tit %>
+    <%= f.text_field :title, :class => "form-control", :maxlength => "255", :style => "width:100%; max-width:400px;" %>
     <%= hidden_field_tag "", "", :id => "hidden_title" %>
   </div>
 <% end %>
@@ -287,29 +262,19 @@ function checkWepion() {
 <!-- Message -->
 <% unless is_edit %>
   <div class="mb-2">
-    <% cont = "" %>
-    <% if erreur %>
-      <% cont = @error_params[:content] if @error_params.has_key?(:content) %>
-    <% end %>
     <%= f.label :content, :for => "MathInput#{postfix}", :class => "form-label" %>
     <%= render 'shared/preview', postfix: postfix %>
     <%= render 'shared/smiley', postfix: postfix, hiddentext: true %>
-    <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id=>"MathInput#{postfix}", :value => cont %>
+    <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput#{postfix}", :value => @message.content %>
     <script>initAndUpdatePreviewSafeWhenPossible("", /* enableBBCode = */ true, /* enableHiddenText = */ true)</script>
   </div>
 <% end %>
 
 <!-- Case correcteurs -->
 <% if current_user.admin? || current_user.corrector? %>
-  <% checked = "" %>
-  <% if erreur %>
-    <% checked = "checked" if @error_params.has_key?(:for_correctors) && @error_params[:for_correctors].to_i == 1 %>
-  <% elsif is_edit %>
-    <% checked = "checked" if @subject.for_correctors %>
-  <% end %>
   <div class="form-check mb-1">
   <label class="form-check-label">
-    <%= f.check_box :for_correctors, :class => "form-check-input", :checked => checked %>
+    <%= f.check_box :for_correctors, :class => "form-check-input" %>
     Ce sujet est réservé aux correcteurs.
   </label>
   </div>
@@ -319,15 +284,9 @@ function checkWepion() {
 
 <!-- Case important -->
 <% if current_user.admin? %>
-  <% checked = "" %>
-  <% if erreur %>
-    <% checked = "checked" if @error_params.has_key?(:important) && @error_params[:important].to_i == 1 %>
-  <% elsif is_edit %>
-    <% checked = "checked" if @subject.important %>
-  <% end %>
   <div class="form-check mb-1">
    <label class="form-check-label">
-    <%= f.check_box :important, :class => "form-check-input", :checked => checked %>
+    <%= f.check_box :important, :class => "form-check-input" %>
     Ce sujet doit toujours apparaître en premier lieu.
   </label>
   </div>
@@ -335,16 +294,10 @@ function checkWepion() {
 <% end %>
 
 <!-- Case wépion -->
-<% wepion_checked = "" %>
 <% if current_user.wepion? || current_user.admin? %>
-  <% if erreur %>
-    <% wepion_checked = "checked" if @error_params.has_key?(:for_wepion) && @error_params[:for_wepion].to_i == 1 %>
-  <% elsif is_edit %>
-    <% wepion_checked = "checked" if @subject.for_wepion %>
-  <% end %>
   <div class="form-check mb-1">
   <label class="form-check-label">
-    <%= f.check_box :for_wepion, :class => "form-check-input", :checked => wepion_checked, :onchange => ("javascript: checkWepion();") %>
+    <%= f.check_box :for_wepion, :class => "form-check-input", :onchange => ("javascript: checkWepion();") %>
     Ce sujet est destiné aux étudiants de Wépion.
   </label>
   </div>
@@ -353,7 +306,7 @@ function checkWepion() {
 
 <!-- Case e-mails aux groupes A et/ou B -->
 <% if current_user.root? && !is_edit %>
-  <div class="form-check mb-1" style="<%= "display:none;" unless wepion_checked == "checked" or Rails.env.test? %>" id="emailWepionDiv">
+  <div class="form-check mb-1" style="<%= "display:none;" unless !@subject.nil? && @subject.for_wepion or Rails.env.test? %>" id="emailWepionDiv">
   <label class="form-check-label">
     <%= check_box_tag "emailWepion", "A", false, :class => "form-check-input" %>
     Prévenir tous les élèves de Wépion de ce nouveau message par e-mail.
@@ -364,8 +317,4 @@ function checkWepion() {
 
 <% if someCheckBox %>
   <div class="mb-2"></div>
-<% end %>
-
-<% if is_edit && erreur %>
-  <script>rollingDevelopQuickWhenPossible("<%= postfix %>")</script>
 <% end %>

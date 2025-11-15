@@ -6,3 +6,7 @@
   <%= render 'shared/edit_files' %>
   <%= f.submit "Créer", class: "btn btn-lg btn-primary mb-3", :disabled => in_skin? %>
 <% end %>
+
+<% if @subject.errors.any? %>
+  <script>rollingDevelopQuickWhenPossible("")</script>
+<% end %>

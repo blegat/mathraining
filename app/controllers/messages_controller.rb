@@ -31,19 +31,21 @@ class MessagesController < ApplicationController
       lastid = lastmessage.id
     end
 
+    @page = @subject.last_page # Used in case of error
+
     if lastid != params[:lastmessage].to_i
-      error_create(["Un nouveau message a été posté avant le vôtre ! Veuillez en prendre connaissance avant de poster votre message."]) and return
+      render_with_error('subjects/show', @message, "Un nouveau message a été posté avant le vôtre ! Veuillez en prendre connaissance avant de poster votre message.") and return
     end
     
     # Invalid CSRF token
-    error_create([get_csrf_error_message]) and return if @invalid_csrf_token
+    render_with_error('subjects/show', @message, get_csrf_error_message) and return if @invalid_csrf_token
     
     # Invalid message
-    error_create(@message.errors.full_messages) and return if !@message.valid?
+    render_with_error('subjects/show') and return if !@message.valid?
 
     # Attached files
     attach = create_files
-    error_create([@file_error]) and return if !@file_error.nil?
+    render_with_error('subjects/show', @message, @file_error) and return if !@file_error.nil?
 
     @message.save
     
@@ -77,20 +79,22 @@ class MessagesController < ApplicationController
     params[:message][:content].strip! if !params[:message][:content].nil?
     @message.content = params[:message][:content]
     
+    @page = @message.page # Used in case of error
+    
     # Invalid CSRF token
-    error_update([get_csrf_error_message]) and return if @invalid_csrf_token
+    render_with_error('subjects/show', @message, get_csrf_error_message) and return if @invalid_csrf_token
     
     # Invalid message
-    error_update(@message.errors.full_messages) and return if !@message.valid?
+    render_with_error('subjects/show') and return if !@message.valid?
     
     # Attached files
     update_files(@message)
-    error_update([@file_error]) and return if !@file_error.nil?
+    render_with_error('subjects/show', @message, @file_error) and return if !@file_error.nil?
     
     @message.save
     
     flash[:success] = "Votre message a bien été modifié."
-    @message.reload
+    @message.reload # To get correct page
     redirect_to subject_path(@subject, :page => @message.page, :q => @q, :msg => @message.id)
   end
   
@@ -151,28 +155,5 @@ class MessagesController < ApplicationController
     unless @message.can_be_updated_by(current_user)
       render 'errors/access_refused'
     end
-  end
-  
-  ########## HELPER METHODS ##########
-  
-  # Helper method when an error occurred during create
-  def error_create(err)
-    @error_case = "errorNewMessage"
-    @error_msgs = err
-    @error_params = params[:message]
-    
-    @page = @subject.last_page
-    render 'subjects/show'
-  end
-  
-  # Helper method when an error occurred during update
-  def error_update(err)
-    @error_case = "errorMessage#{@message.id}"
-    @error_msgs = err
-    @error_params = params[:message]
-    
-    @message.reload
-    @page = @message.page
-    render 'subjects/show'
   end
 end

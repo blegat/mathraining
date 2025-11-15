@@ -6,12 +6,16 @@
 <%= render 'shared/post', ms: message, kind: "message", can_edit: can_edit, postfix: postfix %>
 </div>
 
+<% error = false %>
 <% if can_edit %>
+  <% error = !@message.nil? && @message.id == message.id %>
   <div id="form<%= postfix %>" class="form-part px-1" style="height:0px;">
-  <%= render 'messages/edit', message: message, postfix: postfix %>
+  <%= render 'messages/edit', message: (error ? @message : message), postfix: postfix %>
   </div>
 <% end %>
 
-<% if params.has_key?(:msg) && (params[:msg].to_i == message.id) %>
+<% if error %>
+  <script>rollingDevelopQuickWhenPossible("<%= postfix %>")</script>
+<% elsif params.has_key?(:msg) && (params[:msg].to_i == message.id) %>
   <script>rollingShowusWhenPossible("<%= postfix %>")</script>
 <% end %>

@@ -32,6 +32,8 @@
   </div>
 <% end %>
 
-<% if params.has_key?(:msg) && (params[:msg].to_i == 0) %>
+<% if subject.errors.any? %>
+  <script>rollingDevelopQuickWhenPossible("<%= postfix %>")</script>
+<% elsif params.has_key?(:msg) && (params[:msg].to_i == 0) %>
   <script>rollingShowusWhenPossible("<%= postfix %>")</script>
 <% end %>

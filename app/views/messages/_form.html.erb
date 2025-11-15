@@ -6,23 +6,13 @@
   <% show_mail_checkboxes = false %>
 <% end %>
 
-<% erreur = false %>
-
-<% if @error_case == "error#{postfix}" %>
-  <% erreur = true %>
-  <%= render 'shared/error_messages', errors: @error_msgs %>
-<% end %>
-
+<%= render 'shared/error_messages', object: f.object %>
 
 <div class="mb-2">
-  <% cont = message.content %>
-  <% if erreur %>
-    <% cont = @error_params[:content] if @error_params.has_key?(:content) %>
-  <% end %>
   <%= f.label :content, :for => "MathInput#{postfix}", :class => "form-label" %>
   <%= render 'shared/preview', postfix: postfix %>
   <%= render 'shared/smiley', postfix: postfix, hiddentext: true %>
-  <%= f.text_area :content, :value => cont, :maxlength => "8000", :class => "form-control", :style => "height:200px;", :id => "MathInput#{postfix}" %>
+  <%= f.text_area :content, :maxlength => "8000", :class => "form-control", :style => "height:200px;", :id => "MathInput#{postfix}" %>
   <script>initAndUpdatePreviewSafeWhenPossible("<%= postfix %>", /* enableBBCode = */ true, /* enableHiddenText = */ true, /* skipUpdate = */ true)</script>
 </div>
 
@@ -34,8 +24,4 @@
     Prévenir tous les élèves de Wépion de ce nouveau message par e-mail.
   </label>
   </div>
-<% end %>
-
-<% if erreur %>
-  <script>rollingDevelopQuickWhenPossible("<%= postfix %>")</script>
 <% end %>
