@@ -132,7 +132,7 @@ var hideStatement = function () {
 
   <!-- Affichage de la soumission -->
   <div id="theSubmission" class="content-part">
-    <%= render 'shared/post', ms: @submission, kind: "submission", can_edit: current_user.root?, postfix: "Submission" %>
+    <%= render 'shared/post', ms: @submission, can_edit: current_user.root?, postfix: "Submission" %>
   </div>
   
   <% if current_user.root? %>

@@ -14,7 +14,7 @@
 <% corrections.each do |correction| %>
   <% @lastid = correction.id %>
   <% last_correction_user = correction.user %>
-  <%= render 'shared/post', ms: correction, kind: "correction" %>  
+  <%= render 'shared/post', ms: correction %>  
 <% end %>
 
 <% if @submission.user == current_user && @submission.wrong? && @submission.has_recent_activity && !last_correction_user.nil? && last_correction_user != current_user %>

@@ -55,7 +55,7 @@
 
 <!-- Affichage de la soumission -->
 <% if !@contestsolution.official %>
-  <%= render 'shared/post', ms: @contestsolution, kind: "contestsolution", can_edit: false %>
+  <%= render 'shared/post', ms: @contestsolution, can_edit: false %>
 <% end %>
 
 <% if @contestproblem.at_least(:corrected) || @contest.is_organized_by_or_root(current_user) %>

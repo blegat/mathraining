@@ -3,7 +3,7 @@
 <!-- Si un brouillon a déjà été enregistré -->
 <% if !@contestsolution.new_record? %>
   <div id="the" class="content-part">
-    <%= render 'shared/post', ms: @contestsolution, kind: "contestsolution", can_edit: true %>
+    <%= render 'shared/post', ms: @contestsolution, can_edit: true %>
   </div>
 <% end %>
 

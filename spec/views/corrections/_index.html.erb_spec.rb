@@ -34,8 +34,8 @@ describe "corrections/_index.html.erb", type: :view, correction: true do
       it "renders the corrections correctly" do
         render partial: "corrections/index"
         should have_no_content("Aucun commentaire")
-        expect(response).to render_template(:partial => "shared/_post", :locals => {ms: correction1, kind: "correction"})
-        expect(response).to render_template(:partial => "shared/_post", :locals => {ms: correction2, kind: "correction"})
+        expect(response).to render_template(:partial => "shared/_post", :locals => {ms: correction1})
+        expect(response).to render_template(:partial => "shared/_post", :locals => {ms: correction2})
         should have_content("Votre solution est erronée")
       end
       
@@ -44,7 +44,7 @@ describe "corrections/_index.html.erb", type: :view, correction: true do
         
         it "does not render the message about how to correct a solution anymore" do
           render partial: "corrections/index"
-          expect(response).to render_template(:partial => "shared/_post", :locals => {ms: correction3, kind: "correction"})
+          expect(response).to render_template(:partial => "shared/_post", :locals => {ms: correction3})
           should have_no_content("Votre solution est erronée")
         end
       end
@@ -61,7 +61,7 @@ describe "corrections/_index.html.erb", type: :view, correction: true do
       
       it "does not render the message about how to correct a solution" do
         render partial: "corrections/index"
-        expect(response).to render_template(:partial => "shared/_post", :locals => {ms: correction, kind: "correction"})
+        expect(response).to render_template(:partial => "shared/_post", :locals => {ms: correction})
         should have_no_content("Votre solution est erronée")
       end
     end

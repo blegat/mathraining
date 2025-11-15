@@ -6,7 +6,7 @@
 <% if !@submission.new_record? %>
   <div id="the" class="content-part">
     <p>Cette solution n'a pas encore été envoyée aux correcteurs.</p>
-    <%= render 'shared/post', ms: @submission, kind: "submission", can_edit: true, postfix: "" %>
+    <%= render 'shared/post', ms: @submission, can_edit: true, postfix: "" %>
     
     <%= form_for @submission, url: send_draft_submission_path(@submission), :html => { :multipart => true } do |f| %>
       <% if limit_reached %>

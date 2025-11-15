@@ -34,7 +34,7 @@ describe "contestsolutions/_line.html.erb", type: :view, contestsolution: true d
           should have_selector("h3", text: "Solution officielle (publique)", normalize_ws: true, exact_text: true)
           should have_content("Cliquez ici pour réserver")
           expect(response).to render_template(:partial => "contestproblems/_show")
-          expect(response).not_to render_template(:partial => "shared/_post", :locals => {ms: contestsolution, kind: "contestsolution"})
+          expect(response).not_to render_template(:partial => "shared/_post", :locals => {ms: contestsolution})
           expect(response).not_to render_template(:partial => "contestsolutions/_edit", :locals => {contestsolution: contestsolution})
           expect(response).to render_template(:partial => "contestcorrections/_show", :locals => {contestsolution: contestsolution, contestcorrection: contestsolution.contestcorrection})
         end
@@ -55,7 +55,7 @@ describe "contestsolutions/_line.html.erb", type: :view, contestsolution: true d
           render template: "contestsolutions/show"
           should have_selector("h3", text: "Solution officielle (publique)", normalize_ws: true, exact_text: true)
           should have_content("Cliquez ici pour réserver")
-          expect(response).not_to render_template(:partial => "shared/_post", :locals => {ms: contestsolution, kind: "contestsolution"})
+          expect(response).not_to render_template(:partial => "shared/_post", :locals => {ms: contestsolution})
           expect(response).not_to render_template(:partial => "contestsolutions/_edit", :locals => {contestsolution: contestsolution})
           expect(response).to render_template(:partial => "contestcorrections/_show", :locals => {contestsolution: contestsolution, contestcorrection: contestsolution.contestcorrection})
         end
@@ -68,7 +68,7 @@ describe "contestsolutions/_line.html.erb", type: :view, contestsolution: true d
           render template: "contestsolutions/show"
           should have_selector("h3", text: "Solution officielle (non-publique)", normalize_ws: true, exact_text: true)
           should have_content("Cliquez ici pour réserver")
-          expect(response).not_to render_template(:partial => "shared/_post", :locals => {ms: contestsolution, kind: "contestsolution"})
+          expect(response).not_to render_template(:partial => "shared/_post", :locals => {ms: contestsolution})
           expect(response).not_to render_template(:partial => "contestsolutions/_edit", :locals => {contestsolution: contestsolution})
           expect(response).to render_template(:partial => "contestcorrections/_show", :locals => {contestsolution: contestsolution, contestcorrection: contestsolution.contestcorrection})
         end
@@ -81,7 +81,7 @@ describe "contestsolutions/_line.html.erb", type: :view, contestsolution: true d
           render template: "contestsolutions/show"
           should have_selector("h3", text: "Solution de #{user.name}", normalize_ws: true, exact_text: true)
           should have_content("Cliquez ici pour réserver")
-          expect(response).to render_template(:partial => "shared/_post", :locals => {ms: contestsolution, kind: "contestsolution", can_edit: false})
+          expect(response).to render_template(:partial => "shared/_post", :locals => {ms: contestsolution, can_edit: false})
           expect(response).not_to render_template(:partial => "contestsolutions/_edit", :locals => {contestsolution: contestsolution})
           expect(response).to render_template(:partial => "contestcorrections/_show", :locals => {contestsolution: contestsolution, contestcorrection: contestsolution.contestcorrection})
         end
@@ -94,7 +94,7 @@ describe "contestsolutions/_line.html.erb", type: :view, contestsolution: true d
           render template: "contestsolutions/show"
           should have_selector("h3", text: "Solution de #{user.name} (à corriger)", normalize_ws: true, exact_text: true)
           should have_content("Cliquez ici pour réserver")
-          expect(response).to render_template(:partial => "shared/_post", :locals => {ms: contestsolution, kind: "contestsolution", can_edit: false})
+          expect(response).to render_template(:partial => "shared/_post", :locals => {ms: contestsolution, can_edit: false})
           expect(response).not_to render_template(:partial => "contestsolutions/_edit", :locals => {contestsolution: contestsolution})
           expect(response).to render_template(:partial => "contestcorrections/_show", :locals => {contestsolution: contestsolution, contestcorrection: contestsolution.contestcorrection})
         end
@@ -111,7 +111,7 @@ describe "contestsolutions/_line.html.erb", type: :view, contestsolution: true d
           render template: "contestsolutions/show"
           should have_selector("h3", text: "Votre solution (en attente de correction)", normalize_ws: true, exact_text: true)
           should have_no_content("Cliquez ici pour réserver")
-          expect(response).to render_template(:partial => "shared/_post", :locals => {ms: contestsolution, kind: "contestsolution", can_edit: false})
+          expect(response).to render_template(:partial => "shared/_post", :locals => {ms: contestsolution, can_edit: false})
           expect(response).not_to render_template(:partial => "contestsolutions/_edit", :locals => {contestsolution: contestsolution})
           expect(response).not_to render_template(:partial => "contestcorrections/_show", :locals => {contestsolution: contestsolution, contestcorrection: contestsolution.contestcorrection})
         end
@@ -132,7 +132,7 @@ describe "contestsolutions/_line.html.erb", type: :view, contestsolution: true d
           render template: "contestsolutions/show"
           should have_selector("h3", text: "Solution officielle (non-publique)", normalize_ws: true, exact_text: true)
           should have_content("Cliquez ici pour réserver")
-          expect(response).not_to render_template(:partial => "shared/_post", :locals => {ms: contestsolution, kind: "contestsolution"})
+          expect(response).not_to render_template(:partial => "shared/_post", :locals => {ms: contestsolution})
           expect(response).not_to render_template(:partial => "contestsolutions/_edit", :locals => {contestsolution: contestsolution})
           expect(response).to render_template(:partial => "contestcorrections/_show", :locals => {contestsolution: contestsolution, contestcorrection: contestsolution.contestcorrection})
         end
@@ -145,7 +145,7 @@ describe "contestsolutions/_line.html.erb", type: :view, contestsolution: true d
           render template: "contestsolutions/show"
           should have_selector("h3", text: "Solution de #{user.name}", normalize_ws: true, exact_text: true)
           should have_no_content("Cliquez ici pour réserver")
-          expect(response).to render_template(:partial => "shared/_post", :locals => {ms: contestsolution, kind: "contestsolution", can_edit: false})
+          expect(response).to render_template(:partial => "shared/_post", :locals => {ms: contestsolution, can_edit: false})
           expect(response).not_to render_template(:partial => "contestsolutions/_edit", :locals => {contestsolution: contestsolution})
           expect(response).to render_template(:partial => "contestcorrections/_show", :locals => {contestsolution: contestsolution, contestcorrection: contestsolution.contestcorrection})
         end
@@ -162,7 +162,7 @@ describe "contestsolutions/_line.html.erb", type: :view, contestsolution: true d
           render template: "contestsolutions/show"
           should have_selector("h3", text: "Votre solution", normalize_ws: true, exact_text: true)
           should have_no_content("Cliquez ici pour réserver")
-          expect(response).to render_template(:partial => "shared/_post", :locals => {ms: contestsolution, kind: "contestsolution", can_edit: false})
+          expect(response).to render_template(:partial => "shared/_post", :locals => {ms: contestsolution, can_edit: false})
           expect(response).not_to render_template(:partial => "contestsolutions/_edit", :locals => {contestsolution: contestsolution})
           expect(response).to render_template(:partial => "contestcorrections/_show", :locals => {contestsolution: contestsolution, contestcorrection: contestsolution.contestcorrection})
         end
@@ -176,7 +176,7 @@ describe "contestsolutions/_line.html.erb", type: :view, contestsolution: true d
           render template: "contestsolutions/show"
           should have_selector("h3", text: "Solution de #{other_user.name}", normalize_ws: true, exact_text: true)
           should have_no_content("Cliquez ici pour réserver")
-          expect(response).to render_template(:partial => "shared/_post", :locals => {ms: contestsolution, kind: "contestsolution", can_edit: false})
+          expect(response).to render_template(:partial => "shared/_post", :locals => {ms: contestsolution, can_edit: false})
           expect(response).not_to render_template(:partial => "contestsolutions/_edit", :locals => {contestsolution: contestsolution})
           expect(response).to render_template(:partial => "contestcorrections/_show", :locals => {contestsolution: contestsolution, contestcorrection: contestsolution.contestcorrection})
         end

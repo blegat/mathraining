@@ -8,12 +8,12 @@
 
 <div class="post mb-3">
 
-  <% coul = ((kind == "correction" && ms.user != @submission.user) || kind == "contestcorrection") ? "table-ld-danger" : "table-ld-primary" %>
+  <% coul = ((ms.is_a?(Correction) && ms.user != @submission.user) || ms.is_a?(Contestcorrection)) ? "table-ld-danger" : "table-ld-primary" %>
   <div class="header <%= coul %>">
 
   <!-- Nom -->
   <div class="author h4 mb-0">
-  <% if kind != "contestcorrection" %>
+  <% if !ms.is_a?(Contestcorrection) %>
     <% if !ms.user.nil? %>
       <%= ms.user.linked_name %>
     <% else %>
@@ -29,7 +29,7 @@
   </div>
 
   <!-- Date -->
-  <% if kind != "contestsolution" && kind != "contestcorrection" %>
+  <% if !ms.is_a?(Contestsolution) && !ms.is_a?(Contestcorrection) %>
     <div class="date h5 mb-0"><%= write_date(ms.created_at) %></div>
   <% end %>
 
@@ -37,14 +37,14 @@
 
   <!-- Contenu du message -->
   <div class="content">
-  <% if kind == "message" && ms.erased? %>
+  <% if ms.is_a?(Message) && ms.erased? %>
     <i>Ce message a été supprimé.</i>
   <% else %>
-    <% theid = -ms.id if kind == "submission" || kind == "contestsolution" %>
-    <% theid = ms.id if kind == "message" || kind == "correction" || kind == "contestcorrection" %>
+    <% theid = -ms.id if ms.is_a?(Submission) || ms.is_a?(Contestsolution) %>
+    <% theid = ms.id if ms.is_a?(Message) || ms.is_a?(Correction) || ms.is_a?(Contestcorrection) %>
   
     <!-- NB: We use ms.content_was to get the content before it was possibly changed (useful in case of error when updating a draft submission) -->
-    <%= render '/shared/text_show_hide_code', content: (ms.new_record? ? ms.content : ms.content_was), id: theid, replace_indice: (kind == "message") %>
+    <%= render '/shared/text_show_hide_code', content: (ms.new_record? ? ms.content : ms.content_was), id: theid, replace_indice: ms.is_a?(Message) %>
   
     <!-- Pièces jointes -->
     <%= render 'shared/show_files', s: ms %>
@@ -53,7 +53,7 @@
   
   <% if can_edit %>
     <div class="modify">
-      <% if kind == "message" && !ms.new_record? %>
+      <% if ms.is_a?(Message) && !ms.new_record? %>
         <% unless ms.erased? %>
           <a href='#' onclick='return Rolling.develop("<%= postfix %>")' id='LinkEdit<%= postfix %>'>Modifier ce message</a>
           | <%= link_to "Supprimer ce message", soft_destroy_message_path(ms), method: :put, id: "LinkSoftDelete#{ postfix }", data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer ce message ?" } %>
@@ -62,10 +62,10 @@
           <%= "|" unless ms.erased? %>
           <%= link_to "Supprimer totalement ce message", message_path(ms), method: :delete, id: "LinkDelete#{ postfix }", data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer ce message ?" }  %>
         <% end %>
-      <% elsif kind == "contestsolution" %>
+      <% elsif ms.is_a?(Contestsolution) %>
         <a href='#' onclick='return Rolling.develop("")'>Modifier la solution</a>
         | <%= link_to "Supprimer la solution", contestsolution_path(ms), method: :delete, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer cette solution ?" }  %>
-      <% elsif kind == "contestcorrection" %>
+      <% elsif ms.is_a?(Contestcorrection) %>
         <a href='#' onclick='return Rolling.develop("")'>
         <% if !ms.contestsolution.official? %>
           Modifier la correction
@@ -73,7 +73,7 @@
           Modifier la solution
         <% end %>
         </a>
-      <% elsif kind == "submission" %>
+      <% elsif ms.is_a?(Submission) %>
         <a href='#' onclick='return Rolling.develop("<%= postfix %>")'>Modifier la solution</a>
         <% unless current_user.root? %>
           <!-- Supprimer (en test) -->

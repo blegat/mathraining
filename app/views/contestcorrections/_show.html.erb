@@ -7,7 +7,7 @@
       <%= contestsolution.score if contestsolution.score >= 0 %><%= '-' if contestsolution.score < 0 %> / 7
     </div>
   <% end %>
-  <%= render 'shared/post', ms: contestcorrection, kind: "contestcorrection", can_edit: can_edit %>
+  <%= render 'shared/post', ms: contestcorrection, can_edit: can_edit %>
 </div>
 
 <% if can_edit %>  

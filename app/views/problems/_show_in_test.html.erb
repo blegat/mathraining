@@ -11,7 +11,7 @@
 <div id="the" class="content-part">
 <!-- Si une soumission a déjà été faite -->
 <% if !@submission.new_record? %>
-  <%= render 'shared/post', ms: @submission, kind: "submission", can_edit: true, postfix: "" %>
+  <%= render 'shared/post', ms: @submission, can_edit: true, postfix: "" %>
 <!-- Si pas encore de soumission -->
 <% else %>
   <!-- On propose d'écrire une solution -->

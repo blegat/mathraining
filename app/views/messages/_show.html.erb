@@ -3,7 +3,7 @@
 <% can_edit = !message.new_record? && message.can_be_updated_by(current_user) %>
 
 <div id="the<%= postfix %>" class="content-part">
-<%= render 'shared/post', ms: message, kind: "message", can_edit: can_edit, postfix: postfix %>
+<%= render 'shared/post', ms: message, can_edit: can_edit, postfix: postfix %>
 </div>
 
 <% error = false %>

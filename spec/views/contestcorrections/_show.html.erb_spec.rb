@@ -22,7 +22,7 @@ describe "contestcorrections/_show.html.erb", type: :view, contestcorrection: tr
       render partial: "contestcorrections/show", locals: {contestsolution: contestsolution_official, contestcorrection: contestsolution_official.contestcorrection}
       should have_no_selector("h4", text: "Score obtenu")
       should have_no_content("/ 7")
-      expect(response).to render_template(:partial => "shared/_post", :locals => {ms: contestsolution_official.contestcorrection, kind: "contestcorrection", can_edit: true})
+      expect(response).to render_template(:partial => "shared/_post", :locals => {ms: contestsolution_official.contestcorrection, can_edit: true})
       expect(response).to render_template(:partial => "contestcorrections/_edit")
     end
   end
@@ -33,7 +33,7 @@ describe "contestcorrections/_show.html.erb", type: :view, contestcorrection: tr
         render partial: "contestcorrections/show", locals: {contestsolution: contestsolution, contestcorrection: contestsolution.contestcorrection}
         should have_selector("h4", text: "Score obtenu")
         should have_content("#{contestsolution.score} / 7")
-        expect(response).to render_template(:partial => "shared/_post", :locals => {ms: contestsolution.contestcorrection, kind: "contestcorrection", can_edit: false})
+        expect(response).to render_template(:partial => "shared/_post", :locals => {ms: contestsolution.contestcorrection, can_edit: false})
         expect(response).not_to render_template(:partial => "contestcorrections/_edit")
       end
     end
@@ -45,7 +45,7 @@ describe "contestcorrections/_show.html.erb", type: :view, contestcorrection: tr
         render partial: "contestcorrections/show", locals: {contestsolution: contestsolution, contestcorrection: contestsolution.contestcorrection}
         should have_selector("h4", text: "Score obtenu")
         should have_content("#{contestsolution.score} / 7")
-        expect(response).to render_template(:partial => "shared/_post", :locals => {ms: contestsolution.contestcorrection, kind: "contestcorrection", can_edit: true})
+        expect(response).to render_template(:partial => "shared/_post", :locals => {ms: contestsolution.contestcorrection, can_edit: true})
         expect(response).to render_template(:partial => "contestcorrections/_edit")
       end
     end
