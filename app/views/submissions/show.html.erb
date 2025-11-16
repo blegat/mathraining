@@ -42,6 +42,8 @@ var hideStatement = function () {
     (erronée)
   <% elsif @submission.plagiarized? %>
     (plagiée)
+  <% elsif @submission.generated_with_ai? %>
+    (générée par IA)
   <% elsif @submission.closed? %>
     (clôturée)
   <% elsif @submission.correct? %>
@@ -114,7 +116,7 @@ var hideStatement = function () {
   </div>
 <% end %>
 
-<% if @submission.plagiarized? && current_user == @submission.user %>
+<% if @submission.cheated? && current_user == @submission.user %>
   <p>Vous ne pouvez plus voir cette solution.</p>
 <% else %>
 
