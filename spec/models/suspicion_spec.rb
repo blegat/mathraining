@@ -8,6 +8,7 @@
 #  source        :text
 #  status        :integer          default("waiting_confirmation")
 #  created_at    :datetime         not null
+#  cheating_type :integer          default("plagiarism")
 #
 require "spec_helper"
 

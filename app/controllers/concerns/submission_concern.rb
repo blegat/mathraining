@@ -12,16 +12,16 @@ module SubmissionConcern
     end
   end
   
-  # Check that the student has no (recent) plagiarized or closed solution to the problem
-  def user_has_no_recent_plagiarism_or_closure
+  # Check that the student has no (recent) cheated or closed solution to the problem
+  def user_has_no_recent_cheating_or_closure
     if @submission.nil? || @submission.user == current_user
       if current_user.has_sanction_of_type(:no_submission)
         flash[:danger] = "Action impossible en raison de votre sanction actuelle."
         redirect_to problem_submission_path(@problem, @submission) and return
       end
-      s = current_user.submissions.where(:problem => @problem, :status => :plagiarized).order(:last_comment_time).last
+      s = current_user.submissions.where(:problem => @problem, :status => [:plagiarized, :generated_with_ai]).order(:last_comment_time).last
       if !s.nil? && s.date_new_submission_allowed > Date.today
-        flash[:danger] = "Action impossible en raison d'une solution plagiée sur ce problème."
+        flash[:danger] = "Action impossible en raison d'une solution #{s.plagiarized? ? 'plagiée' : 'générée par intelligence artificielle'} sur ce problème."
         redirect_to problem_submission_path(@problem, @submission) and return
       end
       s = current_user.submissions.where(:problem => @problem, :status => :closed).order(:last_comment_time).last

@@ -130,6 +130,7 @@ fr:
       submission:
         content: "Solution"
       suspicion:
+        cheating_type: "Type de triche"
         source: "Source"
       tchatmessage:
         content: "Message"

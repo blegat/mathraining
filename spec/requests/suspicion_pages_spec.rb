@@ -28,11 +28,11 @@ describe "Suspicion pages", suspicion: true do
       it do
         should have_selector("h1", text: "Problème ##{problem.number}")
         should have_selector("div", text: wrong_submission.content)
-        should have_link("Soumettre une nouvelle suspicion de plagiat")
+        should have_link("Soumettre une nouvelle suspicion de triche")
         should have_button("Envoyer pour confirmation") # in test environment it is always shown
       end
         
-      describe "and submits a new suspicion" do
+      describe "and submits a new suspicion of plagiarism" do
         before do
           fill_in "suspicion_source", with: new_source
           click_button "new_suspicion_button"
@@ -44,7 +44,27 @@ describe "Suspicion pages", suspicion: true do
           expect(page).to have_no_link("Modifier")
           expect(page).to have_no_button("Modifier")
           expect(page).to have_no_link("Supprimer")
+          expect(wrong_submission.suspicions.order(:id).last.plagiarism?).to eq(true)
           expect(wrong_submission.suspicions.order(:id).last.source).to eq(new_source)
+          expect(wrong_submission.suspicions.order(:id).last.user).to eq(corrector)
+          expect(wrong_submission.suspicions.order(:id).last.waiting_confirmation?).to eq(true)
+        end
+      end
+      
+      describe "and submits a new suspicion of AI generated solution" do
+        before do
+          select "Utilisation d'une IA", from: "suspicion_cheating_type"
+          click_button "new_suspicion_button"
+        end
+        specify do
+          expect(page).to have_success_message("Suspicion envoyée pour confirmation.")
+          expect(page).to have_selector("td", text: "Intelligence artificielle")
+          expect(page).to have_selector("td", text: "À confirmer")
+          expect(page).to have_no_link("Modifier")
+          expect(page).to have_no_button("Modifier")
+          expect(page).to have_no_link("Supprimer")
+          expect(wrong_submission.suspicions.order(:id).last.usage_of_ai?).to eq(true)
+          expect(wrong_submission.suspicions.order(:id).last.source).to eq("")
           expect(wrong_submission.suspicions.order(:id).last.user).to eq(corrector)
           expect(wrong_submission.suspicions.order(:id).last.waiting_confirmation?).to eq(true)
         end
@@ -65,7 +85,7 @@ describe "Suspicion pages", suspicion: true do
       let!(:suspicion_root) { FactoryBot.create(:suspicion, :user => root, :status => :forgiven) }
       before { visit suspicions_path }
       it do
-        should have_selector("h1", text: "Suspicions de plagiat")
+        should have_selector("h1", text: "Suspicions de triche")
         should have_no_link("Tout voir")
         should have_no_link("Voir nouvelles suspicions")
         should have_link("Voir", href: problem_submission_path(suspicion1.submission.problem, suspicion1.submission))
@@ -79,12 +99,12 @@ describe "Suspicion pages", suspicion: true do
     before { sign_in root }
     
     describe "visits waiting suspicions" do
-      let!(:suspicion1) { FactoryBot.create(:suspicion, :user => corrector, :submission => wrong_submission, :status => :waiting_confirmation) }
+      let!(:suspicion1) { FactoryBot.create(:suspicion, :user => corrector, :submission => wrong_submission, :status => :waiting_confirmation, :cheating_type => :usage_of_ai) }
       let!(:suspicion2) { FactoryBot.create(:suspicion, :user => corrector, :submission => correct_submission, :status => :waiting_confirmation) }
       let!(:suspicion3) { FactoryBot.create(:suspicion, :user => corrector, :submission => plagiarized_submission, :status => :confirmed) }
       before { visit suspicions_path }
       it do
-        should have_selector("h1", text: "Suspicions de plagiat")
+        should have_selector("h1", text: "Suspicions de triche")
         should have_link("Tout voir")
         should have_no_link("Voir nouvelles suspicions")
         should have_link("Voir", href: problem_submission_path(suspicion1.submission.problem, suspicion1.submission))
@@ -95,7 +115,7 @@ describe "Suspicion pages", suspicion: true do
       describe "and then visits all suspicions" do
         before { click_link "Tout voir" }
         it do
-          should have_selector("h1", text: "Suspicions de plagiat")
+          should have_selector("h1", text: "Suspicions de triche")
           should have_no_link("Tout voir")
           should have_link("Nouvelles suspicions uniquement")
           should have_link("Voir", href: problem_submission_path(suspicion1.submission.problem, suspicion1.submission))
@@ -114,14 +134,13 @@ describe "Suspicion pages", suspicion: true do
         expect(page).to have_link("Modifier")
         expect(page).to have_link("Supprimer", href: suspicion_path(suspicion)) # in test environment it is always shown
         expect(page).to have_button("Modifier") # in test environment it is always shown
-        expect(page).to have_link("Soumettre une nouvelle suspicion de plagiat")
+        expect(page).to have_link("Soumettre une nouvelle suspicion de triche")
         expect(page).to have_button("Envoyer pour confirmation") # in test environment it is always shown
         expect { click_link("Supprimer") }.to change{wrong_submission.suspicions.count}.by(-1)
       end
       
       describe "and mark it as confirmed" do
         before do
-          select root.name, from: "edit_user_field_#{suspicion.id}"
           fill_in "edit_source_field_#{suspicion.id}", with: new_source
           select "Confirmé", from: "edit_status_field_#{suspicion.id}"
           click_button "edit_button_#{suspicion.id}"
@@ -129,17 +148,32 @@ describe "Suspicion pages", suspicion: true do
           wrong_submission.reload
         end
         specify do
-          expect(suspicion.user).to eq(root)
+          expect(suspicion.plagiarism?).to eq(true)
           expect(suspicion.source).to eq(new_source)
           expect(suspicion.confirmed?).to eq(true)
           expect(wrong_submission.plagiarized?).to eq(true)
           expect(page).to have_link("Sanctionner #{wrong_submission.user.name}")
         end
       end
+      
+      describe "and removes the source by mistake" do
+        before do
+          fill_in "edit_source_field_#{suspicion.id}", with: ""
+          select "Confirmé", from: "edit_status_field_#{suspicion.id}"
+          click_button "edit_button_#{suspicion.id}"
+          suspicion.reload
+          wrong_submission.reload
+        end
+        specify do
+          expect(suspicion.source).not_to eq("")
+          expect(suspicion.confirmed?).to eq(false)
+          expect(wrong_submission.wrong?).to eq(true)
+        end
+      end
     end
     
     describe "visits a reserved waiting submission in test with suspicion" do
-      let!(:suspicion) { FactoryBot.create(:suspicion, :user => corrector, :submission => waiting_submission, :status => :waiting_confirmation) }
+      let!(:suspicion) { FactoryBot.create(:suspicion, :user => corrector, :submission => waiting_submission, :status => :waiting_confirmation, :cheating_type => :usage_of_ai) }
       let!(:reservation) { FactoryBot.create(:following, :user => corrector, :submission => waiting_submission, :kind => :reservation) }
       before do
         waiting_submission.update(:intest => true, :score => -1)
@@ -147,7 +181,7 @@ describe "Suspicion pages", suspicion: true do
       end
       it do
         should have_selector("div", text: "Cette soumission est en train d'être corrigée par #{corrector.name}")
-        should have_selector("td", text: suspicion.source)
+        should have_selector("td", text: "Intelligence artificielle")
         should have_selector("td", text: "À confirmer")
         should have_link("Modifier")
       end
@@ -161,7 +195,7 @@ describe "Suspicion pages", suspicion: true do
         end
         specify do
           expect(suspicion.confirmed?).to eq(true)
-          expect(waiting_submission.plagiarized?).to eq(true)
+          expect(waiting_submission.generated_with_ai?).to eq(true)
           expect(waiting_submission.score).to eq(0)
           expect(corrector.followings.where(:submission => waiting_submission, :kind => :reservation).count).to eq(0) # reservation should be deleted
           expect(corrector.followings.where(:submission => waiting_submission, :kind => :first_corrector).count).to eq(1) # corrector "corrected" that submission
@@ -176,7 +210,7 @@ describe "Suspicion pages", suspicion: true do
         end
         specify do
           expect(page).to have_selector("td", text: "Pardonné")
-          expect(waiting_submission.plagiarized?).to eq(false)
+          expect(waiting_submission.waiting?).to eq(true)
           expect(waiting_submission.score).to eq(-1)
           expect(corrector.followings.where(:submission => waiting_submission, :kind => :reservation).count).to eq(1) # reservation should not be deleted
           expect(corrector.followings.where(:submission => waiting_submission, :kind => :first_corrector).count).to eq(0) # should not be created

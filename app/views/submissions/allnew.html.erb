@@ -7,7 +7,7 @@
   - <%= link_to "Cachées", allhidden_submissions_path %>
 <% end %>
 <% if current_user.root? || current_user.suspicions.count > 0 %>
- - <%= link_to "Plagiats", suspicions_path %>
+ - <%= link_to "Suspicions", suspicions_path %>
 <% end %>
 <% if current_user.root? || current_user.starproposals.count > 0 %>
  - <%= link_to "Étoiles", starproposals_path %>

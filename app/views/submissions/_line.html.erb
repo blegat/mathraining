@@ -31,7 +31,7 @@
   <% color_class = "table-ld-warning" %>
 <% elsif s.correct? %>
   <% color_class = "table-ld-success" %>
-<% elsif s.wrong? || s.plagiarized? || s.closed? %>
+<% elsif s.wrong? || s.cheated? || s.closed? %>
   <% color_class = "table-ld-danger" %>
 <% elsif s.waiting_forever? %>
   <% if current_user == s.user %>

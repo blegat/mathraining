@@ -12,7 +12,7 @@
 <table class="table table-bordered" style="width:auto;">
 <%= render 'submissions/line_header', hide_user: true %>
 
-<% @user.submissions.where(:status => [:closed, :plagiarized]).order(:created_at).each do |s| %>
+<% @user.submissions.where(:status => [:closed, :plagiarized, :generated_with_ai]).order(:created_at).each do |s| %>
   <% while i < sanctions.size && sanctions[i].start_time < s.created_at %>
     <%= render 'sanctions/line', s: sanctions[i] %>
     <% i += 1 %>

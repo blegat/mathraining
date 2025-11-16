@@ -21,7 +21,7 @@
     <tr class="table-ld-<%= s.color_class %>">
     <td class="sub-date d-none d-lg-table-cell"><%= write_date(s.created_at) %></td>
     <td class="sub-user"><%= s.user.linked_name %></td>
-    <td><%= bbcode(s.reason) %><% unless s.waiting_treatment? %><br/><br/><b>Réponse</b> : <%= bbcode(s.answer) %><% end %></td>
+    <td><%= bbcode(s.reason) %><% unless s.answer.nil? || s.answer.size == 0 %><br/><br/><b>Réponse</b> : <%= bbcode(s.answer) %><% end %></td>
     <td class="text-center" style="width:110px;"><%= s.status_string %></td>
     <% if current_user.root? %>
       <td class="text-center" style="width:100px;">

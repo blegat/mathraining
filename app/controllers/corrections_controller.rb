@@ -12,8 +12,8 @@ class CorrectionsController < ApplicationController
   
   before_action :user_can_comment_submission, only: [:create]
   before_action :submission_not_draft, only: [:create]
-  before_action :submission_not_plagiarized_or_closed, only: [:create]
-  before_action :user_has_no_recent_plagiarism_or_closure, only: [:create]
+  before_action :submission_not_cheated_or_closed, only: [:create]
+  before_action :user_has_no_recent_cheating_or_closure, only: [:create]
   before_action :submission_not_waiting_in_test, only: [:create]
   before_action :submission_has_recent_activity, only: [:create]
 
@@ -164,9 +164,9 @@ class CorrectionsController < ApplicationController
     end
   end
   
-  # Check that the submission is not plagiarized or closed (nobody can comment in that case)
-  def submission_not_plagiarized_or_closed
-    if @submission.plagiarized? || @submission.closed?
+  # Check that the submission is not cheated or closed (nobody can comment in that case)
+  def submission_not_cheated_or_closed
+    if @submission.cheated? || @submission.closed?
       flash[:danger] = "Cette solution ne peut plus être commentée."
       redirect_to problem_submission_path(@problem, @submission)
     end

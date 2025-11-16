@@ -409,6 +409,10 @@ module ApplicationHelper
     return 'x-circle.svg'
   end
   
+  def ai_icon
+    return 'ai.svg'
+  end
+  
   def ruby_to_javascript(arr)
     t = "["
     prems = true

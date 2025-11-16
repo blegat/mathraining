@@ -1,11 +1,11 @@
-<% provide(:title, 'Suspicions de plagiats') %>
+<% provide(:title, 'Suspicions de triche') %>
 
 <% show_all = false %>
 <% if !current_user.root? || (params.has_key?:show_all) %>
   <% show_all = true %>
 <% end %>
 
-<h1><%= title_1("Suspicions de plagiats") %>
+<h1><%= title_1("Suspicions de triche") %>
 <% if current_user.root? %>
   <span class="h4"> - 
   <% if show_all %>

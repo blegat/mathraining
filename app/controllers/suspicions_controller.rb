@@ -38,7 +38,7 @@ class SuspicionsController < ApplicationController
   
   # Create a suspicion
   def create
-    suspicion = Suspicion.new(:user => current_user, :submission => @submission, :source => params[:suspicion][:source], :status => :waiting_confirmation)
+    suspicion = Suspicion.new(:user => current_user, :submission => @submission, :source => params[:suspicion][:source], :cheating_type => params[:suspicion][:cheating_type], :status => :waiting_confirmation)
     if suspicion.save
       flash[:success] = "Suspicion envoyée pour confirmation."
     else
@@ -50,7 +50,7 @@ class SuspicionsController < ApplicationController
   # Update a suspicion (for example its status, to confirm it)
   def update
     old_status = @suspicion.status
-    if @suspicion.update(params.require(:suspicion).permit(:user_id, :source, :status))
+    if @suspicion.update(params.require(:suspicion).permit(:source, :status, :cheating_type))
       if @submission.correct? && params[:suspicion][:status] == "confirmed"
         # Mark submission as incorrect (changing the user's score if needed)
         @submission.mark_incorrect
@@ -58,12 +58,13 @@ class SuspicionsController < ApplicationController
         # Delete the reservation, if any
         @submission.followings.where(:kind => :reservation).destroy_all
       end
-      if old_status != "confirmed" && @suspicion.status == "confirmed" && !@submission.plagiarized?
-        # Mark submission as plagiarized
-        @submission.update(:status            => :plagiarized,
-                           :last_comment_time => DateTime.now) # Because the new date for submission is 6 months after that date
-        if @submission.intest? && @submission.score == -1
-          @submission.update_attribute(:score, 0)
+      if old_status != "confirmed" && @suspicion.status == "confirmed"
+        # Mark submission as plagiarized or generated with AI
+        if !@submission.cheated?
+          @submission.update_attribute(:last_comment_time, DateTime.now) # Because the new date for submission is 6 months after that date
+          if @submission.intest? && @submission.score == -1
+            @submission.update_attribute(:score, 0)
+          end
         end
         @submission.notified_users << @submission.user unless @submission.notified_users.exists?(@submission.user_id)
       elsif old_status == "confirmed" && @suspicion.status != "confirmed"
@@ -73,16 +74,21 @@ class SuspicionsController < ApplicationController
           last_comment = @submission.corrections.order(:id).last
           @submission.update_last_comment
           if @submission.waiting?
-            # Delete the 'following' that was added automatically when submission was marked as plagiarized
+            # Delete the 'following' that was added automatically when submission was marked as cheated
             @submission.followings.destroy_all
           end
           @submission.notified_users << @submission.user unless @submission.notified_users.exists?(@submission.user_id)
         end
       end
-      if @submission.plagiarized? && @submission.followings.count == 0
+      if @suspicion.status == "confirmed"
+        @submission.update_attribute(:status, (@suspicion.usage_of_ai? ? :generated_with_ai : :plagiarized))
+      end
+      if @submission.cheated? && @submission.followings.count == 0
         Following.create(:user => @suspicion.user, :submission => @submission, :kind => :first_corrector, :read => true, :created_at => @suspicion.created_at)
       end
       flash[:success] = "Suspicion modifiée."
+    else
+      flash[:danger] = error_list_for(@suspicion)
     end
     redirect_to problem_submission_path(@submission.problem, @submission)
   end

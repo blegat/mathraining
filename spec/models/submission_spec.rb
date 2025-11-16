@@ -62,6 +62,7 @@ describe Submission, submission: true do
     let!(:sub_waiting) { FactoryBot.create(:submission, status: :waiting) }
     let!(:sub_waiting_forever) { FactoryBot.create(:submission, status: :waiting_forever) }
     let!(:sub_plagiarized) { FactoryBot.create(:submission, status: :plagiarized) }
+    let!(:sub_ai) { FactoryBot.create(:submission, status: :generated_with_ai) }
     let!(:sub_closed) { FactoryBot.create(:submission, status: :closed) }
     specify do
       expect(sub_star.icon).to eq(star_icon)
@@ -72,6 +73,7 @@ describe Submission, submission: true do
       expect(sub_waiting.icon).to eq(dash_icon)
       expect(sub_waiting_forever.icon).to eq(dash_icon)
       expect(sub_plagiarized.icon).to eq(warning_icon)
+      expect(sub_ai.icon).to eq(ai_icon)
       expect(sub_closed.icon).to eq(blocked_icon)
     end
   end

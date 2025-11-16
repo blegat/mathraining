@@ -66,7 +66,7 @@ var showFalse = function() {
       <%= render 'submissions/line', s: s, hide_user: true %>
       <% if s.waiting? || s.waiting_forever? || s.correct? %>
         <% @cansendnewsub = false %>
-      <% elsif s.plagiarized? || s.closed? %>
+      <% elsif s.cheated? || s.closed? %>
         <% one_date_submission_allowed = s.date_new_submission_allowed %>
         <% if date_submission_allowed.nil? or date_submission_allowed < one_date_submission_allowed %>
           <% date_submission_allowed = one_date_submission_allowed %>
@@ -83,6 +83,8 @@ var showFalse = function() {
     <% @cansendnewcomment = false %>
     <% if nonewcomment_reason == "plagiarized" %>
       <p class="text-color-red">Vous avez soumis une solution plagiée à ce problème. Vous aurez à nouveau la possibilité de proposer une solution à partir du <%= write_date_only(date_submission_allowed) %>.</p>
+    <% elsif nonewcomment_reason == "generated_with_ai" %>
+      <p class="text-color-red">Vous avez soumis une solution générée par intelligence artificielle à ce problème. Vous aurez à nouveau la possibilité de proposer une solution à partir du <%= write_date_only(date_submission_allowed) %>.</p>
     <% elsif nonewcomment_reason == "closed" %>
       <p class="text-color-red">Vous avez soumis une solution à ce problème qui a été clôturée par un correcteur. Vous aurez à nouveau la possibilité de proposer une solution à partir du <%= write_date_only(date_submission_allowed) %>.</p>
     <% end %>

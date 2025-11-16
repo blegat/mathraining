@@ -8,7 +8,7 @@
   }
 </script>
 
-<h3>Suspicions de plagiat</h3>
+<h3>Suspicions de triche</h3>
 <% suspicions = @submission.suspicions %>
 
 <% if suspicions.size > 0 %>
@@ -23,15 +23,19 @@
     <td class="sub-date d-none d-lg-table-cell"><%= write_date(s.created_at) %></td>
     <td class="sub-user"><%= s.user.linked_name %></td>
     <td>
-    <% s.source.split(' ').each do |w| %>
-      <% if w.index("http") == 0 %>
-        <% url_shortened = (w.size > 40 ? w[0,37] + "..." : w) %>
-        <%= link_to url_shortened, w, target: "_blank" %>
-      <% elsif w.index("www") == 0 %>
-        <% url_shortened = (w.size > 40 ? w[0,37] + "..." : w) %>
-        <%= link_to url_shortened, "http://" + w, target: "_blank" %>
-      <% else %>
-        <%= w %>
+    <% if s.usage_of_ai? %>
+      <i>Intelligence artificielle</i>
+    <% else %>
+      <% s.source.split(' ').each do |w| %>
+        <% if w.index("http") == 0 %>
+          <% url_shortened = (w.size > 40 ? w[0,37] + "..." : w) %>
+          <%= link_to url_shortened, w, target: "_blank" %>
+        <% elsif w.index("www") == 0 %>
+          <% url_shortened = (w.size > 40 ? w[0,37] + "..." : w) %>
+          <%= link_to url_shortened, "http://" + w, target: "_blank" %>
+        <% else %>
+          <%= w %>
+        <% end %>
       <% end %>
     <% end %>
     </td>
@@ -52,7 +56,7 @@
         <% end %>
         </td>
         <td>
-        <%= f.select(:user_id, options_for_select(correctors.collect {|u| [ u.name, u.id ] }, s.user_id), {}, { :class => "form-select", :id => "edit_user_field_#{s.id}" }) %>
+        <%= f.select(:cheating_type, [["Plagiat", :plagiarism], ["Utilisation d'une IA", :usage_of_ai]], {}, { :class => "form-select", :style => "max-width:180px;", :onchange => "showOrHideSource();" }) %>
         </td>
         <td><%= f.text_field :source, :class => "form-control", :id => "edit_source_field_#{s.id}" %></td>
         <td><%= f.select(:status, options_for_select({ "À confirmer" => :waiting_confirmation, "Confirmé" => :confirmed, "Pardonné" => :forgiven, "Rejeté" => :rejected }, s.status), {}, { :class => "form-select", :id => "edit_status_field_#{s.id}" }) %></td>
@@ -65,9 +69,20 @@
   </div>
 <% end %>
 
-<% if current_user.root? && @submission.plagiarized? && @submission.user.student? %>
+<% if current_user.root? && @submission.cheated? && @submission.user.student? %>
   <% num_plagiarism = @submission.user.submissions.where(:status => :plagiarized).count %>
-  <p><%= @submission.user.name %> a envoyé <b><%= num_plagiarism %> soumission<%= 's' if num_plagiarism > 1 %> plagiée<%= 's' if num_plagiarism > 1 %></b> sur Mathraining.</p>
+  <% num_ai = @submission.user.submissions.where(:status => :generated_with_ai).count %>
+  <p><%= @submission.user.name %> a envoyé
+  <% if num_plagiarism > 0 %>
+    <% plural = (num_plagiarism > 1 ? "s" : "") %>
+    <b><%= num_plagiarism %></b> soumission<%= plural %> plagiée<%= plural %></b>
+  <% end %>
+  <%= "et" if num_plagiarism > 0 && num_ai > 0 %>
+  <% if num_ai > 0 %>
+    <% plural = (num_ai > 1 ? "s" : "") %>
+    <b><%= num_ai %> soumission<%= plural %> générée<%= plural %> par intelligence artificielle</b>
+  <% end %>
+    sur Mathraining.</p>
   <% last_ban = @submission.user.last_sanction_of_type(:ban) %>
   <% if !last_ban.nil? %>
     <% if last_ban.end_time > DateTime.now %>
@@ -84,15 +99,37 @@
   </p>
 <% end %>
 
-<p id="btn_show_new_suspicion_form"><%= link_to "Soumettre une nouvelle suspicion de plagiat", "javascript:showNewSuspicionForm()" %></p>
+<p id="btn_show_new_suspicion_form"><%= link_to "Soumettre une nouvelle suspicion de triche", "javascript:showNewSuspicionForm()" %></p>
 
 <% new_suspicion = Suspicion.new %>
 <div id="new_suspicion_form" style="display:<%= Rails.env.test? ? 'block' : 'none' %>;">
 <%= form_for new_suspicion, url: submission_suspicions_path(@submission) do |f| %>
-  <div class="mb-2">
-  <%= f.label :source, "Source (lien vers une autre soumission ou une source extérieure)", :class => "form-label" %>
-  <%= f.text_field :source, :class => "form-control" %>
+
+<script>
+function showOrHideSource() {
+  var select = document.getElementById("suspicion_cheating_type");
+  if (select == undefined) { return; }    
+  var source_div = document.getElementById("source_div");
+  if (source_div == undefined) { return; }
+  if (select.value == "plagiarism") {
+    source_div.style.display = "block";
+  }
+  else {
+    source_div.style.display = "none";
+  }
+}
+</script>
+
+<div class="mb-2">
+  <%= f.label :cheating_type, :class => "form-label" %>
+  <%= f.select(:cheating_type, [["Plagiat", :plagiarism], ["Utilisation d'une IA", :usage_of_ai]], {}, { :class => "form-select", :style => "max-width:170px;", :onchange => "showOrHideSource();" }) %>
+</div>
+
+  <div class="mb-2" id="source_div">
+    <%= f.label :source, "Source", :class => "form-label" %>
+    <%= f.text_field :source, :class => "form-control", :placeholder => "Lien vers une source extérieure" %>
   </div>
+  
   <%= f.submit "Envoyer pour confirmation", :class => "btn btn-primary mb-3", :id => "new_suspicion_button" %>
 <% end %>
 </div>
