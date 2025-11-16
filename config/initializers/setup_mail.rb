@@ -1,6 +1,6 @@
 ActionMailer::Base.smtp_settings = {
   :address              => "ssl0.ovh.net",
-  :port	                => 995,
+  :port	                => 465,
   :domain               => "mathraining.be",
   :user_name            => Rails.application.credentials.dig(:email_user_name),
   :password             => Rails.application.credentials.dig(:email_password),
