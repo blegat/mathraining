@@ -1,9 +1,9 @@
 ActionMailer::Base.smtp_settings = {
-  :address              => "smtp.gmail.com",
-  :port	                => 587,
-  :domain               => "mathraining",
+  :address              => "ssl0.ovh.net",
+  :port	                => 995,
+  :domain               => "mathraining.be",
   :user_name            => Rails.application.credentials.dig(:email_user_name),
-  :password             => Rails.application.credentials.dig(:email_mathraining_key),
+  :password             => Rails.application.credentials.dig(:email_password),
   :authentication       => "plain",
   :enable_starttls_auto => true
 }
