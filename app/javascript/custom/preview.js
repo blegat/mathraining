@@ -17,14 +17,16 @@ class Preview {
   //  Initialize the members of this Preview
   //
   Init (safe, enableBBCode, enableHiddenText, enableIndice) {
+    this.container = document.getElementById("MathContainer" + this.key);
     this.preview = document.getElementById("MathPreview" + this.key);
-    this.buff = document.getElementById("MathBuffer" + this.key);
+    this.buff = undefined;
     this.input = document.getElementById("MathInput" + this.key);
     this.stop = document.getElementById("stop" + this.key);
     this.safe = safe;
     this.bbcode = enableBBCode;
     this.hiddentext = enableHiddenText;
     this.indice = enableIndice;
+    this.autoscroll = false;
     
     this.input.oninput = () => PreviewHandler.UpdateFromUser(this.key);
     if (this.stop) {
@@ -37,21 +39,38 @@ class Preview {
   }
   
   //
+  //  Create (hidden) buffer div just after the preview div.
+  //
+  CreateBufferDiv() {
+    if (this.buff != undefined) {
+      return;
+    }
+    this.buff = document.createElement("div");
+    this.buff.classList.add("card-body");
+    this.buff.classList.add("hidden-latex");
+    this.container.appendChild(this.buff);
+  }
+  
+  //
   //  Switch the buffer and preview, and display the right one.
   //  (We use visibility:hidden rather than display:none since
   //  the results of running MathJax are more accurate that way.)
   //
-  SwapBuffers () {
-    var buffer = this.preview, preview = this.buff;
-    this.buff = buffer; this.preview = preview;
-    var oldHeight = buffer.offsetHeight;
+  SwapBufferAndPreview() {
+    var oldHeight = this.preview.offsetHeight;
     var oldScroll = $(window).scrollTop();
-    buffer.classList.add("hidden-latex");
-    preview.classList.remove("hidden-latex");
-    var newHeight = preview.offsetHeight; // Must be done after removing hidden-latex!
-    if (Math.abs(newHeight - oldHeight) > 1) {
-      window.scrollTo(0, oldScroll+newHeight-oldHeight);
+    this.preview.classList.add("hidden-latex"); // Maybe faster than directly removing
+    this.buff.classList.remove("hidden-latex");
+    if (this.autoscroll) {
+      var newHeight = this.buff.offsetHeight; // Must be done after removing hidden-latex!
+      if (Math.abs(newHeight - oldHeight) > 1) {
+        window.scrollTo(0, oldScroll+newHeight-oldHeight);
+      }
     }
+    this.preview.remove();
+    this.preview = this.buff;
+    this.preview.id = "MathPreview" + this.key // Not necessary, but why not?
+    this.buff = undefined;
   }
 
   //
@@ -66,7 +85,7 @@ class Preview {
     if (this.timeout) {
       clearTimeout(this.timeout)
     }
-    this.timeout = setTimeout(this.callback,this.delay);
+    this.timeout = setTimeout(this.callback, this.delay);
   }
   
   //
@@ -130,6 +149,8 @@ class Preview {
       this.needUpdate = true;
       return;
     }
+    
+    this.CreateBufferDiv();
     
     var text = this.input.value
     if (this.safe) {
@@ -247,17 +268,12 @@ class Preview {
     if (text === this.preview.innerHTML) return;
     this.buff.innerHTML = text;
     
-    // On Firefox there is an issue when swapping the buffers, when the text to preview is long.
-    // The page scrolls a bit every two characters (when buffers are swapped in some order).
-    // For some reason, calling scrollTop() here (after setting innerHTML) solves the issue.
-    $(window).scrollTop();
-    
     this.mjRunning = true;
     this.needUpdate = false;
     
     MathJax.Hub.Queue(
-      ["Typeset",MathJax.Hub,this.buff],
-      ["PreviewDone",this]
+      ["Typeset", MathJax.Hub, this.buff],
+      ["PreviewDone", this]
     );
   }
 
@@ -267,7 +283,7 @@ class Preview {
   //
   PreviewDone () {
     this.mjRunning = false;
-    this.SwapBuffers();
+    this.SwapBufferAndPreview();
     if (this.needUpdate) {
       this.CreatePreview();
     }
@@ -277,6 +293,7 @@ class Preview {
   //  Method to call when text was updated by user.
   //
   UpdateFromUser () {
+    this.autoscroll = true;
     LeavingForm.SetChangesDone();
     if (!this.stop || this.stop.checked) {
       this.Update();
