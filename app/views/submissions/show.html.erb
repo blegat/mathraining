@@ -188,12 +188,13 @@ var hideStatement = function () {
     <% end %>
   <% end %>
   
-  <!-- Warning quand un extrait d'une solution externe est incluse dans la soumission ou un commentaire -->
+  <!-- Warning quand un extrait d'une solution externe est incluse dans la soumission ou un commentaire, ou que ça ressemble à de l'IA -->
   <% if can_current_user_correct %>
-    <% user_contents = [@submission.content] %>
+    <% user_contents = [@submission.content + "\n"] %>
     <% @submission.corrections.where(:user => @submission.user).each do |c| %>
-      <% user_contents.push(c.content) %>
+      <% user_contents.push(c.content + "\n") %>
     <% end %>
+    
     <% @problem.externalsolutions.each do |e| %>
       <% matching_extracts = [] %>
       <% e.extracts.each do |extract| %>
@@ -212,9 +213,20 @@ var hideStatement = function () {
           <li><%= m.text %></li>
           <% end %>
         </ul>
-        Vérifiez s'il s'agit d'un plagiat et soumettez une suspicion de plagiat si c'est le cas !
+        Vérifiez s'il s'agit d'un plagiat et soumettez une suspicion de triche si c'est le cas !
         </div>
       <% end %>
+    <% end %>
+    
+    <% num_blocks = 0 %>
+    <% user_contents.each do |content| %>
+      <% open = content.scan(/\n\\\[(\r)?\n/).size %>
+      <% close = content.scan(/(\r)?\n\\\](\r)?\n/).size %>
+      <% num_blocks += [open, close].min %>
+    <% end %>
+    <% if num_blocks > 0 %>
+      <div class="mb-3 p-2 px-3 bg-as-table-ld-warning-reder"><span class="fw-bold text-decoration-underline">Avertissement</span> : Cette solution contient <b><%= num_blocks %></b> bloc<%= "s" if num_blocks > 1 %> $\LaTeX$ similaire<%= "s" if num_blocks > 1 %> à ce que ChatGPT produit. Vérifiez le code et soumettez une suspicion de triche si l'ensemble vous semble suspect.
+      </div>
     <% end %>
   <% end %>
 
