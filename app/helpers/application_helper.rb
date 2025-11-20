@@ -172,7 +172,7 @@ module ApplicationHelper
   
   # Process the /latextest/ in LaTeX theory (to test LaTeX)
   def process_latex_test(m, id)
-    return m.gsub(/\/latextest\//, "<div class=\"mb-2\"><div class=\"card text-bg-ld-light-dark mb-2\"><div class=\"card-body\" id=\"MathPreview#{ id }\"></div><div class=\"card-body hidden-latex\" id=\"MathBuffer#{ id }\"></div></div><textarea id=\"MathInput#{ id }\" class=\"form-control\" style=\"height:120px;\" placeholder=\"Rentrez ici le code $\LaTeX$ que vous souhaitez tester.\"></textarea></div><script>initAndUpdatePreviewSafeWhenPossible(\"#{ id }\", false)</script>").html_safe
+    return m.gsub(/\/latextest\//, "<div class=\"mb-2\"><div class=\"card text-bg-ld-light-dark mb-2\" id=\"MathContainer#{ id }\"><div class=\"card-body\" id=\"MathPreview#{ id }\"></div></div><textarea id=\"MathInput#{ id }\" class=\"form-control\" style=\"height:120px;\" placeholder=\"Rentrez ici le code $\LaTeX$ que vous souhaitez tester.\"></textarea></div><script>initAndUpdatePreviewSafeWhenPossible(\"#{ id }\", false)</script>").html_safe
   end
 
   # Write 21h50
