@@ -75,7 +75,7 @@
   <p><%= @submission.user.name %> a envoyé
   <% if num_plagiarism > 0 %>
     <% plural = (num_plagiarism > 1 ? "s" : "") %>
-    <b><%= num_plagiarism %></b> soumission<%= plural %> plagiée<%= plural %></b>
+    <b><%= num_plagiarism %> soumission<%= plural %> plagiée<%= plural %></b>
   <% end %>
   <%= "et" if num_plagiarism > 0 && num_ai > 0 %>
   <% if num_ai > 0 %>
