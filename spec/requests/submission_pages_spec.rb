@@ -463,7 +463,7 @@ describe "Submission pages", submission: true do
             it do
               should have_selector("h3", text: "Soumission (erronée)")
               should have_selector("div", text: newcorrection)
-              should have_selector("div", text: "Votre solution est erronée.")
+              should have_selector("div", text: "Votre solution est erronée")
               should have_selector("h4", text: "Poster un commentaire")
               should have_no_link(href: notifs_path) # no more notification
             end
