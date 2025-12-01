@@ -24,11 +24,11 @@
 <!-- Date de début -->
 <div class="mb-2">
   <%= f.label :start_time, :class => "form-label" %>
-  <%= f.datetime_field :start_time, :class => "form-control", :style => "max-width:200px;", :disabled => @contestproblem.at_least(:in_progress) %>
+  <%= f.datetime_field :start_time, :class => "form-control", :style => "max-width:250px;", :disabled => @contestproblem.at_least(:in_progress) %>
 </div>
 
 <!-- Date de fin -->
 <div class="mb-2">
   <%= f.label :end_time, :class => "form-label" %>
-  <%= f.datetime_field :end_time, :class => "form-control", :style => "max-width:200px;", :disabled => @contestproblem.at_least(:in_correction) %>
+  <%= f.datetime_field :end_time, :class => "form-control", :style => "max-width:250px;", :disabled => @contestproblem.at_least(:in_correction) %>
 </div>
