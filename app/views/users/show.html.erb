@@ -1011,6 +1011,12 @@
       <%= link_to "Autoriser le changement de nom", set_can_change_name_user_path(@user), :method => :put %>
     <% end %>
     |
+    <% if @user.whitelisted %>
+      <%= link_to "Retirer de la liste blanche", unset_whitelisted_user_path(@user), :method => :put %>
+    <% else %>
+      <%= link_to "Ajouter à la liste blanche", set_whitelisted_user_path(@user), :method => :put %>
+    <% end %>
+    |
     <%= link_to "Sanctionner", user_sanctions_path(@user) %>
   </div>
 <% end %>

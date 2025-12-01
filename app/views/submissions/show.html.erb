@@ -218,15 +218,17 @@ var hideStatement = function () {
       <% end %>
     <% end %>
     
-    <% num_blocks = 0 %>
-    <% user_contents.each do |content| %>
-      <% open = content.scan(/\n\\\[(\r)?\n/).size %>
-      <% close = content.scan(/(\r)?\n\\\](\r)?\n/).size %>
-      <% num_blocks += [open, close].min %>
-    <% end %>
-    <% if num_blocks > 0 %>
-      <div class="mb-3 p-2 px-3 bg-as-table-ld-warning-reder"><span class="fw-bold text-decoration-underline">Avertissement</span> : Cette solution contient <b><%= num_blocks %></b> bloc<%= "s" if num_blocks > 1 %> $\LaTeX$ similaire<%= "s" if num_blocks > 1 %> à ce que ChatGPT produit. Vérifiez le code et soumettez une suspicion de triche si l'ensemble vous semble suspect.
-      </div>
+    <% unless @submission.user.whitelisted %>
+      <% num_blocks = 0 %>
+      <% user_contents.each do |content| %>
+        <% open = content.scan(/\n\\\[(\r)?\n/).size %>
+        <% close = content.scan(/(\r)?\n\\\](\r)?\n/).size %>
+        <% num_blocks += [open, close].min %>
+      <% end %>
+      <% if num_blocks > 0 %>
+        <div class="mb-3 p-2 px-3 bg-as-table-ld-warning-reder"><span class="fw-bold text-decoration-underline">Avertissement</span> : Cette solution contient <b><%= num_blocks %></b> bloc<%= "s" if num_blocks > 1 %> $\LaTeX$ similaire<%= "s" if num_blocks > 1 %> à ce que ChatGPT produit. Vérifiez le code et soumettez une suspicion de triche si l'ensemble vous semble suspect.
+        </div>
+      <% end %>
     <% end %>
   <% end %>
 

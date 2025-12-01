@@ -739,6 +739,29 @@ describe "User pages", user: true do
       end
     end
     
+    describe "adds a user to white list" do
+      before do
+        visit user_path(zero_user)
+        click_link("Ajouter à la liste blanche")
+        zero_user.reload
+      end
+      specify do
+        expect(page).to have_success_message("Utilisateur ajouté à la liste blanche")
+        expect(zero_user.whitelisted).to eq(true)
+      end
+      
+      describe "and allows him to change his name" do
+        before do
+          click_link("Retirer de la liste blanche")
+          zero_user.reload
+        end
+        specify do
+          expect(page).to have_success_message("Utilisateur retiré de la liste blanche")
+          expect(zero_user.whitelisted).to eq(false)
+        end
+      end
+    end
+    
     describe "visits unranked scores page" do
       before { visit users_path(:title => -1) }
       it do

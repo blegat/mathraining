@@ -98,6 +98,8 @@ describe UsersController, type: :controller, user: true do
     it { expect(response).to have_controller_put_path_behavior('unset_corrector', user1, :access_refused) }
     it { expect(response).to have_controller_put_path_behavior('set_can_change_name', user1, :access_refused) }
     it { expect(response).to have_controller_put_path_behavior('unset_can_change_name', user1, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('set_whitelisted', user1, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('unset_whitelisted', user1, :access_refused) }
     it { expect(response).to have_controller_put_path_behavior('take_skin', user1, :access_refused) }
     it { expect(response).to have_controller_put_path_behavior('destroydata', user1, :access_refused) }
     it { expect(response).to have_controller_get_static_path_behavior('groups', :ok) }
@@ -116,6 +118,8 @@ describe UsersController, type: :controller, user: true do
     it { expect(response).to have_controller_put_path_behavior('unset_corrector', user1, :ok) }
     it { expect(response).to have_controller_put_path_behavior('set_can_change_name', user1, :ok) }
     it { expect(response).to have_controller_put_path_behavior('unset_can_change_name', user1, :ok) }
+    it { expect(response).to have_controller_put_path_behavior('set_whitelisted', user1, :ok) }
+    it { expect(response).to have_controller_put_path_behavior('unset_whitelisted', user1, :ok) }
     it { expect(response).to have_controller_put_path_behavior('take_skin', user1, :ok) }
     it { expect(response).to have_controller_put_path_behavior('leave_skin', user1, :ok) }
     it { expect(response).to have_controller_put_path_behavior('destroydata', user1, :ok) }

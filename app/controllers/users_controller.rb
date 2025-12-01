@@ -3,13 +3,13 @@ class UsersController < ApplicationController
   skip_before_action :user_has_some_actions_to_take, only: [:improve_password, :accept_legal, :accept_code_of_conduct]
   
   before_action :signed_in_user, only: [:edit, :notifs, :groups, :followed, :unset_follow_message, :search]
-  before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :set_administrator, :take_skin, :leave_skin, :set_wepion, :unset_wepion, :set_corrector, :unset_corrector, :change_group, :accept_legal, :accept_code_of_conduct, :follow, :unfollow, :set_follow_message, :validate_names, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name, :improve_password]
+  before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :set_administrator, :take_skin, :leave_skin, :set_wepion, :unset_wepion, :set_corrector, :unset_corrector, :change_group, :accept_legal, :accept_code_of_conduct, :follow, :unfollow, :set_follow_message, :validate_names, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name, :set_whitelisted, :unset_whitelisted, :improve_password]
   before_action :admin_user, only: [:set_wepion, :unset_wepion, :change_group]
-  before_action :root_user, only: [:take_skin, :set_administrator, :destroy, :destroydata, :set_corrector, :unset_corrector, :validate_names, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name]
+  before_action :root_user, only: [:take_skin, :set_administrator, :destroy, :destroydata, :set_corrector, :unset_corrector, :validate_names, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name, :set_whitelisted, :unset_whitelisted]
   before_action :signed_out_user, only: [:new, :create, :forgot_password, :password_forgotten]
   before_action :wepion_user, only: [:groups]
   
-  before_action :get_user, only: [:edit, :update, :show, :destroy, :activate, :destroydata, :change_password, :take_skin, :set_administrator, :set_wepion, :unset_wepion, :set_corrector, :unset_corrector, :change_group, :recup_password, :follow, :unfollow, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name]
+  before_action :get_user, only: [:edit, :update, :show, :destroy, :activate, :destroydata, :change_password, :take_skin, :set_administrator, :set_wepion, :unset_wepion, :set_corrector, :unset_corrector, :change_group, :recup_password, :follow, :unfollow, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name, :set_whitelisted, :unset_whitelisted]
   
   before_action :avoid_strange_scraping, only: [:index]
   
@@ -287,6 +287,20 @@ class UsersController < ApplicationController
   def unset_can_change_name
     flash[:success] = "Cet utilisateur ne peut maintenant plus changer son nom."
     @user.update_attribute(:can_change_name, false)
+    redirect_to @user
+  end
+  
+  # Add user to whitelist
+  def set_whitelisted
+    flash[:success] = "Utilisateur ajouté à la liste blanche."
+    @user.update_attribute(:whitelisted, true)
+    redirect_to @user
+  end
+  
+  # Remove user from whitelist
+  def unset_whitelisted
+    flash[:success] = "Utilisateur retiré de la liste blanche."
+    @user.update_attribute(:whitelisted, false)
     redirect_to @user
   end
 

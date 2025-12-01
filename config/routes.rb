@@ -207,6 +207,8 @@ Rails.application.routes.draw do
       put :unfollow
       put :set_can_change_name
       put :unset_can_change_name
+      put :set_whitelisted
+      put :unset_whitelisted
       get :validate_name # only via JS
     end
     collection do
