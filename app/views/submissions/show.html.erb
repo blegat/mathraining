@@ -222,11 +222,30 @@ var hideStatement = function () {
       <% num_blocks = 0 %>
       <% user_contents.each do |content| %>
         <% open = content.scan(/\n\\\[(\r)?\n/).size %>
-        <% close = content.scan(/(\r)?\n\\\](\r)?\n/).size %>
-        <% num_blocks += [open, close].min %>
+        <% if open > 0 %>
+          <% close = content.scan(/\n\\\](\r)?\n/).size %>
+          <% num_blocks += [open, close].min %>
+        <% end %>
       <% end %>
-      <% if num_blocks > 0 %>
-        <div class="mb-3 p-2 px-3 bg-as-table-ld-warning-reder"><span class="fw-bold text-decoration-underline">Avertissement</span> : Cette solution contient <b><%= num_blocks %></b> bloc<%= "s" if num_blocks > 1 %> $\LaTeX$ similaire<%= "s" if num_blocks > 1 %> à ce que ChatGPT produit. Vérifiez le code et soumettez une suspicion de triche si l'ensemble vous semble suspect.
+      <% num_inlines = 0 %>
+      <% user_contents.each do |content| %>
+        <% open = content.scan(/\\\(/).size %>
+        <% if open > 0 %>
+          <% close = content.scan(/\\\)/).size %>
+          <% num_inlines += [open, close].min %>
+        <% end %>
+      <% end %>
+      <% if num_blocks > 0 || num_inlines > 0 %>
+        <div class="mb-3 p-2 px-3 bg-as-table-ld-warning-reder"><span class="fw-bold text-decoration-underline">Avertissement</span> : Cette solution contient <b><%= num_blocks + num_inlines %></b> bloc<%= "s" if num_blocks + num_inlines > 1 %> $\LaTeX$ similaire<%= "s" if num_blocks + num_inlines > 1 %> à ce que ChatGPT produit : 
+        <ul class="tex2jax_ignore mb-1">
+        <% if num_blocks > 0 %>
+          <li><%= num_blocks %> utilisation<%= "s" if num_blocks > 1 %> de \[ et \] sur des lignes séparées au lieu de $$</li>
+        <% end %>
+        <% if num_inlines > 0 %>
+          <li><%= num_inlines %> utilisation<%= "s" if num_inlines > 1 %> de \( et \) au lieu de $</li>
+        <% end %>
+        </ul>
+        Vérifiez le code et soumettez une suspicion de triche si la solution vous semble suspecte.
         </div>
       <% end %>
     <% end %>
