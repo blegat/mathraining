@@ -68,10 +68,10 @@ describe "Session pages", session: true do
     end
     
     describe "to an account that was recently banned" do
-      let!(:sanction) { FactoryBot.create(:sanction, user: user, sanction_type: :ban, start_time: DateTime.now - 1.week, duration: 14, reason: "Ce compte a été désactivé jusqu'au [DATE].") }
+      let!(:sanction) { FactoryBot.create(:sanction, user: user, sanction_type: :ban, start_time: DateTime.now - 1.week, duration: 14, reason: "Vous avez plagié !") }
       before { sign_in_with_form(user) }
       it do
-        should have_error_message("Ce compte a été désactivé jusqu'au #{write_date_only(sanction.end_time)}")
+        should have_error_message("Vous avez plagié !")
         should have_no_content(user.fullname) # Should not be connected
       end
     end

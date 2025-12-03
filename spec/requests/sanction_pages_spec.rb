@@ -32,7 +32,7 @@ describe "Sanction pages", sanction: true do
       describe "and sends with good information" do
         before do
           select "Soumissions non corrigées", from: "Type de sanction"
-          fill_in "Message", with: newreason
+          fill_in "Raison", with: newreason
           click_button "Créer"
         end
         specify do
@@ -44,11 +44,11 @@ describe "Sanction pages", sanction: true do
       
       describe "and sends with wrong information" do
         before do
-          fill_in "Message", with: "Mauvais raison"
+          fill_in "Raison", with: ""
           click_button "Créer"
         end
         specify do
-          expect(page).to have_error_message("Le message doit contenir exactement une fois '[DATE]'")
+          expect(page).to have_error_message("Raison doit être rempli")
           expect(page).to have_selector("h1", text: "Créer une sanction")
         end
       end
@@ -60,7 +60,7 @@ describe "Sanction pages", sanction: true do
       
       describe "and sends with good information" do
         before do
-          fill_in "Message", with: newreason
+          fill_in "Raison", with: newreason
           click_button "Modifier"
           sanction.reload
         end
@@ -73,7 +73,7 @@ describe "Sanction pages", sanction: true do
       describe "and sends with wrong information" do
         before do
           fill_in "Date de début", with: ""
-          fill_in "Message", with: newreason
+          fill_in "Raison", with: newreason
           click_button "Modifier"
           sanction.reload
         end

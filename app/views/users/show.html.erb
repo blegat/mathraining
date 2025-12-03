@@ -103,11 +103,11 @@
   <tr><td class="pt-1 fw-bold" style="font-size:16px;"><%= grade %>
   <% if signed_in? && current_user.root? %>
     <% if @user.has_sanction_of_type(:ban) %>
-      <span class='text-color-red'>(<%= write_date_only_small(@user.last_sanction_of_type(:ban).end_time) %>)</span>
+      <span class='text-color-red'>(<%= write_date_only_small(@user.last_sanction_of_type(:ban).end_date) %>)</span>
     <% elsif @user.has_sanction_of_type(:no_submission) %>
-      <span class='text-color-orange'>(<%= write_date_only_small(@user.last_sanction_of_type(:no_submission).end_time) %>)</span>
+      <span class='text-color-orange'>(<%= write_date_only_small(@user.last_sanction_of_type(:no_submission).end_date) %>)</span>
     <% elsif @user.has_sanction_of_type(:not_corrected) %>
-      <span class='text-color-orange'>(<%= write_date_only_small(@user.last_sanction_of_type(:not_corrected).end_time) %>)</span>
+      <span class='text-color-orange'>(<%= write_date_only_small(@user.last_sanction_of_type(:not_corrected).end_date) %>)</span>
     <% end %>
   <% end %>
   </td></tr>

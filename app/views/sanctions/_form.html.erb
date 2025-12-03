@@ -46,22 +46,17 @@ function showMessages() {
 </div>
 
 <div id="messages_ban" style="display:none;">
-<h6>Précédents messages</h6>
+<h6>Messages suggérés</h6>
 <ul>
-<% ban_messages = Sanction.where(:sanction_type => :ban).group(:reason).count %>
-<% ban_messages.sort_by{|message, nb| -nb}.each do |message, nb| %>
-  <li><%= message %></li>
-<% end %>
+  <li>L'utilisation d'une intelligence artificielle pour rédiger ses solutions est strictement interdite, quelle qu'en soit la raison.</li>
+  <li>L'équipe des correcteurs bénévoles vous invite à réfléchir à l'intérêt de leur faire corriger des solutions qui ne viennent pas de vous.</li>
 </ul>
 </div>
 
 <div id="messages_no_submission" style="display:none;">
-<h6>Précédents messages</h6>
+<h6>Messages suggérés</h6>
 <ul>
-<% no_sub_messages = Sanction.where(:sanction_type => :no_submission).group(:reason).count %>
-<% no_sub_messages.sort_by{|message, nb| -nb}.each do |message, nb| %>
-  <li><%= message %></li>
-<% end %>
+  <li>Les correcteurs estiment que vous ne fournissez pas assez d'efforts dans la rédaction de vos soumissions et ne prenez pas en compte les commentaires qui vous sont faits.</li>
 </ul>
 </div>
 

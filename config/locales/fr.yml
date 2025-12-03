@@ -105,7 +105,7 @@ fr:
         sanction_type: "Type de sanction"
         start_time: "Date de début"
         duration: "Durée (en jours)"
-        reason: "Message"
+        reason: "Raison"
       savedreply:
         problem_id: "Problème"
         content: "Réponse"

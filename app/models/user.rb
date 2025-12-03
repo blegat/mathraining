@@ -397,7 +397,7 @@ class User < ActiveRecord::Base
   # Tells if the user currently has a sanction of the given type
   def has_sanction_of_type(type)
     sanction = self.last_sanction_of_type(type)
-    return !sanction.nil? && sanction.end_time > DateTime.now
+    return !sanction.nil? && sanction.end_date >= Date.today
   end
   
   # Create a new random token, to automatically sign out the user from everywhere

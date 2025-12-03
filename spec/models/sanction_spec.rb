@@ -46,12 +46,32 @@ describe Sanction, sanction: true do
     before { sanction.reason = nil }
     it { should_not be_valid }
   end
-  describe "when reason does not contain [DATE]" do
-    before { sanction.reason = "Vous êtes banni" }
-    it { should_not be_valid }
+  
+  # message
+  describe "old messages are still correct" do
+    before do
+      sanction.start_time = DateTime.new(2025, 11, 15, 15, 0, 0)
+      sanction.duration = 3
+      sanction.reason = "Vous êtes puni jusqu'au [DATE]."
+    end
+    specify { expect(sanction.message).to eq("Vous êtes puni jusqu'au 18 novembre 2025.") }
   end
-  describe "when reason contains [DATE] twice." do
-    before { sanction.reason = "Vous êtes banni du [DATE] au [DATE]." }
-    it { should_not be_valid }
+  describe "new messages for ban are correct" do
+    before do
+      sanction.start_time = DateTime.new(2025, 12, 15, 15, 0, 0)
+      sanction.sanction_type = :ban
+      sanction.duration = 3
+      sanction.reason = "Vous n'avez pas été gentil."
+    end
+    specify { expect(sanction.message).to eq("Ce compte a été temporairement désactivé jusqu'au 18 décembre 2025. Vous n'avez pas été gentil.") }
+  end
+  describe "new messages for no submission are correct" do
+    before do
+      sanction.start_time = DateTime.new(2025, 12, 15, 15, 0, 0)
+      sanction.sanction_type = :no_submission
+      sanction.duration = 3
+      sanction.reason = "Vous n'avez pas été gentil."
+    end
+    specify { expect(sanction.message).to eq("Il ne vous est plus possible de faire de nouvelles soumissions ou d'écrire de nouveaux commentaires jusqu'au 18 décembre 2025. Vous n'avez pas été gentil.") }
   end
 end

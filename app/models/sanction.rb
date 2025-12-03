@@ -12,15 +12,6 @@
 #  reason        :text
 #
 
-class SanctionReasonValidator < ActiveModel::Validator
-  def validate(record)
-    return if record.not_corrected? # The message is not shown so we don't need [DATE]
-    if record.reason.nil? || record.reason.scan(/(?=\[DATE\])/).count != 1
-      record.errors.add(:base, "Le message doit contenir exactement une fois '[DATE]'.")
-    end
-  end
-end
-
 class Sanction < ActiveRecord::Base
   
   enum sanction_type: {:ban           => 0, # cannot connect to the account
@@ -38,16 +29,21 @@ class Sanction < ActiveRecord::Base
   validates :duration, presence: true, numericality: { greater_than: 0 }
   validates :reason, presence: true, length: { maximum: 2000 }
   
-  validates_with SanctionReasonValidator
-  
   # OTHER METHODS
   
-  # End date time of sanction
-  def end_time
-    return self.start_time + (self.duration).days
+  # End date of sanction
+  def end_date
+    return self.start_time.in_time_zone.to_date + (self.duration).days
   end
   
+  # Message shown to user
   def message
-    return self.reason.sub("[DATE]", write_date_only(self.end_time))
+    if self.start_time < DateTime.new(2025, 12, 3, 14, 0, 0) # Before, the message contained everything, with [DATE] for the date
+      return self.reason.sub("[DATE]", write_date_only(self.end_date))
+    elsif self.ban?
+      return "Ce compte a été temporairement désactivé jusqu'au #{write_date_only(self.end_date)}. #{self.reason}"
+    elsif self.no_submission?
+      return "Il ne vous est plus possible de faire de nouvelles soumissions ou d'écrire de nouveaux commentaires jusqu'au #{write_date_only(self.end_date)}. #{self.reason}"
+    end
   end
 end

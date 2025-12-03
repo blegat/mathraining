@@ -241,7 +241,7 @@ FactoryBot.define do
     sanction_type { :ban }
     start_time { DateTime.now }
     duration { 14 }
-    sequence(:reason) { |n| "Puni pour #{n} plagiats jusqu'au [DATE]." }
+    sequence(:reason) { |n| "Puni pour #{n} plagiats." }
   end
   
   # Saved reply
