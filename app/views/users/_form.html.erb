@@ -3,18 +3,18 @@
 <!-- Prénom -->
 <div class="mb-2">
   <%= f.label :first_name, :class => "form-label" %>
-  <%= f.text_field :first_name, :class => "form-control", :style => "width:200px;", :disabled => (modif && !@user.can_change_name && !in_skin?) %>
+  <%= f.text_field :first_name, :class => "form-control", :style => "width:200px;", :disabled => (modif && !@user.can_change_name && !current_user.root?) %>
 </div>
 
 <!-- Nom -->
 <div class="mb-2">
   <%= f.label :last_name, :class => "form-label" %>
-  <%= f.text_field :last_name, :class => "form-control", :style => "width:200px;", :disabled => (modif && !@user.can_change_name && !in_skin?) %>
+  <%= f.text_field :last_name, :class => "form-control", :style => "width:200px;", :disabled => (modif && !@user.can_change_name && !current_user.root?) %>
 </div>
 
-<% if modif && !@user.can_change_name %>
+<% if modif && !@user.can_change_name && !current_user.root? %>
   <p>(Vous ne pouvez plus modifier votre nom car vous avez abusé de cette possibilité.)</p>
-<% elsif modif && !@user.root? %>
+<% elsif modif && !current_user.root? %>
   <p>(Les changements de noms sont sujets à vérification, dans un souci d'uniformité entre utilisateurs. En cas d'abus, la possibilité de modifier votre nom vous sera retirée.)</p>
 <% end %>
 
@@ -72,44 +72,44 @@
 <!-- Email -->
 <div class="mb-2">
   <%= f.label :email, :class => "form-label" %>
-  <%= f.email_field :email, :class => "form-control", :style => "width:250px;", :disabled => (modif && !current_user_no_skin.admin?)  %>
+  <%= f.email_field :email, :class => "form-control", :style => "width:250px;", :disabled => (modif && !current_user.root?)  %>
 </div>
-
-<% if modif && !in_skin? && current_user.admin? %>
-  <p>(Vous pouvez modifier votre adresse e-mail car vous êtes administrateur.)</p>
-<% end %>
 
 <!-- Confirmation e-mail -->
 <% if !modif %>
 <div class="mb-2">
   <%= f.label :email_confirmation, :class => "form-label" %>
-  <%= f.email_field :email_confirmation, :class => "form-control", :style => "width:250px;", :disabled => modif %>
+  <%= f.email_field :email_confirmation, :class => "form-control", :style => "width:250px;" %>
 </div>
 <% end %>
 
-<%= render "password_inputs", f: f, show_placeholders: modif %>
+<% if !modif || @user == current_user %>
+  <%= render "password_inputs", f: f, show_placeholders: modif %>
+<% end %>
 
 <% if !modif && !Rails.env.test? %>
   <%= render 'users/captcha' %>
 <% end %>
 
 <!-- Couleur de correcteur -->
-<% if modif && (current_user.admin? || current_user.corrector?) %>
+<% if modif && (@user.admin? || @user.corrector?) %>
   <div class="mb-2">
     <%= f.label :corrector_color, :class => "form-label" %>
     <%= f.text_field :corrector_color, :class => "form-control", :style => "width:200px;" %>
   </div>
 <% end %>
 
-<!-- Accepter Google Analytics -->
-<div class="form-check">
-<%= f.label :accept_analytics, :class => "form-check-label mb-1" do %>
-  <%= f.check_box :accept_analytics, :class => "form-check-input" %>
-  J'accepte de contribuer aux statistiques de visites anonymes de Mathraining en autorisant les cookies de Google Analytics.
-  Ces statistiques permettent uniquement aux administrateurs d'en savoir plus sur la manière dont les utilisateurs naviguent sur le site, mais elles ne permettent aucunement d'identifier les visiteurs.
-  Le nombre total de pages visitées par mois est par exemple un indicateur de la popularité du site, qui peut être mis en valeur à différentes occasions.
+<% if !modif || @user == current_user %>
+  <!-- Accepter Google Analytics -->
+  <div class="form-check">
+  <%= f.label :accept_analytics, :class => "form-check-label mb-1" do %>
+    <%= f.check_box :accept_analytics, :class => "form-check-input" %>
+    J'accepte de contribuer aux statistiques de visites anonymes de Mathraining en autorisant les cookies de Google Analytics.
+    Ces statistiques permettent uniquement aux administrateurs d'en savoir plus sur la manière dont les utilisateurs naviguent sur le site, mais elles ne permettent aucunement d'identifier les visiteurs.
+    Le nombre total de pages visitées par mois est par exemple un indicateur de la popularité du site, qui peut être mis en valeur à différentes occasions.
+  <% end %>
+  </div>
 <% end %>
-</div>
 
 <% if !modif %>
   <!-- Lire et accepter la politique de confidentialité -->

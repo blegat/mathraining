@@ -1,14 +1,19 @@
 <% provide(:title, "Compte") %>
 
-<h1><%= title_1("Votre compte") %></h1>
+<% if @user == current_user %>
+  <h1><%= title_1("Votre compte") %></h1>
+<% else %>
+  <h1><%= title_user(@user, "Modifier") %></h1>
+<% end %>
 
 <%= form_for(@user) do |f| %>
   <%= render 'form', f: f, modif: true %>
-  <%= f.submit "Mettre à jour", class: "btn btn-lg btn-primary" %>
+  <%= f.submit "Mettre à jour", :class => "btn btn-lg btn-primary mb-3", :disabled => in_skin? %>
 <% end %>
 
-<hr>
-
-<p>Si vous désirez modifier votre adresse e-mail ou supprimer votre compte, merci de nous contacter à l'adresse</p>
-<p class="text-center"><%= image_tag "contact.svg", :class => "svg-black-white", :style => "width:80%; max-width:250px;" %></p>
-<p>pour en faire la demande.</p>
+<% if @user == current_user %>
+  <hr class="mt-0">
+  <p>Si vous désirez modifier votre adresse e-mail ou supprimer votre compte, merci de nous contacter à l'adresse</p>
+  <p class="text-center"><%= image_tag "contact.svg", :class => "svg-black-white", :style => "width:80%; max-width:250px;" %></p>
+  <p>pour en faire la demande.</p>
+<% end %>

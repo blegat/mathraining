@@ -4,8 +4,7 @@ class UsersController < ApplicationController
   
   before_action :signed_in_user, only: [:edit, :notifs, :groups, :followed, :unset_follow_message, :search]
   before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :set_administrator, :take_skin, :leave_skin, :set_wepion, :unset_wepion, :set_corrector, :unset_corrector, :change_group, :accept_legal, :accept_code_of_conduct, :follow, :unfollow, :set_follow_message, :validate_names, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name, :set_whitelisted, :unset_whitelisted, :improve_password]
-  before_action :admin_user, only: [:set_wepion, :unset_wepion, :change_group]
-  before_action :root_user, only: [:take_skin, :set_administrator, :destroy, :destroydata, :set_corrector, :unset_corrector, :validate_names, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name, :set_whitelisted, :unset_whitelisted]
+  before_action :root_user, only: [:destroy, :destroydata, :take_skin, :set_administrator, :set_corrector, :unset_corrector, :set_wepion, :unset_wepion, :change_group, :validate_names, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name, :set_whitelisted, :unset_whitelisted]
   before_action :signed_out_user, only: [:new, :create, :forgot_password, :password_forgotten]
   before_action :wepion_user, only: [:groups]
   
@@ -13,7 +12,7 @@ class UsersController < ApplicationController
   
   before_action :avoid_strange_scraping, only: [:index]
   
-  before_action :target_user_is_current_user, only: [:edit, :update]
+  before_action :current_user_is_target_user_or_root, only: [:edit, :update]
   before_action :target_user_is_not_root, only: [:destroy, :destroydata]
 
   # Show all users with their scores
@@ -188,15 +187,20 @@ class UsersController < ApplicationController
     old_last_name = @user.last_name
     old_first_name = @user.first_name
 
-    allowed_params = [:see_name, :sex, :year, :country_id, :password, :password_confirmation, :accept_analytics]
-    allowed_params << [:first_name, :last_name] unless !@user.can_change_name && !in_skin?
-    allowed_params << :email if current_user_no_skin.admin? # no_skin because root can change email of someone else
-    allowed_params << :corrector_color if (current_user.admin? || current_user.corrector?)
+    allowed_params = [:see_name, :sex, :year, :country_id]
+    allowed_params << [:password, :password_confirmation, :accept_analytics] if @user == current_user
+    allowed_params << [:first_name, :last_name] if @user.can_change_name || current_user.root?
+    allowed_params << :email if current_user.root?
+    allowed_params << :corrector_color if (@user.admin? || @user.corrector?)
     if @user.update(params.require(:user).permit(allowed_params))
       @user.adapt_name
       @user.save
-      flash[:success] = "Votre profil a bien été mis à jour."
-      if ((old_last_name != @user.last_name || old_first_name != @user.first_name) && !current_user.root?)
+      if @user == current_user
+        flash[:success] = "Votre profil a bien été mis à jour."
+      else
+        flash[:success] = "Ce profil a bien été mis à jour."
+      end
+      if old_last_name != @user.last_name || old_first_name != @user.first_name
         @user.update_attribute(:valid_name, false)
       end
       redirect_to edit_user_path(@user)
@@ -570,9 +574,9 @@ class UsersController < ApplicationController
     end
   end
   
-  # Check that the target user is current user
-  def target_user_is_current_user
-    if current_user.id != @user.id
+  # Check that current user is target user (or root)
+  def current_user_is_target_user_or_root
+    if current_user.id != @user.id && !current_user.root?
       render 'errors/access_refused'
     end
   end

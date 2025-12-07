@@ -89,11 +89,13 @@ describe UsersController, type: :controller, user: true do
   context "if the user is a admin" do
     before { sign_in_controller(admin) }
     
+    it { expect(response).to have_controller_edit_behavior(user1, :access_refused) }
+    it { expect(response).to have_controller_update_behavior(user1, :access_refused) }
     it { expect(response).to have_controller_destroy_behavior(user1, :access_refused) }
     it { expect(response).to have_controller_put_path_behavior('set_administrator', user1, :access_refused) }
-    it { expect(response).to have_controller_put_path_behavior('set_wepion', user1, :ok) }
-    it { expect(response).to have_controller_put_path_behavior('unset_wepion', user1, :ok) }
-    it { expect(response).to have_controller_put_path_behavior('change_group', user1, :ok, {:group => "A"}) }
+    it { expect(response).to have_controller_put_path_behavior('set_wepion', user1, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('unset_wepion', user1, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('change_group', user1, :access_refused, {:group => "A"}) }
     it { expect(response).to have_controller_put_path_behavior('set_corrector', user1, :access_refused) }
     it { expect(response).to have_controller_put_path_behavior('unset_corrector', user1, :access_refused) }
     it { expect(response).to have_controller_put_path_behavior('set_can_change_name', user1, :access_refused) }
@@ -109,11 +111,15 @@ describe UsersController, type: :controller, user: true do
   context "if the user is a root" do
     before { sign_in_controller(root) }
     
-    it { expect(response).to have_controller_update_behavior(user1, :access_refused) }
+    it { expect(response).to have_controller_edit_behavior(user1, :ok) }
+    it { expect(response).to have_controller_update_behavior(user1, :ok) }
     it { expect(response).to have_controller_update_behavior(root, :ok) }
     it { expect(response).to have_controller_destroy_behavior(user1, :ok) }
     it { expect(response).to have_controller_destroy_behavior(root, :access_refused) } # Cannot delete a root
     it { expect(response).to have_controller_put_path_behavior('set_administrator', user1, :ok) }
+    it { expect(response).to have_controller_put_path_behavior('set_wepion', user1, :ok) }
+    it { expect(response).to have_controller_put_path_behavior('unset_wepion', user1, :ok) }
+    it { expect(response).to have_controller_put_path_behavior('change_group', user1, :ok, {:group => "A"}) }
     it { expect(response).to have_controller_put_path_behavior('set_corrector', user1, :ok) }
     it { expect(response).to have_controller_put_path_behavior('unset_corrector', user1, :ok) }
     it { expect(response).to have_controller_put_path_behavior('set_can_change_name', user1, :ok) }

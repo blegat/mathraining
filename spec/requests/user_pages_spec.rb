@@ -20,6 +20,7 @@ describe "User pages", user: true do
   let(:new_first_name)  { "New First Name" }
   let(:new_last_name)  { "New Last Name" }
   let(:new_name)  { "#{new_first_name} #{new_last_name}" }
+  let(:new_email)  { "newemail@test.com" }
   let(:new_password) { "Tototototo22" }
   
   describe "visitor" do
@@ -713,6 +714,36 @@ describe "User pages", user: true do
         expect(page).to have_success_message("Vous êtes maintenant dans la peau de")
         expect(root.skin).to eq(zero_user.id)
         expect { click_link "Sortir de ce corps" and root.reload }.to change{root.skin}.to(0)
+      end
+    end
+    
+    describe "tries to edit information of a user" do
+      before do
+        visit user_path(zero_user)
+        click_link("Modifier")
+      end
+      it do
+        should have_selector("h1", text: "Modifier")
+        should have_no_content("J'accepte de contribuer") # Not when editing another user
+        should have_no_content("Mot de passe") # Not when editing another user
+        should have_no_content("Les changements de nom") # Not when editing another user
+        should have_no_content("Si vous désirez modifier votre") # Not when editing another user
+      end
+      
+      describe "and sends the form" do
+        before do
+          fill_in "Prénom", with: new_first_name
+          fill_in "Nom", with: new_last_name
+          fill_in "user_email", with: new_email
+          click_button "Mettre à jour"
+          zero_user.reload
+        end
+        specify do
+          expect(page).to have_success_message("Ce profil a bien été mis à jour")
+          expect(zero_user.first_name).to eq(new_first_name)
+          expect(zero_user.last_name).to eq(new_last_name)
+          expect(zero_user.email).to eq(new_email)
+        end
       end
     end
     
