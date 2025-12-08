@@ -16,6 +16,6 @@ ActionMailer::Base.smtp_settings = {
   :domain               => "mathraining.be",
   :user_name            => Rails.application.credentials.dig(:email_user_name),
   :password             => Rails.application.credentials.dig(:email_password),
-  :authentication       => "plain",
+  :authentication       => "login",
   :enable_starttls_auto => true
 }
