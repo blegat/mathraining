@@ -17,6 +17,10 @@
   </div>
 </div>
 
+<% if @contest.in_progress? %>
+  <div class="text-center fst-italic mb-2">La participation au concours est individuelle, afin de garantir l'équité entre les participants.</div>
+<% end %>
+
 <h3>Description</h3>
 
 <div class="mb-3">
