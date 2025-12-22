@@ -32,6 +32,10 @@ class Preview {
     if (this.stop) {
       this.stop.onclick = () => PreviewHandler.UpdateFromUser(this.key);
     }
+    
+    // Cache a callback to the CreatePreview action
+    this.callback = MathJax.Callback(["CreatePreview", this]);
+    this.callback.autoReset = true;  // make sure it can run more than once
   }
   
   //
@@ -55,17 +59,17 @@ class Preview {
   SwapBufferAndPreview() {
     var oldHeight = this.preview.offsetHeight;
     var oldScroll = $(window).scrollTop();
-    this.preview.classList.add("hidden-latex"); // Hide old preview: maybe faster than directly removing it
-    this.buff.classList.remove("hidden-latex"); // Show new preview
+    this.preview.classList.add("hidden-latex"); // Maybe faster than directly removing
+    this.buff.classList.remove("hidden-latex");
     if (this.autoscroll) {
       var newHeight = this.buff.offsetHeight; // Must be done after removing hidden-latex!
       if (Math.abs(newHeight - oldHeight) > 1) {
         window.scrollTo(0, oldScroll+newHeight-oldHeight);
       }
     }
-    this.preview.remove(); // Remove old preview
-    this.preview = this.buff; // Make this.preview point to the new preview
-    this.preview.id = "MathPreview" + this.key // Change id of new preview (not necessary, but why not)
+    this.preview.remove();
+    this.preview = this.buff;
+    this.preview.id = "MathPreview" + this.key // Not necessary, but why not?
     this.buff = undefined;
   }
 
@@ -75,12 +79,13 @@ class Preview {
   //  Then set up an update to occur after a small delay (so if more keys
   //    are pressed, the update won't occur until after there has been
   //    a pause in the typing).
+  //  The callback function is set up below, after the Preview object is set up.
   //
   Update () {
     if (this.timeout) {
       clearTimeout(this.timeout)
     }
-    this.timeout = setTimeout(() => {this.CreatePreview()}, this.delay);
+    this.timeout = setTimeout(this.callback, this.delay);
   }
   
   //
@@ -266,7 +271,10 @@ class Preview {
     this.mjRunning = true;
     this.needUpdate = false;
     
-    MathJax.typesetPromise([this.buff]).then(() => { this.PreviewDone() });
+    MathJax.Hub.Queue(
+      ["Typeset", MathJax.Hub, this.buff],
+      ["PreviewDone", this]
+    );
   }
 
   //

@@ -1,11 +1,11 @@
-<script>
-  MathJax = {
-    loader: {load: ['[tex]/begingroup']},
-    tex: {
-      packages: {'[+]': ['begingroup']},
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
       inlineMath: [ ['$','$'], ["\\(", "\\)"] ],
-      processEscapes: true,
-      macros: {
+      processEscapes: true
+    },
+    TeX: {
+      Macros: {
         pgcd: "\\operatorname{pgcd}",
         ppcm: "\\operatorname{ppcm}",
         arccot: "\\operatorname{arccot}",
@@ -26,30 +26,21 @@
         Lra: "\\Leftrightarrow",
         wh: "\\widehat",
         degree: "^\\circ"
-      }
+      },
+      extensions: ["begingroup.js"]
     },
-    options: {
-      ignoreHtmlClass: 'tex2jax_ignore',
-      menuOptions: {
-        settings: {
-          enrich: false, // Important because otherwise TypesetPromise is much slower on large tex inputs
-          collapsible: false,
-          speech: false, // Because of enrich: false
-          braille: true,
-          assistiveMml: false
-        }
-      }
+    "HTML-CSS": {
+      mtextFontInherit: true,
+      linebreaks: { automatic: true }
     },
-    output: {
-      mtextInheritFont: true,
-      displayOverflow: 'linebreak',
-      linebreaks: {
-        inline: true,
-        width: '100%',
-        lineleading: .2
-      }
-    }
-  }
+    CommonHTML: {
+      linebreaks: { automatic: true }
+    },
+    SVG: {
+      linebreaks: { automatic: true }
+    },
+    messageStyle: "simple" 
+  })
 </script>
 
-<script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4.1.0/tex-svg.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
