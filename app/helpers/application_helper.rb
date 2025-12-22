@@ -34,10 +34,15 @@ module ApplicationHelper
   end
 
   private
+  
+  # Use \begingroup and \endgroup so that potential new commands in m are local
+  def make_latex_local(m)
+    return "<span style='display:none;'>$\\begingroup$</span>" + m + "<span style='display:none;'>$\\endgroup$</span>"
+  end
 
   # To read bbcode on user side (should be similar to preview.js)
   def bbcode(m)
-    return (h m).
+    m2 = (h m).
     gsub(/\\\][ \r]*\n/,'\] ').
     gsub(/\$\$[ \r]*\n/,'$$ ').
     gsub(/\[b\](.*?)\[\/b\]/mi, '<b>\1</b>').
@@ -55,8 +60,9 @@ module ApplicationHelper
     gsub(/\;\-\)/,    image_tag("Smiley7.png", alt: ";-)", width: "20px")).
     gsub(/\:\-\|/,    image_tag("Smiley8.png", alt: ":-|", width: "20px")).
     gsub(/[3]\:\[/,   image_tag("Smiley9.png", alt: "3:[", width: "20px")).
-    gsub(/\n/, '<br/>').
-    html_safe
+    gsub(/\n/, '<br/>')
+    
+    return (make_latex_local(m2)).html_safe
   end
 
   # To read code on admin side (should be similar to preview.js)
@@ -128,7 +134,7 @@ module ApplicationHelper
       gsub(/<indice>(.*?)<\/indice>/mi, '<div class=\'clue-bis\'><div><button onclick=\'return Clue.toggle(0);\' class=\'btn btn-ld-light-dark\'>Indice</button></div><div id=\'indice0\' class=\'clue-hide\'><div class=\'clue-content\'>\1</div></div></div>')
     end
     
-    return m2.html_safe
+    return (make_latex_local(m2)).html_safe
   end
   
   # Replace hidden text in m, where "[hide=" is in position a, "]" in position b, and "[/hide]" in position c
