@@ -18,15 +18,19 @@ class ContestcorrectionsController < ApplicationController
     params[:contestcorrection][:content].strip! if !params[:contestcorrection][:content].nil?
     @contestcorrection.content = params[:contestcorrection][:content]
     
-    # Save correction, handling usual errors
-    if !save_object_handling_errors(@contestcorrection, 'contestsolutions/show')
-      return
-    end
-    
     old_score = @contestsolution.score
     
     if !@contestsolution.official?
-      @contestsolution.score = params["score".to_sym].to_i
+      if (params[:score].nil? || params[:score].blank?) && params[:status] != "star" # For a starred submission, score is set to 7 automatically below
+        render_with_error('contestsolutions/show', @contestcorrection, "Veuillez donner un score à cette solution.")
+        return
+      end
+      @contestsolution.score = params[:score].to_i
+    end
+    
+    # Save correction, handling usual errors
+    if !save_object_handling_errors(@contestcorrection, 'contestsolutions/show')
+      return
     end
     
     @contestsolution.reservation = 0

@@ -10,7 +10,7 @@
 <% if !contestsolution.official? %>
   <div class="mb-2">
   <label for="score" class="form-label">Score attribué (sur 7)</label>
-  <%= val = (!params.has_key?(:score) ? (contestsolution.score >= 0 ? contestsolution.score : nil) : params[:score]) %>
+  <% val = (!params.has_key?(:score) ? (contestsolution.score >= 0 ? contestsolution.score : nil) : params[:score]) %>
   <%= number_field_tag "score", val, :min => 0, :max => 7, :class => "form-control", :style => "width:70px;", :disabled => !has_reserved_correction %>
   </div>
 <% end %>

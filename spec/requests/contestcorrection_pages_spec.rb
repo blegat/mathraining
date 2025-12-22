@@ -215,6 +215,20 @@ describe "Contestcorrection pages", contestcorrection: true do
           expect(usersol_finished.contestcorrection.content).to eq("-")
         end
       end
+      
+      describe "and forgets the score" do
+        before do
+          fill_in "MathInput", with: newcorrection
+          click_button "Enregistrer"
+          usersol_finished.reload
+          usersol_finished.contestcorrection.reload
+        end
+        specify do
+          expect(page).to have_error_message("Veuillez donner un score à cette solution")
+          expect(usersol_finished.score).to eq(-1)
+          expect(usersol_finished.contestcorrection.content).to eq("-")
+        end
+      end
 
       describe "and hacked the system (he did not reserve)" do
         before do
@@ -428,6 +442,7 @@ describe "Contestcorrection pages", contestcorrection: true do
         wait_for_ajax
         click_button "button-reserve"
         wait_for_ajax
+        fill_in "score", with: 3
         click_button "Ajouter une pièce jointe"
         wait_for_ajax
         attach_file("file_1", File.absolute_path(attachments_folder + exe_attachment))
