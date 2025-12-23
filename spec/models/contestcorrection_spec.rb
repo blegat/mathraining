@@ -14,12 +14,17 @@ describe Contestcorrection, contestcorrection: true do
 
   subject { contestcorrection }
 
-  it { should be_valid }
+  it { should_not be_valid } # Because empty content is allowed at creation but not at update!
 
   # Content
   describe "when content is not present" do
     before { contestcorrection.content = nil }
     it { should_not be_valid }
+  end
+  
+  describe "when content is added" do
+    before { contestcorrection.content = "Voici" }
+    it { should be_valid }
   end
   
   describe "when content is too long" do

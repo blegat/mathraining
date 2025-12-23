@@ -22,6 +22,6 @@ class Contestcorrection < ActiveRecord::Base
   # VALIDATIONS
 
   validates :contestsolution_id, uniqueness: true
-  validates :content, presence: true, length: { maximum: 16000 }  # Limited to 8000 in the form but end-of-lines count twice
+  validates :content, presence: true, length: { maximum: 16000 }, on: :update  # Limited to 8000 in the form but end-of-lines count twice
 
 end

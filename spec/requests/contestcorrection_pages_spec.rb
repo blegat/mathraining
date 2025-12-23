@@ -212,7 +212,7 @@ describe "Contestcorrection pages", contestcorrection: true do
         specify do
           expect(page).to have_error_message("Correction doit être rempli")
           expect(usersol_finished.score).to eq(-1)
-          expect(usersol_finished.contestcorrection.content).to eq("-")
+          expect(usersol_finished.contestcorrection.content).to eq("")
         end
       end
       
@@ -226,7 +226,7 @@ describe "Contestcorrection pages", contestcorrection: true do
         specify do
           expect(page).to have_error_message("Veuillez donner un score à cette solution")
           expect(usersol_finished.score).to eq(-1)
-          expect(usersol_finished.contestcorrection.content).to eq("-")
+          expect(usersol_finished.contestcorrection.content).to eq("")
         end
       end
 
@@ -242,7 +242,7 @@ describe "Contestcorrection pages", contestcorrection: true do
         specify do
           expect(page).to have_error_message("Vous n'avez pas réservé.")
           expect(usersol_finished.score).to eq(-1)
-          expect(usersol_finished.contestcorrection.content).to eq("-")
+          expect(usersol_finished.contestcorrection.content).to eq("")
         end
       end
     end
@@ -442,6 +442,7 @@ describe "Contestcorrection pages", contestcorrection: true do
         wait_for_ajax
         click_button "button-reserve"
         wait_for_ajax
+        fill_in "MathInput", with: newcorrection2
         fill_in "score", with: 3
         click_button "Ajouter une pièce jointe"
         wait_for_ajax

@@ -73,7 +73,7 @@ class Contestsolution < ActiveRecord::Base
   
   # Create the correction just after the creation
   def create_correction
-    Contestcorrection.create(:contestsolution => self, :content => "-")
+    Contestcorrection.create(:contestsolution => self, :content => "")
   end
 
 end
