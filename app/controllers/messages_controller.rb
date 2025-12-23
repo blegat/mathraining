@@ -43,13 +43,15 @@ class MessagesController < ApplicationController
     end
 
     # Send an email to users following the subject
-    @subject.following_users.each do |u|
-      if u != current_user
-        if (@subject.for_correctors && !u.corrector? && !u.admin?) || (@subject.for_wepion && !u.wepion? && !u.admin?)
-          # Not really normal that this user follows this subject
-        else
-          UserMailer.new_followed_message(u.id, @subject.id, current_user.id).deliver
-        end
+    unless @limited_emails
+      @subject.following_users.each do |u|
+        if u != current_user
+          if (@subject.for_correctors && !u.corrector? && !u.admin?) || (@subject.for_wepion && !u.wepion? && !u.admin?)
+            # Not really normal that this user follows this subject
+          else
+            UserMailer.new_followed_message(u.id, @subject.id, current_user.id).deliver
+         end
+       end
       end
     end
 

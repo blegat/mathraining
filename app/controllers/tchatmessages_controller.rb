@@ -65,7 +65,7 @@ class TchatmessagesController < ApplicationController
 
     attach_files(attach, @tchatmessage)
     
-    if other_user.follow_message
+    if !@limited_emails && other_user.follow_message
       UserMailer.new_followed_tchatmessage(other_user.id, current_user.id, @discussion.id).deliver
     end
     

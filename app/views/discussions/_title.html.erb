@@ -4,11 +4,14 @@
     <%= title_1("Messages") %>
     </h1>
   </div>
-  <div class="part-2 pt-2">
-    <% if !current_user.follow_message %>
-      <%= link_to "M'avertir des nouveaux messages par e-mail", set_follow_message_path, :method => :put, :class => 'btn btn-ld-light-dark', :data => { confirm: "Vous recevrez un e-mail à chaque nouveau message."}, :disabled => in_skin? %>
-    <% else %>
-      <%= link_to "Ne plus m'avertir par e-mail", unset_follow_message_path, :class => 'btn btn-ld-light-dark', :disabled => in_skin? %>
-    <% end %>
-  </div>
+  
+  <% unless @limited_emails %>
+    <div class="part-2 pt-2">
+      <% if !current_user.follow_message %>
+        <%= link_to "M'avertir des nouveaux messages par e-mail", set_follow_message_path, :method => :put, :class => 'btn btn-ld-light-dark', :data => { confirm: "Vous recevrez un e-mail à chaque nouveau message."}, :disabled => in_skin? %>
+      <% else %>
+        <%= link_to "Ne plus m'avertir par e-mail", unset_follow_message_path, :class => 'btn btn-ld-light-dark', :disabled => in_skin? %>
+      <% end %>
+    </div>
+  <% end %>
 </div>

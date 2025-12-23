@@ -54,22 +54,42 @@ feature 'Emailer', mailer: true do
     let(:user) { FactoryBot.create(:user) }
     let!(:other_user) { FactoryBot.create(:user, last_connexion_date: DateTime.now) } # last_connexion_date to be sure that other_user appears in the list
   
-    before do
-      clear_emails
-      other_user.update_attribute(:follow_message, true)
-      sign_in user
-      visit new_discussion_path
-      select other_user.name, from: "qui"
-      fill_in "MathInput", with: "Salut !"
-      click_button "Envoyer"
-    end
+    describe "when emails are not limited" do
+      before do
+        clear_emails
+        other_user.update_attribute(:follow_message, true)
+        sign_in user
+        visit new_discussion_path
+        select other_user.name, from: "qui"
+        fill_in "MathInput", with: "Salut !"
+        click_button "Envoyer"
+      end
   
-    specify do
-      open_email(other_user.email)
-      expect(current_email.subject).to eq("Mathraining - Nouveau message de #{user.name}")
-      expect(current_email).to have_content "#{user.name} vous a envoyé un message sur Mathraining"
-      expect(current_email).to have_link("ici", href: discussion_url(Discussion.order(:id).last, :host => "www.mathraining.be"))
-      expect(current_email).to have_link("ici", href: unset_follow_message_url(:host => "www.mathraining.be"))
+      specify do
+        open_email(other_user.email)
+        expect(current_email.subject).to eq("Mathraining - Nouveau message de #{user.name}")
+        expect(current_email).to have_content "#{user.name} vous a envoyé un message sur Mathraining"
+        expect(current_email).to have_link("ici", href: discussion_url(Discussion.order(:id).last, :host => "www.mathraining.be"))
+        expect(current_email).to have_link("ici", href: unset_follow_message_url(:host => "www.mathraining.be"))
+      end
+    end
+    
+    describe "when emails are limited" do
+      before do
+        clear_emails
+        Globalvariable.create(:key => "limited_emails", :value => true)
+        other_user.update_attribute(:follow_message, true)
+        sign_in user
+        visit new_discussion_path
+        select other_user.name, from: "qui"
+        fill_in "MathInput", with: "Salut !"
+        click_button "Envoyer"
+      end
+  
+      specify do
+        open_email(other_user.email)
+        expect(current_email).to eq(nil)
+      end
     end
   end
   
@@ -78,22 +98,41 @@ feature 'Emailer', mailer: true do
     let!(:other_user) { FactoryBot.create(:user) }
     let!(:sub) { FactoryBot.create(:subject) }
     
-    before do
-      clear_emails
-      other_user.followed_subjects << sub
-      sign_in user
-      visit subject_path(sub)
-      fill_in "MathInputNewMessage", with: "Voici un nouveau message"
-      click_button "Poster"
+    describe "when emails are not limited" do
+      before do
+        clear_emails
+        other_user.followed_subjects << sub
+        sign_in user
+        visit subject_path(sub)
+        fill_in "MathInputNewMessage", with: "Voici un nouveau message"
+        click_button "Poster"
+      end
+    
+      specify do
+        open_email(other_user.email)
+        expect(page).to have_success_message("Votre message a bien été posté.")
+        expect(current_email.subject).to eq("Mathraining - Nouveau message sur le sujet '#{ sub.title }'")
+        expect(current_email).to have_content("#{user.name} a posté un message sur le sujet '#{ sub.title }' que vous suivez")
+        expect(current_email).to have_link("ici", href: subject_url(sub, :host => "www.mathraining.be", :page => 1, :anchor => "bottom"))
+        expect(current_email).to have_link("ici", href: unfollow_subject_url(sub, :host => "www.mathraining.be"))
+      end
     end
     
-    specify do
-      open_email(other_user.email)
-      expect(page).to have_success_message("Votre message a bien été posté.")
-      expect(current_email.subject).to eq("Mathraining - Nouveau message sur le sujet '#{ sub.title }'")
-      expect(current_email).to have_content("#{user.name} a posté un message sur le sujet '#{ sub.title }' que vous suivez")
-      expect(current_email).to have_link("ici", href: subject_url(sub, :host => "www.mathraining.be", :page => 1, :anchor => "bottom"))
-      expect(current_email).to have_link("ici", href: unfollow_subject_url(sub, :host => "www.mathraining.be"))
+    describe "when emails are limited" do
+      before do
+        clear_emails
+        Globalvariable.create(:key => "limited_emails", :value => true)
+        other_user.followed_subjects << sub
+        sign_in user
+        visit subject_path(sub)
+        fill_in "MathInputNewMessage", with: "Voici un nouveau message"
+        click_button "Poster"
+      end
+  
+      specify do
+        open_email(other_user.email)
+        expect(current_email).to eq(nil)
+      end
     end
   end
   

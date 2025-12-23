@@ -61,6 +61,7 @@ class ApplicationController < ActionController::Base
     @no_new_submission = false
     @limited_new_submissions = false
     @temporary_closure = false
+    @limited_emails = false
     Globalvariable.all.each do |g|
       if g.key == "under_maintenance"
         @under_maintenance = g.value
@@ -73,6 +74,8 @@ class ApplicationController < ActionController::Base
       elsif g.key == "temporary_closure"
         @temporary_closure = g.value
         @temporary_closure_message = g.message
+      elsif g.key == "limited_emails"
+        @limited_emails = g.value
       end
     end
   end
