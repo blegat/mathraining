@@ -62,7 +62,7 @@
       </div>
       <div id="indice0" class="clue-hide">
         <div class="clue-content">
-          <div class="mb-2"><%= htmlise(official_sol.contestcorrection.content) %></div>
+          <div class="mb-2"><%= bbcode(official_sol.contestcorrection.content) %></div>
           <div class="text-center"><%= link_to "Modifier la solution officielle", contestproblem_contestsolution_path(@contestproblem, official_sol) %></div>
         </div>
       </div>
