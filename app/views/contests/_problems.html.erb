@@ -42,16 +42,40 @@
       <div class="g-col-12 g-col-md-10 g-col-lg-8 g-col-xl-7 module right-part">
         <center><h5>Statistiques</h5></center>
         <% if p.at_least(:in_progress) %>
-          <% nb_sol = p.contestsolutions.count - 1 %>
+          <% sols = p.contestsolutions.where(:official => false).group(:corrected, :score).count %>
+          <% nb_sol = sols.sum{|x| x.second} %>
           Tenté par <b><%= nb_sol %></b> personne<%= "s" if nb_sol > 1 %><br/>
           <% if p.at_least(:corrected) %>
-            <% nb_perfect = p.contestsolutions.where(:score => 7, :official => false).count %>
+            <% nb_perfect = sols[[true, 7]] %>
+            <% nb_perfect = 0 if nb_perfect.nil? %>
             Scores parfaits : <b><%= nb_perfect %></b>
           <% elsif p.in_correction? %>
             En cours de correction
             <% if organizer %>
-              <% nb_not_corrected = p.contestsolutions.where(:score => -1, :official => false).count %>
-              (<%= nb_not_corrected %> restante<%= "s" if nb_not_corrected > 1 %>)
+              <% nb_corrected = sols.sum{|x| (x.first[0] ? x.second : 0)} %>
+              <% nb_partly_corrected = sols.sum{|x| (!x.first[0] && x.first[1] >= 0 ? x.second : 0)} %>
+              <% nb_not_corrected = nb_sol - nb_corrected - nb_partly_corrected %>
+              <% pct_corrected = (nb_corrected/nb_sol.to_f)*100 %>
+              <% pct_partly_corrected = (nb_partly_corrected/nb_sol.to_f)*100 %>
+              <% pct_not_corrected = (nb_not_corrected/nb_sol.to_f)*100 %>
+              
+              <div class="progress mx-4 mt-2">
+                <% if nb_not_corrected > 0 %>
+                  <div class="progress-bar bg-danger" role="progressbar" style="width: <%= pct_not_corrected %>%" aria-valuenow="<%= pct_not_corrected %>" aria-valuemin="0" aria-valuemax="100">
+                    <%= nb_not_corrected if pct_not_corrected >= 12 %>
+                  </div>
+                <% end %>
+                <% if nb_partly_corrected > 0 %>
+                  <div class="progress-bar bg-warning" role="progressbar" style="color: black; width: <%= pct_partly_corrected %>%" aria-valuenow="<%= pct_partly_corrected %>" aria-valuemin="0" aria-valuemax="100">
+                    <%= nb_partly_corrected if pct_partly_corrected >= 12 %>
+                  </div>
+                <% end %>
+                <% if nb_corrected > 0 %>
+                  <div class="progress-bar bg-success" role="progressbar" style="width: <%= pct_corrected %>%" aria-valuenow="<%= pct_corrected %>" aria-valuemin="0" aria-valuemax="100">
+                    <%= nb_corrected if pct_corrected >= 12 %>
+                  </div>
+                <% end %>
+              </div>
             <% end %>
           <% end %>
         <% end %>
