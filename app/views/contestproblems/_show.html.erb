@@ -50,3 +50,22 @@
   <!-- Les solutions -->
   <%= render 'contestsolutions/index' %>
 <% end %>
+
+<!-- Si organisateur et problème en (re)correction -->
+<% if @contest.is_organized_by_or_root(current_user) && (@contestproblem.in_correction? || @contestproblem.in_recorrection?) %>
+  <!-- Solution officielle (avec barème éventuel) -->
+  <% official_sol = @contestproblem.contestsolutions.where(:official => true).first %>
+  <% unless official_sol.nil? %>
+    <div class="clue-bis mb-3">
+      <div class="text-center">
+        <button onclick="return Clue.toggle(0)" class="btn btn-ld-light-dark">Solution officielle</button>
+      </div>
+      <div id="indice0" class="clue-hide">
+        <div class="clue-content">
+          <div class="mb-2"><%= htmlise(official_sol.contestcorrection.content) %></div>
+          <div class="text-center"><%= link_to "Modifier la solution officielle", contestproblem_contestsolution_path(@contestproblem, official_sol) %></div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+<% end %>
