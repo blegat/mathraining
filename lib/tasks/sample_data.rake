@@ -192,8 +192,7 @@ def create_users
               email_confirmation:    "root@root.com",
               password:              "Foobar12",
               password_confirmation: "Foobar12",
-              root:                  true,
-              admin:                 true,
+              role:                  :root,
               year:                  1990,
               country:               country[0],
               created_at:            DateTime.now - 100.days)
@@ -205,8 +204,7 @@ def create_users
               email_confirmation:    "admin@admin.com",
               password:              "Foobar12",
               password_confirmation: "Foobar12",
-              root:                  false,
-              admin:                 true,
+              role:                  :administrator,
               year:                  1993,
               country:               country[1],
               created_at:            DateTime.now - 90.days)
@@ -229,8 +227,7 @@ def create_users
                 email_confirmation:    mail,
                 password:              "Foobar12",
                 password_confirmation: "Foobar12",
-                root:                  false,
-                admin:                 false,
+                role:                  :student,
                 year:                  2000 + Random.rand(5),
                 country:               country[Random.rand(num_countries)],
                 wepion:                wepion,
@@ -242,7 +239,7 @@ end
 
 # Create solved questions for users
 def create_solvedquestions
-  User.where(:admin => false).each do |user|
+  User.where.not(role: [:administrator, :root]).each do |user|
     user_level = user.rating # Temporary level is stored as the rating, between 2 and 120
     start_time_by_chapter = Array.new
 
@@ -307,7 +304,7 @@ end
 
 # Update user ratings based on what they solved
 def update_users_ratings
-  User.where(:admin => false).each do |user|
+  User.where.not(role: [:administrator, :root]).each do |user|
     rating = 0
     rating_by_section = Array.new
     Section.select(:id).where(:fondation => false).each do |sec|
@@ -336,7 +333,7 @@ end
 # Create submissions for users
 def create_submissions
   max_rating = User.order(:rating).last.rating
-  User.where(:admin => false).each do |user|
+  User.where.not(role: [:administrator, :root]).each do |user|
     if user.rating < 200
       next
     end
@@ -368,14 +365,13 @@ def create_submissions
                                      content:           (is_correct ? "Ceci est une soumission correcte :-)" : "Ceci est incorrect :-("),
                                      status:            (corrected ? (is_correct ? 2 : 1) : 0),
                                      intest:            false,
-                                     visible:           true,
                                      score:             -1,
                                      star:              corrected && is_correct && Random.rand(10) == 0,
                                      created_at:        submission_time,
                                      last_comment_time: submission_time)
       if corrected # Corrected
         correction_time = [submission_time + (300 + Random.rand(24*60*60)).seconds, DateTime.now].min
-        corrector = (Random.rand(2) == 0 ? User.where(:admin => true).first : User.where(:admin => true).last)
+        corrector = (Random.rand(2) == 0 ?  User.where(role: [:administrator, :root]).first : User.where(role: [:administrator, :root]).last)
         Correction.create(user:       corrector,
                           submission: submission,
                           content:    (is_correct ? "En effet c'est magnifique :-D" : "Effectivement c'est une catastrophe."),
@@ -435,7 +431,7 @@ end
 # Create some subjects and messages
 def create_subjects
   # One important subject for everybody
-  user = User.where(:root => true).first
+  user = User.where(:role => :root).first
   time = DateTime.now - 20.days
   category = Category.where(:name => "Mathraining").first
   subject = Subject.create_with_first_message(user_id:    user.id,
@@ -446,12 +442,12 @@ def create_subjects
                                               created_at: time)
 
   Message.create(subject:    subject,
-                 user:       User.where(:admin => false).order(:created_at).last,
+                 user:       User.where.not(role: [:administrator, :root]).order(:created_at).last,
                  content:    "Je me demandais : comment devient-on correcteur ?",
                  created_at: DateTime.now - 5.days)
   
   # One important subject for Wépion
-  user = User.where(:root => true).first
+  user = User.where(:role => :root).first
   time = DateTime.now - 30.days
   category = Category.where(:name => "Wépion").first
   subject = Subject.create_with_first_message(user_id:    user.id,
@@ -468,7 +464,7 @@ def create_subjects
                  created_at: time + 2.hours)
   
   # One important subject for correctors
-  user = User.where(:root => false, :admin => true).first
+  user = User.where(:role => :administrator).first
   time = DateTime.now - 10.days
   category = Category.where(:name => "Mathraining").first
   subject = Subject.create_with_first_message(user_id:        user.id,
@@ -480,7 +476,7 @@ def create_subjects
                                               created_at:     time)
                            
   # One subject about a chapter
-  user = User.where(:admin => false).first
+  user = User.where.not(role: [:administrator, :root]).first
   time = user.created_at + 2.hours
   chapter = Chapter.first
   subject = Subject.create_with_first_message(user_id:    user.id,
@@ -491,12 +487,12 @@ def create_subjects
                                               created_at: time)
   
   Message.create(subject:    subject,
-                 user:       User.where(:admin => true).first,
+                 user:       User.where(role: [:administrator, :root]).first,
                  content:    "Relis le chapitre, tout simplement...",
                  created_at: time + 2.minutes)
   
   # One subject about a question
-  user = User.where(:admin => false).second
+  user = User.where.not(role: [:administrator, :root]).second
   time = user.created_at + 5.hours
   question = Section.where(:fondation => true).first.chapters.first.questions.first
   subject = Subject.create_with_first_message(user_id:    user.id,
@@ -508,16 +504,16 @@ def create_subjects
                                               created_at: time)
   
   Message.create(subject:    subject,
-                 user:       User.where(:admin => false).third,
+                 user:       User.where.not(role: [:administrator, :root]).third,
                  content:    "J'en pense que tu dis des sottises !",
                  created_at: time + 7.hours)
 end
 
 # Update some statistics
 def update_statistics
-  Chapter.update_stats
-  Question.update_stats
-  Problem.update_stats
+  Chapter.update_all_stats
+  Question.update_all_stats
+  Problem.update_all_stats
   Record.update
 end
 
