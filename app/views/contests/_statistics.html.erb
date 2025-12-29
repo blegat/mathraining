@@ -1,8 +1,9 @@
 <h3>Distribution des scores</h3>
 
 <% nb_prob = @contest.contestproblems.count %>
+<% nb_prob_corrected = @contest.contestproblems.where(:status => [:corrected, :in_recorrection]).count %>
 <% num_ranked = 0 %>
-<% num_points = 7*nb_prob %>
+<% num_points = 7*nb_prob_corrected %>
 <% num_by_medal = [] %>
 <% (0..4).each do |i| %>
   <% num_by_medal[i] = Array.new(num_points+1, 0) %>
@@ -143,15 +144,17 @@ Votre navigateur ne supporte pas les canvas.
     
 <% problem_point = [] %>
 <% allprobs.each do |p| %>
-  <% problem_point[p.number] = [] %>
-  <% (1..7).each do |i| %>
-    <% problem_point[p.number][i] = 0 %>
-  <% end %>
-  <% problem_point[p.number][0] = num_ranked %>
-  <% p.contestsolutions.each do |s| %>
-    <% if s.score > 0 && !s.official %>
-      <% problem_point[p.number][s.score] = problem_point[p.number][s.score] + 1 %>
-      <% problem_point[p.number][0] = problem_point[p.number][0] - 1 %>
+  <% if p.at_least(:corrected) %>
+    <% problem_point[p.number] = [] %>
+    <% (1..7).each do |i| %>
+      <% problem_point[p.number][i] = 0 %>
+    <% end %>
+    <% problem_point[p.number][0] = num_ranked %>
+    <% p.contestsolutions.each do |s| %>
+      <% if s.score > 0 && !s.official %>
+        <% problem_point[p.number][s.score] = problem_point[p.number][s.score] + 1 %>
+        <% problem_point[p.number][0] = problem_point[p.number][0] - 1 %>
+      <% end %>
     <% end %>
   <% end %>
 <% end %>
@@ -175,7 +178,7 @@ Votre navigateur ne supporte pas les canvas.
 <% allprobs.each do |p| %>
   <tr>
   <td>
-    <% if signed_in? %>
+    <% if signed_in? && p.at_least(:in_progress) %>
       <%= link_to "Problème ##{ p.number }", contestproblem_path(p) %>
     <% else %>
       <%= "Problème ##{ p.number }" %>
@@ -183,11 +186,17 @@ Votre navigateur ne supporte pas les canvas.
   </td>
   <% average = 0.0 %>
   <% (0..7).each do |i| %>
-    <td id="num-<%= i %>-<%= p.id %>" class="text-center"><%= problem_point[p.number][i] > 0 ? problem_point[p.number][i] : "-" %></td>
-    <% average += i * problem_point[p.number][i] %>
+    <td id="num-<%= i %>-<%= p.id %>" class="text-center">
+      <% if p.at_least(:corrected) %>
+        <%= problem_point[p.number][i] > 0 ? problem_point[p.number][i] : "-" %>
+        <% average += i * problem_point[p.number][i] %>
+      <% end %>
+    </td>
   <% end %>
   <% average /= num_ranked %>
-  <td id="average-<%= p.id %>" class="text-center"><%= ("%.2f" % average) %></td>
+  <td id="average-<%= p.id %>" class="text-center">
+    <%= ("%.2f" % average) if p.at_least(:corrected) %>
+  </td>
   </tr>
 <% end %>
 </table>

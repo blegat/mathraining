@@ -70,7 +70,7 @@
   <% if params.has_key?:tab %>
     <% tab = params[:tab].to_i %>
   <% end %>
-  <% if (tab != 0 && tab != 1 && tab != 2) || (nb_prob_corrected != nb_prob && tab == 2) %>
+  <% if (tab != 0 && tab != 1 && tab != 2) %>
     <% tab = 0 %>
   <% end %>
   <!-- Tabs -->
@@ -78,9 +78,7 @@
     <li class="nav-item"><%= link_to "Problèmes", contest_path(@contest), :class => "nav-link #{ "active" if tab == 0 }" %></li>
     <% ranking_title = (nb_prob_corrected == nb_prob ? "Classement final" : "Classement après #{nb_prob_corrected} problème#{"s" if nb_prob_corrected >= 2}") %>
     <li class="nav-item"><%= link_to ranking_title, contest_path(@contest, :tab => 1), :class => "nav-link #{ "active" if tab == 1 }" %></li>
-    <% if nb_prob_corrected == nb_prob %>
-      <li class="nav-item"><%= link_to "Statistiques", contest_path(@contest, :tab => 2), :class => "nav-link #{ "active" if tab == 2 }" %></li>
-    <% end %>
+    <li class="nav-item"><%= link_to "Statistiques", contest_path(@contest, :tab => 2), :class => "nav-link #{ "active" if tab == 2 }" %></li>
   </ul>
 <% else %>
   <h3>Problèmes</h3>

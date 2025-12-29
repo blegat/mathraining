@@ -142,7 +142,7 @@ describe "contests/show.html.erb", type: :view, contest: true do
         render template: "contests/show"
         should have_link("Problèmes", href: contest_path(contest), class: "active")
         should have_link("Classement après 1 problème", href: contest_path(contest, :tab => 1))
-        should have_no_link("Statistiques", href: contest_path(contest, :tab => 2))
+        should have_link("Statistiques", href: contest_path(contest, :tab => 2))
         should have_no_selector("h3", text: "Problèmes")
         expect(response).to render_template(:partial => "contests/_problems")
       end
@@ -155,8 +155,13 @@ describe "contests/show.html.erb", type: :view, contest: true do
       
       it "renders the page correctly with tab = 2" do
         render template: "contests/show", locals: {params: {tab: 2}}
+        should have_link("Statistiques", href: contest_path(contest, :tab => 2), class: "active")
+        expect(response).to render_template(:partial => "contests/_statistics")
+      end
+      
+      it "renders the page correctly with tab = 3" do # Does not exist => tab = 0
+        render template: "contests/show", locals: {params: {tab: 3}}
         should have_link("Problèmes", href: contest_path(contest), class: "active")
-        expect(response).to render_template(:partial => "contests/_problems") # Tab 2 not accessible
       end
     end
   end
