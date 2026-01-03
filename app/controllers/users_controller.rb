@@ -211,12 +211,16 @@ class UsersController < ApplicationController
 
   # Delete a user
   def destroy
-    if @user.messages.count > 0 || @user.submissions.where.not(:status => :draft).count > 0 || @user.contestsolutions.count > 0 || @user.puzzleattempts.count > 0
+    num_messages = @user.messages.count
+    num_submissions = @user.submissions.where.not(:status => :draft).count
+    num_contestsolutions =  @user.contestsolutions.count
+    num_puzzleattempts = @user.puzzleattempts.count
+    if num_messages > 0 || num_submissions > 0 || num_contestsolutions > 0 || num_puzzleattempts > 0
       m = "Cet utilisateur ne peut pas être totalement supprimé car il a :<ul>"
-      m += "<li>#{@user.messages.count} message(s) sur le Forum</li>" if @user.messages.count > 0
-      m += "<li>#{@user.submissions.count} soumission(s) à un problème</li>" if @user.submissions.where.not(:status => :draft).count > 0
-      m += "<li>#{@user.contestsolutions.count} solution(s) à un problème de Concours</li>" if @user.contestsolutions.count > 0
-      m += "<li>#{@user.puzzleattempts.count} tentative(s) de résolution d'énigme</li>" if @user.puzzleattempts.count > 0
+      m += "<li>#{num_messages} message(s) sur le Forum</li>" if @user.messages.count > 0
+      m += "<li>#{num_submissions} soumission(s) à un problème</li>" if @user.submissions.where.not(:status => :draft).count > 0
+      m += "<li>#{num_contestsolutions} solution(s) à un problème de Concours</li>" if @user.contestsolutions.count > 0
+      m += "<li>#{num_puzzleattempts} tentative(s) de résolution d'énigme</li>" if @user.puzzleattempts.count > 0
       m += "</ul>Vous pouvez par contre supprimer ses données personnelles."
       flash[:danger] = m
       redirect_to @user and return
