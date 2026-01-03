@@ -76,7 +76,9 @@ class Discussion < ActiveRecord::Base
       tchatmessage = Tchatmessage.create(:user => user, :discussion => discussion, :content => content)
       
       # Send email if needed
-      UserMailer.new_followed_tchatmessage(other_user.id, user.id, discussion.id).deliver if other_user.follow_message
+      unless @limited_emails
+        UserMailer.new_followed_tchatmessage(other_user.id, user.id, discussion.id).deliver if other_user.follow_message
+      end
       
       # Update number of unread messages
       link.update_attribute(:nonread, 0)
