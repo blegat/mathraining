@@ -101,7 +101,7 @@ describe "User pages", user: true do
           zero_user.reload
         end
         specify do
-          expect(page).to have_info_message("Ce compte est déjà actif !")
+          expect(page).to have_info_message("Ce compte a déjà été activé !")
           expect(other_zero_user.email_confirm).to eq(true)
         end
       end

@@ -320,7 +320,7 @@ class UsersController < ApplicationController
     elsif @user.key.to_s != params[:key].to_s
       flash[:danger] = "Le lien d'activation est erroné."
     else
-      flash[:info] = "Ce compte est déjà actif !"
+      flash[:info] = "Ce compte a déjà été activé ! Veuillez maintenant vous connecter."
     end
     redirect_to root_path
   end
