@@ -113,7 +113,7 @@
           <center><h5>Statistiques</h5></center>
           <% nb_sol = p.nb_solves %>
           <% if nb_sol >= 1 %>
-            Résolu par <b><%= nb_sol %></b> personne<%= "s" if nb_sol > 1 %><br/>
+            Résolu par <b><%= nb_sol %></b> <%= plurialize("personne", nb_sol) %><br/>
             entre le <b><%= write_date_only(p.first_solve_time) %></b><br/>
             et le <b><%= write_date_only(p.last_solve_time) %></b>
           <% else %>

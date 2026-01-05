@@ -10,7 +10,7 @@
   <p class="fw-bold text-color-green">
     Vous avez résolu cet exercice le <%= write_date(solvedquestion.resolution_time) %>,
     <% if solvedquestion.nb_guess-1 > 0 %>
-      après <%= solvedquestion.nb_guess-1 %> erreur<%= "s" if solvedquestion.nb_guess-1 > 1 %>.
+      après <%= solvedquestion.nb_guess-1 %> <%= plurialize("erreur", solvedquestion.nb_guess-1) %>.
     <% else %>
       du premier coup !
     <% end %>

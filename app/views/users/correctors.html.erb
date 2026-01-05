@@ -8,7 +8,7 @@
 <% waiting_statuses.push(:waiting_forever) unless signed_in? && (current_user.admin? || current_user.corrector?) %>
 <% newsubs = Submission.joins(:problem).where(:status => waiting_statuses).group("problems.section_id").group("problems.level").count %>
 <% num_nuwsubs = newsubs.values.sum %>
-<p>Il y a actuellement <b><%= num_nuwsubs %></b> solution<%= "s" if num_nuwsubs >= 2 %> en attente de correction. Le tableau suivant en illustre la répartition, par niveau et par section.</p>
+<p>Il y a actuellement <b><%= num_nuwsubs %></b> <%= plurialize("solution", num_nuwsubs) %> en attente de correction. Le tableau suivant en illustre la répartition, par niveau et par section.</p>
 
 <div class="my-3" style="width:100%; overflow-x:auto;">
 <center>

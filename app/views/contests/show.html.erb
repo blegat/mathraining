@@ -29,7 +29,7 @@
 
 <% c = 0 %>
 <% total = @contest.organizers.count %>
-<p><i>Organisateur<%= 's' if total > 1 %> du concours : </i>
+<p><i><%= plurialize("Organisateur", total) %> du concours : </i>
 <% @contest.organizers.order(:last_name, :first_name).each do |o| %>
   <% c = c+1 %>
   <%= o.linked_name %><% if (signed_in? && current_user.admin?) && @contest.in_construction? %> (<%= link_to "supprimer", remove_organizer_contest_path(@contest, :user_id => o.id), method: :put, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer #{o.name} des organisateurs de ce concours ?"} %>)<% end %><% if c == total - 1 %> et<% elsif c < total - 1 %>, <% else %>.<% end %>
@@ -76,7 +76,7 @@
   <!-- Tabs -->
   <ul class="nav nav-tabs nav-justified flex-column flex-sm-row mb-3">
     <li class="nav-item"><%= link_to "Problèmes", contest_path(@contest), :class => "nav-link #{ "active" if tab == 0 }" %></li>
-    <% ranking_title = (nb_prob_corrected == nb_prob ? "Classement final" : "Classement après #{nb_prob_corrected} problème#{"s" if nb_prob_corrected >= 2}") %>
+    <% ranking_title = (nb_prob_corrected == nb_prob ? "Classement final" : "Classement après #{nb_prob_corrected} #{plurialize('problème', nb_prob_corrected)}") %>
     <li class="nav-item"><%= link_to ranking_title, contest_path(@contest, :tab => 1), :class => "nav-link #{ "active" if tab == 1 }" %></li>
     <li class="nav-item"><%= link_to "Statistiques", contest_path(@contest, :tab => 2), :class => "nav-link #{ "active" if tab == 2 }" %></li>
   </ul>

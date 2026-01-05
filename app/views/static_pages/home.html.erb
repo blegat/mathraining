@@ -90,7 +90,7 @@
 <% num_users_to_display = recent_corrections.size %>
 <% if num_users_to_display > 0 %>
   <div class="bg-as-table-ld-primary p-2 text-center mb-2">
-    Merci au<%= 'x' if num_users_to_display > 1 %> correcteur<%= 's' if num_users_to_display > 1 %> du jour :
+    Merci <%= plurialize("au", num_users_to_display) %> <%= plurialize("correcteur", num_users_to_display) %> du jour :
     <% first = true %>
     <% recent_corrections.each do |f| %>
       <%= " - " unless first %>

@@ -45,7 +45,7 @@ Les problèmes des concours sont accessibles par tous, mais il est nécessaire d
           Début : <b><%= write_date_only_with_day(c.start_time) %></b><br/>
           Fin : <b><%= write_date_only_with_day(c.end_time) %></b><br/>
         <% end %>
-        <b><%= nb_prob %></b> problème<%= "s" if nb_prob > 1 %>
+        <b><%= nb_prob %></b> <%= plurialize("problème", nb_prob) %>
         <% if classe == "greyy" %>
           (à venir)
         <% elsif classe == "orangey" %>
@@ -62,7 +62,7 @@ Les problèmes des concours sont accessibles par tous, mais il est nécessaire d
           <i>Aucun problème corrigé</i>
         <% else %>
           <% if nb_prob_corrected < nb_prob %>
-            Après <%= nb_prob_corrected %> problème<%= 's' if nb_prob_corrected >= 2 %> :<br/>
+            Après <%= nb_prob_corrected %> <%= plurialize("problème", nb_prob_corrected) %> :<br/>
           <% else %>
             À la fin du concours :<br/>
           <% end %>

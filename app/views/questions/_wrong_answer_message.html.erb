@@ -2,6 +2,6 @@
 <% unless question.is_qcm %>
   (<b><%= (question.decimal? ? unsolvedquestion.guess : unsolvedquestion.guess.to_i) %></b>)
 <% end %>
-est erronée. Vous avez déjà commis <b><%= unsolvedquestion.nb_guess %></b> erreur<%= "s" if unsolvedquestion.nb_guess > 1 %>.</p>
+est erronée. Vous avez déjà commis <b><%= unsolvedquestion.nb_guess %></b> <%= plurialize("erreur", unsolvedquestion.nb_guess) %>.</p>
 
 <p class="text-color-red">À partir de la troisième erreur, vous devez attendre trois minutes avant chaque nouvelle tentative.</p>

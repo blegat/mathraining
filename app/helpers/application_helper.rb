@@ -258,6 +258,11 @@ module ApplicationHelper
     return newlevel
   end
   
+  # Add "s" to a word if number is larger than 1
+  def plurialize(word, number)
+    return word + (number > 1 ? (word[-2..-1] == "au" ? "x" : "s") : "")
+  end
+  
   # Tells if user has enough points for problems
   def has_enough_points(user) # user = nil for a non-signed-in user
     if user.nil?

@@ -88,7 +88,7 @@
         <!-- Information -->
         <div class="g-col-12 g-col-md-12 module left-info">
           <h5>Informations</h5>
-          <b><%= nb_prob %></b> problème<%= "s" if nb_prob > 1 %><br/>
+          <b><%= nb_prob %></b> <%= plurialize("problème", nb_prob) %><br/>
           Durée : <b><%= t.duration / 60 %>h<%= "0" if (t.duration % 60) < 10 %><%= t.duration % 60 %></b><br/>
           Niveau moyen : <b><% "-" if niveaumoyen == 0 %><%= niveaumoyen.round(1) if niveaumoyen > 0 %></b>
         </div>
@@ -111,7 +111,7 @@
         
         <div class="g-col-12 g-col-md-12 module right-info pb-2">
           <h5>Statistiques</h5>
-          Terminé par <b><%= nb_u %></b> personne<%= "s" if nb_u > 1 %><br/>
+          Terminé par <b><%= nb_u %></b> <%= plurialize("personne", nb_u) %><br/>
           <% if current_user.admin? || (nb_u >= 3 && status == "finished") %>
             Score moyen : <b><%= moy.round(1) if moy >= 0 %><%= "-" if moy < 0 %> / <%= 7*h %></b>
           <% end %>

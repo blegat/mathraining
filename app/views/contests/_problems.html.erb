@@ -44,7 +44,7 @@
         <% if p.at_least(:in_progress) %>
           <% sols = p.contestsolutions.where(:official => false).group(:corrected, :score).count %>
           <% nb_sol = sols.sum{|x| x.second} %>
-          Tenté par <b><%= nb_sol %></b> personne<%= "s" if nb_sol > 1 %><br/>
+          Tenté par <b><%= nb_sol %></b> <%= plurialize("personne", nb_sol) %><br/>
           <% if p.at_least(:corrected) %>
             <% nb_perfect = sols[[true, 7]] %>
             <% nb_perfect = 0 if nb_perfect.nil? %>

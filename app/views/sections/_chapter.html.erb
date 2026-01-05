@@ -71,7 +71,7 @@
       <center><h5>Statistiques</h5></center>
       <!-- Statistiques -->
       <center>
-      Complété par <b><%= chapter.nb_completions %></b> personne<%= "s" if chapter.nb_completions > 1 %><br/>
+      Complété par <b><%= chapter.nb_completions %></b> <%= plurialize("personne", chapter.nb_completions) %><br/>
       <% unless chapter.publication_date.nil? %>
         depuis le <b><%= write_date_only(chapter.publication_date) %></b><br/>
       <% end %>

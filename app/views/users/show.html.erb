@@ -467,11 +467,11 @@
           <span class="fw-bold <%= @user.color_class %>"><%= ac[:ranking] %><sup><%= ac[:ranking] == 1 ? "er" : "e" %></sup></span> / <%= ac[:num_participants] %>
           </td>
           <td class="d-none d-sm-table-cell text-center" style="width:100px; <%= remove_border %>">
-          <span class="fw-bold <%= @user.color_class %>"><%= ac[:score] %> pt<%= "s" if ac[:score] > 1 %></span> / <%= ac[:max_score] %>
+          <span class="fw-bold <%= @user.color_class %>"><%= ac[:score] %> <%= plurialize("pt",  ac[:score]) %></span> / <%= ac[:max_score] %>
           </td>
           <td class="d-table-cell d-sm-none text-center" style="width:100px; <%= remove_border %>">
           <span class="fw-bold <%= @user.color_class %>"><%= ac[:ranking] %><sup><%= ac[:ranking] == 1 ? "er" : "e" %></sup></span> / <%= ac[:num_participants] %><br/>
-          <span class="fw-bold <%= @user.color_class %>"><%= ac[:score] %> pt<%= "s" if ac[:score] > 1 %></span> / <%= ac[:max_score] %>
+          <span class="fw-bold <%= @user.color_class %>"><%= ac[:score] %> <%= plurialize("pt", ac[:score]) %></span> / <%= ac[:max_score] %>
           </td>
           <td class="d-table-cell d-sm-none" style="width:0px;"></td>
         <% end %>
@@ -738,7 +738,7 @@
 <% if nb_corrections > 0 %>
   <div class="g-col-12 basic_container p-1">
     <div class="container_title">Corrections</div>
-    <div class="pe-2 pb-2" style="padding-left:20px;"><%= @user.name %> a participé à la correction de <span class="fw-bold <%= @user.color_class %>"><%= write_readable_big_number(nb_corrections) %></span> soumission<%= "s" if nb_corrections > 1 %> sur le site.
+    <div class="pe-2 pb-2" style="padding-left:20px;"><%= @user.name %> a participé à la correction de <span class="fw-bold <%= @user.color_class %>"><%= write_readable_big_number(nb_corrections) %></span> <%= plurialize("soumission", nb_corrections) %> sur le site.
     
     <% show_puzzle = signed_in? && Puzzle.started_or_root(current_user) && (!Rails.env.production? || @user.id == 38) %>
     
