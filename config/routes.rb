@@ -306,6 +306,13 @@ Rails.application.routes.draw do
   end
   get '/ten_years', to: 'puzzles#main'
   
+  # Corrector applications
+  resources :correctorapplications, only: [:index, :show, :new, :create, :destroy] do
+    member do
+      patch :answer
+    end
+  end
+  
   # Sessions (singular resource, to call destroy without an id!)
   resource :sessions, only: [:create, :destroy]
   get '/fast_sign_in', to: 'sessions#fast_create' # Only in test and development!

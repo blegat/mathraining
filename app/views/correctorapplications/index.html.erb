@@ -1,0 +1,36 @@
+<% provide(:title, 'Candidatures') %>
+
+<% show_old = false %>
+<% if (params.has_key?:show_old) %>
+  <% show_old = true %>
+<% end %>
+
+<h1><%= title_1("Candidatures") %>
+  <span class="h4"> - 
+  <% if show_old %>
+    <%= link_to "Nouvelles", correctorapplications_path %></span>
+  <% else %>
+    <%= link_to "Anciennes", correctorapplications_path(:show_old => 1) %></span>
+  <% end %>
+</h1>
+
+<%= render 'shared/pages', data: @correctorapplications %>
+
+<% if @correctorapplications.size == 0 %>
+  <% if show_old %>
+    <p>Aucune ancienne candidature.</p>
+  <% else %>
+    <p>Aucune nouvelle candidature.</p>
+  <% end %>
+<% else %>
+  <table class="table table-bordered">
+  <tr class="table-ld-header"><th class="d-none d-md-table-cell">Date</th><th>Qui</th><th></th></tr>
+  <% @correctorapplications.each do |a| %>
+    <tr class="table-ld-<%= a.processed ? 'success' : 'warning' %>">
+    <td class="d-none d-md-table-cell" style="width:200px;"><%= write_date(a.created_at) %></td>
+    <td><%= a.user.linked_name %></td>
+    <td class="text-center" style="width:54px;"><%= link_to "Voir", correctorapplication_path(a) %></td>
+    </tr>
+  <% end %>
+  </table>
+<% end %>

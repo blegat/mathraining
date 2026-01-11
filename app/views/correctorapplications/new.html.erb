@@ -1,0 +1,56 @@
+<% provide(:title, 'Devenir correcteur') %>
+
+<h1><%= title_1("Devenir correcteur") %></h1>
+
+<% min_rating = (Rails.env.development? ? 500 : 5000) %>
+
+<% if current_user.admin? || current_user.corrector? %>
+  <p>Vous l'êtes déjà !</p>
+<% elsif current_user.rating < min_rating %>
+  <p>Il faut être Maître ou Grand Maître, c'est-à-dire avoir au moins <%= min_rating %> points, pour pouvoir poser sa candidature comme correcteur.</p>
+<% else %>
+  <% existing_application = current_user.correctorapplications.where(:processed => false).first %>
+  <% if !existing_application.nil? %>
+  
+    <p>Vous avez bien soumis votre candidature le <%= write_date_only(existing_application.created_at) %> et recevrez une réponse par message privé.</p>
+    
+    <p>Les candidatures prennent du temps à être analysées et ne sont donc passées en revue que quelques fois par an. Merci pour votre patience.</p>
+    
+    <p>Notez que nous n'acceptons comme correcteur que les personnes dont nous pensons qu'elles seront capables de détecter les erreurs dans les solutions des autres et de délivrer des corrections de qualité. Il n'est pas forcément évident pour nous d'émettre ce jugement de valeur et de cerner si vous avez ce potentiel ou non. Nous espérons, dans l'éventualité où vous recevriez une réponse négative, que celle-ci n'affectera ni votre estime de vous ni votre passion des mathématiques !
+    
+    <hr/>
+    
+    <h4>Rappel de votre candidature</h4>
+    
+    <p><%= bbcode(existing_application.content) %></p>
+  
+  <% else %>
+  
+    <p>Si vous avez terminé vos études secondaires et pensez avoir les capacités, l'envie et le temps de corriger les solutions d'autres utilisateurs, alors vous pouvez postuler pour devenir correcteur.</p>
+    
+    <p class="mb-2">Pour ce faire, il vous suffit d'envoyer votre demande ci-dessous. Dans celle-ci, vous pouvez mentionner :</p>
+    <ul>
+    <li>ce qui vous amené sur Mathraining initialement ;</li>
+    <li>votre expérience en mathématiques olympiques, comme étudiant ou comme encadrant, si vous en avez ;</li>
+    <li>ce que vous faites ou avez fait comme études ;</li>
+    <li>ce qui vous motive à devenir correcteur ;</li>
+    <li>toute autre information qui vous semble pertinente.</li>
+    </ul>
+
+    <hr/>
+
+    <%= form_for(@correctorapplication) do |f| %>
+      <%= render 'shared/error_messages', object: f.object %>
+    
+      <div class="mb-2">
+        <%= f.label :content, :class => "form-label", :for => "MathInput" %>
+        <%= render 'shared/preview' %>
+        <%= render 'shared/smiley' %>
+        <%= f.text_area :content, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput" %>
+        <script>initAndUpdatePreviewSafeWhenPossible()</script>
+      </div>
+    
+      <%= f.submit "Soumettre", class: "btn btn-lg btn-primary mb-3", data: { confirm: "Êtes-vous #{current_user.sure} de vouloir soumettre votre candidature ?" } %>
+    <% end %>
+  <% end %>
+<% end %>

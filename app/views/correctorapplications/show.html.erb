@@ -1,0 +1,36 @@
+<% provide(:title, 'Candidatures') %>
+
+<h1><%= title_2((link_to "Candidatures", correctorapplications_path), @correctorapplication.user.linked_name) %></h1>
+
+<h3>Candidature <span class="h5">(<%= write_date_only(@correctorapplication.created_at) %>)</span></h3>
+
+<p><%= bbcode(@correctorapplication.content) %></p>
+
+<% if !@correctorapplication.processed? %>
+  <h3>Réponse</h3>
+  
+  <%= form_for(@correctorapplication, url: answer_correctorapplication_path(@correctorapplication)) do |f| %>
+    <%= render 'shared/error_messages', object: @tchatmessage %>
+    
+    <!-- Message -->
+    <div class="mb-2">
+      <%= render 'shared/preview' %>
+      <%= render 'shared/smiley' %>
+      <%= f.text_area :answer, :class => "form-control", :maxlength => "8000", :style => "height:200px;", :id => "MathInput", :value => @tchatmessage.content %>
+      <script>initAndUpdatePreviewSafeWhenPossible()</script>
+    </div>
+    
+    <%= f.submit "Envoyer", class: "btn btn-lg btn-primary mb-3", data: { confirm: "Êtes-vous #{current_user.sure} de vouloir envoyer cette réponse ?" } %>
+  <% end %>
+  
+  <p class="text-center mb-3">
+  <%= link_to "Supprimer cette candidature", @correctorapplication, :method => :delete, :data => { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer cette candidature ?" }, :class => "text-color-red" %>
+  </p>
+<% else %>
+  <% answer = @correctorapplication.tchatmessage %>
+  <% unless answer.nil? %>
+    <h3>Réponse <span class="h5">(<%= write_date_only(answer.created_at) %> par <%= answer.user.linked_name %>)</span></h3>
+
+    <p><%= bbcode(answer.content) %></p>
+  <% end %>
+<% end %>

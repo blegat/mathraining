@@ -85,6 +85,13 @@ FactoryBot.define do
     content { "Foobar" }
   end
   
+  # Correctorapplication
+  factory :correctorapplication do
+    association :user
+    content { "Voici ma candidature." }
+    processed { false }
+  end
+  
   # Country
   factory :country do
     sequence(:name) { |n| "Pays#{n}" }

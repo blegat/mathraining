@@ -67,6 +67,9 @@ fr:
         score: "Score"
       correction:
         content: "Commentaire"
+      correctorapplication:
+        content: "Candidature"
+        answer: "Réponse"
       externalsolution:
         url: "URL"
       extract:

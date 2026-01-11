@@ -83,6 +83,7 @@ describe "layouts/_header.html.erb", type: :view, layout: true do
       should have_link("Messages", href: new_discussion_path)
       should have_no_link("Pièces jointes", href: myfiles_path)
       should have_no_link(href: validate_names_users_path)
+      should have_no_link(href: correctorapplications_path)
       should have_link("Déconnexion", href: sessions_path)
     end
     
@@ -195,6 +196,7 @@ describe "layouts/_header.html.erb", type: :view, layout: true do
       should have_link("Messages", href: new_discussion_path)
       should have_no_link("Pièces jointes", href: myfiles_path)
       should have_no_link(href: validate_names_users_path)
+      should have_no_link(href: correctorapplications_path)
       should have_link("Déconnexion", href: sessions_path)
     end
   end
@@ -235,7 +237,8 @@ describe "layouts/_header.html.erb", type: :view, layout: true do
       should have_link("Groupes Wépion", href: groups_users_path)
       should have_link("Messages", href: new_discussion_path)
       should have_link("Pièces jointes", href: myfiles_path)
-      should have_link("Valider 0 noms", href: validate_names_users_path)
+      should have_link("Validations", href: validate_names_users_path)
+      should have_link("Candidatures", href: correctorapplications_path)
       should have_link("Déconnexion", href: sessions_path)
     end
     
@@ -262,7 +265,16 @@ describe "layouts/_header.html.erb", type: :view, layout: true do
       
       it "renders the number of user names to validate" do
         render partial: "layouts/header"
-        should have_link("Valider 1 noms", href: validate_names_users_path)
+        should have_link("Validations (1)", href: validate_names_users_path)
+      end
+    end
+    
+    context "and there is a corrector application" do
+      let!(:correctorapplication) { FactoryBot.create(:correctorapplication) }
+      
+      it "renders the number of applications to check" do
+        render partial: "layouts/header"
+        should have_link("Candidatures (1)", href: correctorapplications_path)
       end
     end
   end

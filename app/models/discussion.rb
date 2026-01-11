@@ -27,7 +27,51 @@ class Discussion < ActiveRecord::Base
     return Discussion.joins("INNER JOIN links a ON discussions.id = a.discussion_id").joins("INNER JOIN links b ON discussions.id = b.discussion_id").where("a.user_id" => x, "b.user_id" => y).first
   end
   
-  # Answer to discussions related to the puzzles (done every 4 or 3 minutes (see schedule.rb))
+  # Send a message from user x to user y (used only for some specific cases: cannot have attachments here)
+  def self.send_message_from_to(x, y, content, obj = nil)
+    # Get existing discussion or create new one
+    new_discussion = false
+    discussion = self.get_discussion_between(x, y)
+    if discussion.nil?
+      discussion = Discussion.create(:last_message_time => DateTime.now)
+      new_discussion = true
+    end
+    
+    # Create message
+    tchatmessage = Tchatmessage.new(:user => x, :discussion => discussion, :content => content)
+    if !tchatmessage.save
+      if new_discussion
+        discussion.destroy
+      end
+      return tchatmessage
+    end
+      
+    # Send email if needed
+    unless @limited_emails
+      UserMailer.new_followed_tchatmessage(y, x, discussion.id).deliver if y.follow_message
+    end
+    
+    # Update last message time
+    discussion.update_attribute(:last_message_time, tchatmessage.created_at)
+    
+    # Create or update links (with new number of unread messages)
+    if new_discussion
+      Link.create(:user => x, :discussion => discussion, :nonread => 0)
+      Link.create(:user => y, :discussion => discussion, :nonread => 1)
+    else
+      discussion.links.each do |l|
+        if l.user_id == x.id
+          l.update_attribute(:nonread, (l.nonread == 0 ? 0 : l.nonread + 1))
+        elsif l.user_id == y.id
+          l.update_attribute(:nonread, l.nonread + 1)
+        end
+      end
+    end
+    
+    return tchatmessage
+  end
+  
+  # Answer to discussions related to the puzzles (done every 14 or 23 minutes (see schedule.rb))
   def self.answer_puzzle_questions(t)
     email = (t == 1 ? "j@h.fr" : "cj@dlvp.be")
     threshold = (t == 1 ? 0.4 : 0.2)
@@ -72,20 +116,11 @@ class Discussion < ActiveRecord::Base
         content = (t == 1 ? "Je ne comprends pas ce que vous dites." : "J'ai du mal à vous comprendre.")
       end
       
-      # Create message
-      tchatmessage = Tchatmessage.create(:user => user, :discussion => discussion, :content => content)
-      
-      # Send email if needed
-      unless @limited_emails
-        UserMailer.new_followed_tchatmessage(other_user.id, user.id, discussion.id).deliver if other_user.follow_message
-      end
-      
-      # Update number of unread messages
+      # Read the messages (because send_message_from will add 1 to nonread if it's not 0 already)
       link.update_attribute(:nonread, 0)
-      other_link.update_attribute(:nonread, other_link.nonread + 1)
       
-      # Update last message time
-      discussion.update_attribute(:last_message_time, tchatmessage.created_at)
+      # Send message
+      self.send_message_from_to(user, other_user, content)
       
       # Update connexion date so that user still appears in the list of active users
       if update_connexion_date
