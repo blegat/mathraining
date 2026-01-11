@@ -22,7 +22,7 @@ describe "Problem pages", problem: true do
   let(:neworigin) { "Origine du problème" }
   let(:newlevel) { 5 }
   let(:newexplanation) { "Explication du problème pour les correcteurs." }
-  let(:newmarkscheme) { "Marking scheme pour un problème de test virtuel." }
+  let(:newmarkscheme) { "Barème pour un problème de test virtuel." }
   let(:no_new_sub_message) {"On ne soumet plus pour l'instant !" }
   
   before do
@@ -194,7 +194,7 @@ describe "Problem pages", problem: true do
       before { visit problem_path(problem_in_virtualtest) }
       it do
         should have_selector("h1", text: "Problème ##{problem_in_virtualtest.number} - Test ##{online_virtualtest.number}")
-        should have_link("Modifier le marking scheme", href: edit_markscheme_problem_path(problem_in_virtualtest))
+        should have_link("Modifier le barème", href: edit_markscheme_problem_path(problem_in_virtualtest))
       end
     end
     
@@ -286,7 +286,7 @@ describe "Problem pages", problem: true do
     
     describe "visits edit markscheme page" do
       before { visit edit_markscheme_problem_path(problem_in_virtualtest) }
-      it { should have_selector("h1", text: "Modifier le marking scheme") }
+      it { should have_selector("h1", text: "Modifier le barème") }
       
       describe "and modifies it" do
         before do
@@ -305,7 +305,7 @@ describe "Problem pages", problem: true do
         end
         specify do
           expect(problem_in_virtualtest.markscheme).not_to eq("")
-          expect(page).to have_error_message("Marking scheme doit être rempli")
+          expect(page).to have_error_message("Barème doit être rempli")
         end
       end
     end

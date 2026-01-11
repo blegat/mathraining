@@ -133,7 +133,7 @@ class ProblemsController < ApplicationController
   # Update the marking scheme of a problem (send the form)
   def update_markscheme
     if @problem.update(:markscheme => params[:problem][:markscheme]) # Do not use update_attribute because it does not trigger validations
-      flash[:success] = "Marking scheme modifié."
+      flash[:success] = "Barème modifié."
       redirect_to problem_path(@problem)
     else
       render 'edit_markscheme'

@@ -1,6 +1,6 @@
-<% provide(:title, "Modifier le marking scheme d'un problème") %>
+<% provide(:title, "Modifier le barème d'un problème") %>
 
-<h1><%= title_problem(@problem, "Modifier le marking scheme") %></h1>
+<h1><%= title_problem(@problem, "Modifier le barème") %></h1>
 
 <!-- Enoncé -->
 <h3>Énoncé</h3>
@@ -16,8 +16,8 @@
   </div>
 <% end %>
 
-<!-- Marking scheme -->
-<h3>Marking scheme</h3>
+<!-- Barème -->
+<h3>Barème</h3>
 <p>Ce champ ne sera visible <u>que par les administrateurs et correcteurs</u>.</p>
 
 <%= form_for(@problem, url: update_markscheme_problem_path) do |f| %>

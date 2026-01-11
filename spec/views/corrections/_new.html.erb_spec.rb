@@ -48,13 +48,13 @@ describe "corrections/_new.html.erb", type: :view, correction: true do
       context "and the submission is in a test" do
         before do
           submission.update_attribute(:intest, true)
-          submission.problem.update_attribute(:markscheme, "Voici le marking scheme")
+          submission.problem.update_attribute(:markscheme, "Voici le barème")
         end
         
         it "renders the mark scheme" do
           render partial: "corrections/new"
           should have_field("score")
-          should have_content("Marking scheme")
+          should have_content("Barème")
           should have_content(submission.problem.markscheme)
         end
       end

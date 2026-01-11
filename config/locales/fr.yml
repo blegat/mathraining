@@ -92,7 +92,7 @@ fr:
         origin: "Origine"
         level: "Niveau"
         explanation: "Éléments de solution"
-        markscheme: "Marking scheme"
+        markscheme: "Barème"
       puzzle:
         statement: "Énoncé"
         code: "Code"

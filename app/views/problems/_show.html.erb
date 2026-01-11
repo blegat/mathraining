@@ -144,7 +144,7 @@
       | <%= link_to "Modifier la solution", edit_explanation_problem_path(@problem) %>
       | <%= link_to "Modifier les solutions externes", manage_externalsolutions_problem_path(@problem) %>
       <% if !@problem.virtualtest.nil? %>
-        | <%= link_to "Modifier le marking scheme", edit_markscheme_problem_path(@problem) %>
+        | <%= link_to "Modifier le barème", edit_markscheme_problem_path(@problem) %>
       <% end %>
       <% if @problem.online && current_user.root? %>
         <% if @problem.reviewed? %>
