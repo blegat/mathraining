@@ -70,7 +70,7 @@
 <% if show_correctors %>
   <td class="sub-user d-none d-lg-table-cell">
     <% premier = true %>
-    <% s.followings.each do |f| %>
+    <% s.followings.order(:created_at).each do |f| %>
       <%= " - " if !premier %>
       <%= f.user.linked_name %>
       <% premier = false %>
