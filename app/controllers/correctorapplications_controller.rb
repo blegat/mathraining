@@ -1,6 +1,6 @@
 #encoding: utf-8
 class CorrectorapplicationsController < ApplicationController
-  before_action :signed_in_user, only: [:index, :show, :new]
+  before_action :signed_in_user, only: [:index, :show]
   before_action :signed_in_user_danger, only: [:create, :destroy, :answer]
   before_action :root_user, only: [:index, :show, :destroy, :answer]
   

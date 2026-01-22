@@ -4,7 +4,9 @@
 
 <% min_rating = (Rails.env.development? ? 500 : 5000) %>
 
-<% if current_user.admin? || current_user.corrector? %>
+<% if !signed_in? %>
+  <p>Avant d'être correcteur il faudrait déjà être inscrit !</p>
+<% elsif current_user.admin? || current_user.corrector? %>
   <p>Vous l'êtes déjà !</p>
 <% elsif current_user.rating < min_rating %>
   <p>Il faut être Maître ou Grand Maître, c'est-à-dire avoir au moins <%= min_rating %> points, pour pouvoir poser sa candidature comme correcteur.</p>

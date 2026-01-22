@@ -11,7 +11,7 @@ describe CorrectorapplicationsController, type: :controller, correctorapplicatio
   
   context "if the user is not signed in" do
     it { expect(response).to have_controller_index_behavior(:must_be_connected) }
-    it { expect(response).to have_controller_new_behavior(:must_be_connected) }
+    it { expect(response).to have_controller_new_behavior(:ok) }
     it { expect(response).to have_controller_show_behavior(correctorapplication, :must_be_connected) }
     it { expect(response).to have_controller_create_behavior('correctorapplication', :access_refused) }
     it { expect(response).to have_controller_destroy_behavior(correctorapplication, :access_refused) }
