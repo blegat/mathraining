@@ -7,7 +7,15 @@
 <% elsif s.not_corrected? %>
   <b>Soumissions non corrigées à partir du <%= write_date(s.start_time) %> pour <%= s.duration %> jours</b>.
 <% end %>
-<br/><br/><u>Message</u> : <%= s.message %>
+
+<br/><br/>
+
+<% if s.not_corrected? %>
+  <u>Raison</u> : <%= s.reason %>
+<% else %>
+  <u>Message</u> : <%= s.message %>
+<% end %>
+
 <% if s.end_date >= Date.today %>
 <br/><br/><center><%= link_to "Modifier", edit_sanction_path(s) %> - <%= link_to "Supprimer", s, method: :delete, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer cette sanction ?" }, :class => "text-color-red" %></center>
 <% end %>
