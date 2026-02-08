@@ -115,20 +115,8 @@
 </div>
 
 <!-- Origine si administrateur ou si résolu -->
-<% if current_user.admin? || problem_solved %>
-  <p>
-  <i>Origine du problème :
-  <% if @problem.origin.nil? || @problem.origin.size == 0 %>
-    <% if current_user.admin? %>
-      <span class="text-color-orange">Inconnue</span>
-    <% else %>
-      Inconnue
-    <% end %>
-  <% else %>
-    <b><%= @problem.origin %></b>
-  <% end %>
-  </i>
-  </p>
+<% if (current_user.admin? || problem_solved) && !@problem.origin.nil? && @problem.origin.size > 0 %>
+  <p class="fst-italic">Origine du problème : <b><%= @problem.origin %></b></p>
 <% end %>
 
 <!-- Si administrateur -->

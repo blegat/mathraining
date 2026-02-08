@@ -43,7 +43,7 @@ FactoryBot.define do
     association :contest
     sequence(:number) { |n| n }
     sequence(:statement) { |n| "Énoncé du problème #{n}" }
-    sequence(:origin) { |n| "Origine du problème #{n}" }
+    sequence(:origin) { |n| "Compétition farfelue numéro #{n}" }
     start_time { DateTime.new(2020, 2, 3) }
     end_time { DateTime.new(2020, 3, 5) }
     status { :corrected }
@@ -195,7 +195,7 @@ FactoryBot.define do
     sequence(:statement) { |n| "Énoncé de problème #{n}" }
     level { 1 }
     sequence(:number) { |n| n }
-    sequence(:origin) { |n| "Origine #{n}" }
+    sequence(:origin) { |n| "Compétition numéro #{n}" }
     online { false }
   end
   
