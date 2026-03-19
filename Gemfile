@@ -6,7 +6,7 @@ gem 'rails', '7.1.5.2'                 # Ruby on Rails
 
 gem 'bootstrap', '5.3'                 # Responsive design
 
-gem 'bcrypt', '3.1.16'                 # Password encryption
+gem 'bcrypt', '3.1.22'                 # Password encryption
 
 gem 'will_paginate', '3.3.0'           # Pages
 gem 'will_paginate-bootstrap-style'    # Bootstrap style for pages
