@@ -252,7 +252,9 @@ describe "layouts/_header.html.erb", type: :view, layout: true do
     end
     
     context "and there is a star proposal" do
-      let!(:starproposal) { FactoryBot.create(:starproposal) }
+      let!(:problem) { FactoryBot.create(:problem, online: true, reviewed: true) }
+      let!(:submission) { FactoryBot.create(:submission, problem: problem, status: :correct) }
+      let!(:starproposal) { FactoryBot.create(:starproposal, submission: submission) }
       
       it "renders the star proposal button" do
         render partial: "layouts/header"
