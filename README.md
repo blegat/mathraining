@@ -2,6 +2,7 @@ Mathraining
 ============
 [![Build Status](https://github.com/blegat/mathraining/actions/workflows/ci.yml/badge.svg)](https://github.com/blegat/mathraining/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/github/blegat/mathraining/branch/master/graph/badge.svg?token=npRf7TYZ7e)](https://codecov.io/github/blegat/mathraining)
+[![Hypercommit](https://img.shields.io/badge/Hypercommit-DB2475)](https://hypercommit.com/mathraining)
 
 Description
 -----------
