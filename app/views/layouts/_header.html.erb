@@ -20,7 +20,7 @@
       
       <% if signed_in? and (current_user.admin? || current_user.corrector?) %>
         <% num_waiting_suspicions = (current_user.root? ? Suspicion.where(:status => :waiting_confirmation).count : 0) %>
-        <% num_waiting_starproposals = (current_user.root? ? Starproposal.where(:status => :waiting_treatment).count : 0) %>
+        <% num_waiting_starproposals = (current_user.root? ? Starproposal.joins(submission: :problem).where(:status => :waiting_treatment).where("problems.reviewed = ?", true).count : 0) %>
         <% num_unapproved_savedreplies = (current_user.root? ? Savedreply.where(:approved => false).count : 0) %>
 
         <!-- Nouvelles soumissions et nouveaux commentaires -->
