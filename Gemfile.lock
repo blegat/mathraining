@@ -91,7 +91,7 @@ GEM
     autoprefixer-rails (10.4.13.0)
       execjs (~> 2)
     base64 (0.3.0)
-    bcrypt (3.1.16)
+    bcrypt (3.1.22)
     benchmark (0.4.1)
     bigdecimal (3.2.3)
     bootstrap (5.3.0)
@@ -369,7 +369,7 @@ PLATFORMS
 DEPENDENCIES
   active_storage_validations
   annotate (~> 3.2)
-  bcrypt (= 3.1.16)
+  bcrypt (= 3.1.22)
   bootstrap (= 5.3)
   bootstrap3-datetimepicker-rails (~> 4.14.30)
   capybara (= 3.40.0)
