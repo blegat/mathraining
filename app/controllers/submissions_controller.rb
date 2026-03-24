@@ -43,7 +43,7 @@ class SubmissionsController < ApplicationController
     if @what == 0
       @submissions = @problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where.not(:user => current_user).where(:status => :correct, :star => false).order('created_at DESC')
     elsif @what == 1
-      @submissions = @problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where.not(:user => current_user).where(:status => [:wrong, :wrong_to_read, :plagiarized, :closed]).order('created_at DESC')
+      @submissions = @problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where.not(:user => current_user).where(:status => [:wrong, :wrong_to_read, :plagiarized, :generated_with_ai, :closed]).order('created_at DESC')
     end
 
     respond_to :js
