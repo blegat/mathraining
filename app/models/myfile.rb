@@ -18,7 +18,7 @@ class Myfile < ActiveRecord::Base
   # VALIDATIONS
 
   validates :file, attached: true,
-                   content_type: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/bmp', 'application/pdf', 'application/zip', 'application/msword', 'text/plain'], 
+                   content_type: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/bmp', 'application/pdf', 'text/plain'], 
                    size: { less_than: 1.megabytes }
                    
   # OTHER METHODS
