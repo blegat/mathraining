@@ -127,7 +127,7 @@ GEM
       activerecord (>= 5.a)
       database_cleaner-core (~> 2.0.0)
     database_cleaner-core (2.0.1)
-    date (3.4.1)
+    date (3.5.1)
     diff-lcs (1.5.1)
     docile (1.4.0)
     drb (2.2.3)
@@ -185,7 +185,7 @@ GEM
     mustermann (3.0.4)
       ruby2_keywords (~> 0.0.1)
     mutex_m (0.3.0)
-    net-imap (0.5.10)
+    net-imap (0.5.14)
       date
       net-protocol
     net-pop (0.1.2)
@@ -346,7 +346,7 @@ GEM
     stringio (3.1.7)
     thor (1.4.0)
     tilt (2.6.1)
-    timeout (0.4.3)
+    timeout (0.6.1)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     websocket (1.2.9)
