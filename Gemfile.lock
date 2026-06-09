@@ -185,7 +185,7 @@ GEM
     mustermann (3.0.4)
       ruby2_keywords (~> 0.0.1)
     mutex_m (0.3.0)
-    net-imap (0.5.14)
+    net-imap (0.5.15)
       date
       net-protocol
     net-pop (0.1.2)
