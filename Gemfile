@@ -4,7 +4,7 @@ ruby '3.2.8'                           # Ruby
 
 gem 'rails', '7.1.5.2'                 # Ruby on Rails
 
-gem 'bootstrap', '5.3'                 # Responsive design
+gem 'bootstrap', '5.3.2'               # Responsive design
 
 gem 'bcrypt', '3.1.22'                 # Password encryption
 
@@ -25,8 +25,10 @@ group :development do
   gem 'annotate', '~> 3.2'             # Annotate pages automatically
 end
 
-gem 'sassc'                            # CSS preprocessor
-gem 'sassc-rails'                      # CSS preprocessor
+# With bootstrap 5.3.0 we were using sassc and sassc-rails instead of the
+# following two gems, but on Ubuntu 26 they were creating some issues
+gem 'sass-embedded'                    # CSS preprocessor
+gem 'dartsass-sprockets'               # CSS preprocessor
 
 gem 'jquery-rails'                     # Jquery
 
