@@ -146,6 +146,9 @@ GEM
       railties (>= 5.0.0)
     globalid (1.2.1)
       activesupport (>= 6.1)
+    google-protobuf (4.35.0)
+      bigdecimal
+      rake (~> 13.3)
     google-protobuf (4.35.0-x86_64-linux-gnu)
       bigdecimal
       rake (~> 13.3)
@@ -185,6 +188,7 @@ GEM
     marcel (1.0.4)
     matrix (0.4.2)
     mini_mime (1.1.5)
+    mini_portile2 (2.8.9)
     minitest (6.0.6)
       drb (~> 2.0)
       prism (~> 1.5)
@@ -205,6 +209,9 @@ GEM
     net-smtp (0.5.1)
       net-protocol
     nio4r (2.7.5)
+    nokogiri (1.19.3)
+      mini_portile2 (~> 2.8.2)
+      racc (~> 1.4)
     nokogiri (1.19.3-x86_64-linux-gnu)
       racc (~> 1.4)
     passenger (6.0.27)
@@ -320,6 +327,9 @@ GEM
     rspec-support (3.13.1)
     ruby2_keywords (0.0.5)
     rubyzip (2.3.2)
+    sass-embedded (1.100.0)
+      google-protobuf (~> 4.31)
+      rake (>= 13)
     sass-embedded (1.100.0-x86_64-linux-gnu)
       google-protobuf (~> 4.31)
     sassc-embedded (1.80.8)
@@ -373,6 +383,7 @@ GEM
     zeitwerk (2.8.2)
 
 PLATFORMS
+  ruby
   x86_64-linux
 
 DEPENDENCIES
