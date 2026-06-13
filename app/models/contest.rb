@@ -22,10 +22,10 @@ include ContestsHelper
 
 class Contest < ActiveRecord::Base
 
-  enum status: {:in_construction => 0, # in construction (only visible by organizers)
-                :in_progress     => 1, # online and not finished (but maybe not started)
-                :in_correction   => 2, # online and finished (but not corrected)
-                :completed       => 3} # online, finished, and corrected
+  enum :status, {:in_construction => 0, # in construction (only visible by organizers)
+                 :in_progress     => 1, # online and not finished (but maybe not started)
+                 :in_correction   => 2, # online and finished (but not corrected)
+                 :completed       => 3} # online, finished, and corrected
 
   # BELONGS_TO, HAS_MANY
 

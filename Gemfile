@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby '3.2.8'                           # Ruby
 
-gem 'rails', '7.1.6'                   # Ruby on Rails
+gem 'rails', '7.2.0'                   # Ruby on Rails
 
 gem 'bootstrap', '5.3.8'               # Responsive design
 
@@ -40,7 +40,7 @@ group :test do
   gem 'capybara-email'                 # Tests (email)
   gem 'puma'                           # Tests (mainly for javascript)
   gem 'factory_bot_rails', '6.4.4'     # Tests (factory bot)
-  gem 'database_cleaner-active_record' # Tests (clean database)
+  gem 'database_cleaner-active_record', '>= 2.2.0' # Tests (clean database)
   gem 'capybara-select-2'              # Tests (select2)
   gem 'capybara-screenshot'            # Tests (screenshots to debug)
   gem 'selenium-webdriver'             # Tests (mainly for javascript)

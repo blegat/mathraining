@@ -18,16 +18,16 @@ include ApplicationHelper
 
 class Contestproblem < ActiveRecord::Base
 
-  enum status: {:in_construction => 0, # in construction (contest is not online)
-                :not_started_yet => 1, # contest is online but problem is not published yet
-                :in_progress     => 2, # problem is published and students can send solutions
-                :in_correction   => 3, # problem is finished and solutions are being corrected
-                :corrected       => 4, # problem is finished ans solutions have been corrected
-                :in_recorrection => 5} # same as :corrected but organizers are temporarily allowed to modify corrections
+  enum :status, {:in_construction => 0, # in construction (contest is not online)
+                 :not_started_yet => 1, # contest is online but problem is not published yet
+                 :in_progress     => 2, # problem is published and students can send solutions
+                 :in_correction   => 3, # problem is finished and solutions are being corrected
+                 :corrected       => 4, # problem is finished ans solutions have been corrected
+                 :in_recorrection => 5} # same as :corrected but organizers are temporarily allowed to modify corrections
 
-  enum reminder_status: {:no_reminder_sent    => 0, # no reminder sent for this problem yet
-                         :early_reminder_sent => 1, # reminder sent one day before publication
-                         :all_reminders_sent  => 2} # reminder sent at publication
+  enum :reminder_status, {:no_reminder_sent    => 0, # no reminder sent for this problem yet
+                          :early_reminder_sent => 1, # reminder sent one day before publication
+                          :all_reminders_sent  => 2} # reminder sent at publication
 
   # BELONGS_TO, HAS_MANY
 

@@ -12,9 +12,9 @@
 #
 class Takentest < ActiveRecord::Base
 
-  #             :not_started => -1  # used in user.rb (method test_status)
-  enum status: {:in_progress =>  0, # started the test but didn't finish yet
-                :finished    =>  1} # finished the test
+  #              :not_started => -1  # used in user.rb (method test_status)
+  enum :status, {:in_progress =>  0, # started the test but didn't finish yet
+                 :finished    =>  1} # finished the test
 
   # BELONGS_TO, HAS_MANY
 

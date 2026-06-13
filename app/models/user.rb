@@ -96,14 +96,14 @@ end
 
 class User < ActiveRecord::Base
 
-  enum role: {:deleted       => 0, # deleted account
-              :student       => 1, # simple student (possibly a corrector)
-              :administrator => 2, # admin but not root
-              :root          => 3} # root (webmaster)
+  enum :role, {:deleted       => 0, # deleted account
+               :student       => 1, # simple student (possibly a corrector)
+               :administrator => 2, # admin but not root
+               :root          => 3} # root (webmaster)
               
-  enum password_strength: {:unknown_password => 0,
-                           :weak_password    => 1,
-                           :strong_password  => 2}
+  enum :password_strength, {:unknown_password => 0,
+                            :weak_password    => 1,
+                            :strong_password  => 2}
 
   # BELONGS_TO, HAS_MANY
 

@@ -24,13 +24,13 @@ end
 
 class Suspicion < ActiveRecord::Base
   
-  enum status: {:waiting_confirmation => 0, # to be confirmed by a root
-                :confirmed            => 1, # cheating confirmed by a root (and submission marked as plagiarized or generated_with_ai)
-                :forgiven             => 2, # possible plagiarism but forgiven
-                :rejected             => 3} # root does not think this is plagiarism
+  enum :status, {:waiting_confirmation => 0, # to be confirmed by a root
+                 :confirmed            => 1, # cheating confirmed by a root (and submission marked as plagiarized or generated_with_ai)
+                 :forgiven             => 2, # possible plagiarism but forgiven
+                 :rejected             => 3} # root does not think this is plagiarism
                 
-  enum cheating_type: {:plagiarism  => 0,
-                       :usage_of_ai => 1}
+  enum :cheating_type, {:plagiarism  => 0,
+                        :usage_of_ai => 1}
 
   # BELONGS_TO, HAS_MANY
 

@@ -14,9 +14,9 @@
 #
 class Following < ActiveRecord::Base
   
-  enum kind: {:reservation     =>  0,
-              :first_corrector =>  1,
-              :other_corrector =>  2}
+  enum :kind, {:reservation     =>  0,
+               :first_corrector =>  1,
+               :other_corrector =>  2}
 
   # BELONGS_TO, HAS_MANY
 

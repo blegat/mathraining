@@ -14,9 +14,9 @@
 #
 class Starproposal < ActiveRecord::Base
   
-  enum status: {:waiting_treatment => 0, # to be checked by a root
-                :accepted          => 1, # star confirmed by a root (and star given to submission)
-                :rejected          => 2} # root does not think it deserves a star
+  enum :status, {:waiting_treatment => 0, # to be checked by a root
+                 :accepted          => 1, # star confirmed by a root (and star given to submission)
+                 :rejected          => 2} # root does not think it deserves a star
 
   # BELONGS_TO, HAS_MANY
 

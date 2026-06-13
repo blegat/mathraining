@@ -62,7 +62,7 @@ Rails.application.configure do
   
   config.whiny_nils = true
   
-  config.to_prepare do
-    ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.create_unlogged_tables = true
+  ActiveSupport.on_load(:active_record_postgresqladapter) do
+    self.create_unlogged_tables = true
   end
 end

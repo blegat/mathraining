@@ -14,9 +14,9 @@
 
 class Sanction < ActiveRecord::Base
   
-  enum sanction_type: {:ban           => 0, # cannot connect to the account
-                       :no_submission => 1, # cannot send a submission or a comment
-                       :not_corrected => 2} # submissions will not be corrected
+  enum :sanction_type, {:ban           => 0, # cannot connect to the account
+                        :no_submission => 1, # cannot send a submission or a comment
+                        :not_corrected => 2} # submissions will not be corrected
 
   # BELONGS_TO, HAS_MANY
 
