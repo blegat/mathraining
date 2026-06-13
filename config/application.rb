@@ -98,8 +98,5 @@ module Mathraining
     
     # Remove warnings because of bootstrap 5.3.8 still using @import instead of @use:
     config.sass.quiet_deps = true
-    
-    # Get rid of warning about to_time (even if we don't use to_time anymore...)
-    config.active_support.to_time_preserves_timezone = :zone
   end
 end
