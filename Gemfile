@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby '3.2.8'                           # Ruby
 
-gem 'rails', '7.2.0'                   # Ruby on Rails
+gem 'rails', '7.2.3.1'                 # Ruby on Rails
 
 gem 'bootstrap', '5.3.8'               # Responsive design
 
