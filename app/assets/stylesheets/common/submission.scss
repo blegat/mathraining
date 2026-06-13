@@ -1,5 +1,7 @@
 /* SUBMISSION TABLES */
 
+@use "bootstrap_variables" as v;
+
 td.sub-status, th.sub-status {
   width: 70px;
   text-align: center;
@@ -33,11 +35,11 @@ td.sub-match, th.sub-match {
 td.sub-preview, th.sub-preview {
   width: 150px;
   
-  @media (min-width: map-get($grid-breakpoints, 'sm')) {
+  @media (min-width: map-get(v.$grid-breakpoints, 'sm')) {
     width: 250px;
   }
   
-  @media (min-width: map-get($grid-breakpoints, 'md')) {
+  @media (min-width: map-get(v.$grid-breakpoints, 'md')) {
     width: 300px;
   }
 }

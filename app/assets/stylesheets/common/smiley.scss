@@ -1,12 +1,14 @@
 /* SMILEY */
 
+@use "bootstrap_variables" as v;
+
 .smiley-content {
   margin: 0px;
   margin-top: 10px;
   margin-bottom: 8px;
   width: 100%;
 
-  @media (min-width: map-get($grid-breakpoints, 'md')) {
+  @media (min-width: map-get(v.$grid-breakpoints, 'md')) {
     display: -webkit-box;
     display: -mot-box;
     display: -ms-flexbox;
@@ -20,7 +22,7 @@
   text-align: center;
   width: 100%;
   
-  @media (min-width: map-get($grid-breakpoints, 'md')) {
+  @media (min-width: map-get(v.$grid-breakpoints, 'md')) {
     margin-bottom: 0px;
     text-align: left;
     width: auto;

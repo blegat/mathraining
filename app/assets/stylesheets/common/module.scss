@@ -1,5 +1,7 @@
 /* CHAPITRES, PROBLEMES, TEST VIRTUELS, CONCOURS */
 
+@use "bootstrap_variables" as v;
+
 /* Note: We use 12 columns for screens with a width < 768px, and 24 columns for larger screens (to have more flexibility)
    The reason why we don't use 24 columns for small screens is because the number of columns and the gap size seem to have
    an impact on the minimal width of the grid. Using 24 columns with a gap of 15px gives a minimal width that is too large. */
@@ -31,7 +33,7 @@
   }
 }
 
-@media (min-width: map-get($grid-breakpoints, 'md')) { // 768px
+@media (min-width: map-get(v.$grid-breakpoints, 'md')) { // 768px
   .chapter, .problem, .virtualtest, .contest {
     .content {
       --bs-columns: 24;

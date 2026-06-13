@@ -1,5 +1,7 @@
 /* POST */
 
+@use "bootstrap_variables" as v;
+
 .post > div {
   overflow-x: auto;
   border: 1px solid var(--bs-border-color);
@@ -15,7 +17,7 @@
   background-color: var(--bs-table-bg);
   border-color: var(--bs-table-border-color);
 
-  @media (min-width: map-get($grid-breakpoints, 'sm')) {
+  @media (min-width: map-get(v.$grid-breakpoints, 'sm')) {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
@@ -34,7 +36,7 @@
   border-top: 1px solid;
   border-color: inherit;
 
-  @media (min-width: map-get($grid-breakpoints, 'sm')) {
+  @media (min-width: map-get(v.$grid-breakpoints, 'sm')) {
     border-top: none;
   }
 }

@@ -1,13 +1,15 @@
 /* IMAGES */
 
+@use "bootstrap_variables" as v;
+
 .image-pj {
   max-width: 100%;
   
-  @media (min-width: map-get($grid-breakpoints, 'md')) { // 768px
+  @media (min-width: map-get(v.$grid-breakpoints, 'md')) { // 768px
     max-width: 440px;
   }
   
-  @media (min-width: map-get($grid-breakpoints, 'lg')) { // 992px
+  @media (min-width: map-get(v.$grid-breakpoints, 'lg')) { // 992px
     max-width: 670px;
   }
 }
@@ -15,11 +17,11 @@
 .image-pj2 {
   max-width: 100%;
   
-  @media (min-width: map-get($grid-breakpoints, 'md')) { // 768px
+  @media (min-width: map-get(v.$grid-breakpoints, 'md')) { // 768px
     max-width: 660px;
   }
   
-  @media (min-width: map-get($grid-breakpoints, 'lg')) { // 992px
+  @media (min-width: map-get(v.$grid-breakpoints, 'lg')) { // 992px
     max-width: 900px;
   }
 }

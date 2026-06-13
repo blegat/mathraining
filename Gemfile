@@ -2,9 +2,9 @@ source 'https://rubygems.org'
 
 ruby '3.2.8'                           # Ruby
 
-gem 'rails', '7.1.5.2'                 # Ruby on Rails
+gem 'rails', '7.1.6'                   # Ruby on Rails
 
-gem 'bootstrap', '5.3.2'               # Responsive design
+gem 'bootstrap', '5.3.8'               # Responsive design
 
 gem 'bcrypt', '3.1.22'                 # Password encryption
 

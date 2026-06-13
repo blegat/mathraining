@@ -95,5 +95,8 @@ module Mathraining
     I18n.config.enforce_available_locales = true
     
     config.exceptions_app = self.routes
+    
+    # Remove warnings because of bootstrap 5.3.8 still using @import instead of @use:
+    config.sass.quiet_deps = true
   end
 end

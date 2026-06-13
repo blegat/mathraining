@@ -9,6 +9,21 @@
  * compiled file, but it's generally better to create a new file per style scope.
  *
  */
+ 
+@use "bootstrap" as * with (
+  $font-size-base: 0.875rem,
+  $enable-negative-margins: true,
+  $link-decoration: none,
+  $link-hover-decoration: underline,
+  $body-color-dark: white,
+  $enable-cssgrid: true,
+  $grid-columns: 24,
+  $font-family-base: ("Ubuntu", sans-serif),
+  $font-family-sans-serif: ("Ubuntu", sans-serif)
+);
+@use "select2" as *;
+@use "./common" as *;
+@use "./screen" as *;
 
 // Import Font Ubuntu (NB: Other orders do not work!)
 
@@ -50,19 +65,3 @@
   font-weight: 400;
   src: font-url("Ubuntu-R.ttf");
 }
-
-// Bootstrap parameters:
-$font-size-base: 0.875rem;
-$enable-negative-margins: true;
-$link-decoration: none;
-$link-hover-decoration: underline;
-$body-color-dark: white;
-$enable-cssgrid: true;
-$grid-columns: 24;
-$font-family-base: "Ubuntu", sans-serif;
-$font-family-sans-serif: "Ubuntu", sans-serif;
-
-@import "bootstrap";
-@import "select2";
-@import "./common/*";
-@import "./screen/*";
