@@ -12,7 +12,7 @@ Votre navigateur ne supporte pas les canvas.
 <% today = Date.today %>
 <% num_days = 15 %>
 <!-- NB: Need to deduct days before converting to datetime, otherwise we can have an issue with time change, twice a year -->
-<% sometimeago = (today - (num_days-1).days).in_time_zone.to_datetime %>
+<% sometimeago = (today - (num_days-1).days).in_time_zone %>
 <% subs = Submission.where.not(:status => [:draft, :waiting_forever]).where("created_at >= ?", sometimeago).group_by_day(:created_at).count %>
 <% corrs = Following.where(:kind => :first_corrector).where("created_at >= ?", sometimeago).group_by_day(:created_at).count %>
 <% submissions = Array.new(num_days, 0) %>

@@ -49,13 +49,13 @@
     <% trouve = false %>
     <% besttime = 0 %>
     <% bestqui = "" %>
-    <% if q_encours < questions.size && (!trouve || questions[q_encours].time.to_time.to_i > besttime) %>
-      <% besttime = questions[q_encours].time.to_time.to_i %>
+    <% if q_encours < questions.size && (!trouve || questions[q_encours].time.to_i > besttime) %>
+      <% besttime = questions[q_encours].time.to_i %>
       <% trouve = true %>
       <% bestqui = "Q" %>
     <% end %>
-    <% if p_encours < problems.size && (!trouve || problems[p_encours].time.to_time.to_i > besttime) %>
-      <% besttime = problems[p_encours].time.to_time.to_i %>
+    <% if p_encours < problems.size && (!trouve || problems[p_encours].time.to_i > besttime) %>
+      <% besttime = problems[p_encours].time.to_i %>
       <% trouve = true %>
       <% bestqui = "P" %>
     <% end %>
@@ -555,7 +555,7 @@
       <% graph_times = Array.new %>
       <% graph_points = Array.new %>
       <% actperday.each do |a| %>
-        <% graph_int_times.push(a[:time].to_time.to_i) %>
+        <% graph_int_times.push(a[:time].to_i) %>
         <% graph_points.push(a[:pt]) %>
         <% t = "" %>
         <% if parquoi == "jour" %>
@@ -762,7 +762,7 @@
     <% if count_by_month_str.size >= 2 %>
       <% count_by_month_int = {} %>
       <% num_from_2024 = 0 %>
-      <% count_by_month_str.each { |k, v| d = k.to_datetime; count_by_month_int[12*d.year + d.mon-1] = v; num_from_2024 += v if d.year >= 2024 } %>
+      <% count_by_month_str.each { |d, v| count_by_month_int[12*d.year + d.mon-1] = v; num_from_2024 += v if d.year >= 2024 } %>
       <% if show_puzzle && Rails.env.development? %>
         <% count_by_month_int[12*2024+8-1 + 103] = 1 %>
       <% end %>

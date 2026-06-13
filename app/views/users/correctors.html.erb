@@ -54,8 +54,8 @@
 
 <% today = Date.today %>
 <!-- NB: Need to deduct days before converting to datetime, otherwise we can have an issue with time change, twice a year -->
-<% twoweeksago = (today - 13.days).in_time_zone.to_datetime %>
-<% amonthago = (today - 30.days).in_time_zone.to_datetime %>
+<% twoweeksago = (today - 13.days).in_time_zone %>
+<% amonthago = (today - 30.days).in_time_zone %>
 
 <% Groupdate.time_zone = false unless Rails.env.production? %>
 <% ignored_statuses = [:draft] %>

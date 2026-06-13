@@ -704,7 +704,7 @@ class UsersController < ApplicationController
       while s < local_id && @x_globalrank[s] == 1
         s = s + 1
       end
-      r = Random.new(Date.today.in_time_zone.to_time.to_i)
+      r = Random.new(Date.today.in_time_zone.to_i)
       alea = Array.new(s)
       (0..(s-1)).each do |i|
         x = r.rand()
@@ -732,7 +732,7 @@ class UsersController < ApplicationController
     end
 
     # NB: Need to deduct days before converting to datetime, otherwise we can have an issue with time change, twice a year
-    twoweeksago = (Date.today - 13.days).in_time_zone.to_datetime
+    twoweeksago = (Date.today - 13.days).in_time_zone
 
     Solvedproblem.where(:user_id => ids).includes(:problem).where("resolution_time >= ?", twoweeksago).find_each do |s|
       @x_recent[global_user_id_to_local_id[s.user_id]] += s.problem.value

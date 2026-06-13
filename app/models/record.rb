@@ -31,8 +31,8 @@ class Record < ActiveRecord::Base
     curmonday = lastdate+7
     while(curmonday <= mondaybeforelastmonday)
       nextmonday = curmonday+7
-      nb_submissions = Submission.where.not(:status => :draft).where("created_at >= ? AND created_at < ?", curmonday.to_time.to_datetime, nextmonday.to_time.to_datetime).count
-      nb_questions_solved = Solvedquestion.where("resolution_time >= ? AND resolution_time < ?", curmonday.to_time.to_datetime, nextmonday.to_time.to_datetime).count
+      nb_submissions = Submission.where.not(:status => :draft).where("created_at >= ? AND created_at < ?", curmonday.in_time_zone, nextmonday.in_time_zone).count
+      nb_questions_solved = Solvedquestion.where("resolution_time >= ? AND resolution_time < ?", curmonday.in_time_zone, nextmonday.in_time_zone).count
       r = Record.create(:date                => curmonday,
                         :nb_submissions      => nb_submissions,
                         :nb_questions_solved => nb_questions_solved,
@@ -43,8 +43,8 @@ class Record < ActiveRecord::Base
     Record.where(:complete => false).each do |r|
       curmonday = r.date
       nextmonday = curmonday+7
-      curmonday_time = curmonday.to_time.to_datetime
-      nextmonday_time = nextmonday.to_time.to_datetime
+      curmonday_time = curmonday.in_time_zone
+      nextmonday_time = nextmonday.in_time_zone
       
       if Submission.where(:status => :waiting).where("created_at >= ? AND created_at < ?", curmonday_time, nextmonday_time).count > 0
         next # not all submissions were corrected

@@ -78,7 +78,7 @@ describe "users/index.html.erb", user: true do
   end
   
   before(:each) do
-    r = Random.new(Date.today.in_time_zone.to_time.to_i)
+    r = Random.new(Date.today.in_time_zone.to_i)
     
     # Initialize Pointspersection randomly
     Section.where(:fondation => false).each do |s|
