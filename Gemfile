@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby '3.2.8'                           # Ruby
 
-gem 'rails', '7.2.3.1'                 # Ruby on Rails
+gem 'rails', '8.0.0'                   # Ruby on Rails
 
 gem 'bootstrap', '5.3.8'               # Responsive design
 
@@ -11,7 +11,7 @@ gem 'bcrypt', '3.1.22'                 # Password encryption
 gem 'will_paginate', '3.3.0'           # Pages
 gem 'will_paginate-bootstrap-style'    # Bootstrap style for pages
 
-gem 'rails-i18n', '~> 7.0'             # Locales (internationalization)
+gem 'rails-i18n'                       # Locales (internationalization)
 
 gem 'recaptcha', '~> 5.15',            # Captcha
   :require => 'recaptcha/rails'
@@ -22,7 +22,7 @@ gem 'resque', '~> 2.5'                 # Emails
 gem 'resque_mailer'                    # Emails
 
 group :development do
-  gem 'annotate', '~> 3.2'             # Annotate pages automatically
+  gem 'annotaterb'                     # Annotate pages automatically
 end
 
 # With bootstrap 5.3.0 we were using sassc and sassc-rails instead of the
@@ -65,7 +65,7 @@ end
 
 gem 'lograge'                          # Better logs
 
-gem 'groupdate'                        # SQL requests grouped by dates
+gem 'groupdate', ">= 6.5.0"            # SQL requests grouped by dates
 
 gem 'active_storage_validations'       # Validate attachments
 
