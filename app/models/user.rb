@@ -37,6 +37,7 @@
 #  password_strength         :integer          default("unknown_password")
 #  accepted_code_of_conduct  :boolean          default(FALSE)
 #  whitelisted               :boolean          default(FALSE)
+#  canonical_email           :string
 #
 include ERB::Util
 
@@ -147,6 +148,7 @@ class User < ActiveRecord::Base
   # BEFORE, AFTER
 
   before_validation :create_corrector_color
+  before_validation :set_canonical_email
   before_save { self.email.downcase! }
   before_create :create_remember_token
   after_create :create_points
@@ -170,6 +172,7 @@ class User < ActiveRecord::Base
   validates :email, presence: true, format: { with: VALID_EMAIL_REGEX }, uniqueness: { case_sensitive: false }
   validates :email_confirmation, presence: true, on: :create
   validates_confirmation_of :email, case_sensitive: false
+  validate :email_is_not_an_alias_of_an_existing_one # See issue #108
   validates :password, length: { minimum: 8, maximum: 128 }, on: :create
   validates :password, length: { minimum: 8, maximum: 128 }, on: :update, allow_blank: true
   validates_with MyPasswordValidator
@@ -178,7 +181,65 @@ class User < ActiveRecord::Base
   validates_with ColorValidator
   
   # OTHER METHODS
-  
+
+  # ---------------------------------------------------------------------------
+  # E-mail canonicalization (to make double accounts harder, see issue #108)
+  # ---------------------------------------------------------------------------
+  #
+  # Many e-mail providers consider several "spellings" of an address as the very
+  # same mailbox. To make the creation of double accounts harder, we compute a
+  # canonical form of each address (stored in the canonical_email column) and we
+  # forbid a new account whose canonical form is already used by another account.
+  #
+  # The rules below are intentionally conservative: we only normalize what is
+  # *known* to be equivalent for a given provider, so that we never merge two
+  # genuinely distinct addresses.
+
+  # Domains that are simple aliases of another (canonical) domain.
+  EMAIL_DOMAIN_ALIASES = {
+    "googlemail.com" => "gmail.com"
+  }.freeze
+
+  # Domains for which a "+suffix" in the local part is ignored (sub-addressing),
+  # i.e. "foo+anything@domain" delivers to the same mailbox as "foo@domain".
+  # This list can safely be extended with other providers sharing this behavior.
+  PLUS_ALIASING_EMAIL_DOMAINS = Set[
+    "gmail.com",
+    "outlook.com", "outlook.fr", "outlook.be",
+    "hotmail.com", "hotmail.fr", "hotmail.be",
+    "live.com",    "live.fr",    "live.be",
+    "msn.com"
+  ].freeze
+
+  # Domains for which dots in the local part are also ignored,
+  # i.e. "f.o.o@gmail.com" delivers to the same mailbox as "foo@gmail.com".
+  DOT_INSENSITIVE_EMAIL_DOMAINS = Set[
+    "gmail.com"
+  ].freeze
+
+  # Returns a canonical form of the given e-mail address (see explanations above).
+  # This is a pure function (no database access) so that it can be reused both in
+  # the validation below and in data migrations. Returns nil when blank.
+  def self.canonical_email(email)
+    return nil if email.nil?
+    email = email.strip.downcase
+    local, separator, domain = email.rpartition("@")
+    return email if separator.empty? # Not a "local@domain" address: leave as-is
+
+    domain = EMAIL_DOMAIN_ALIASES.fetch(domain, domain)
+
+    if PLUS_ALIASING_EMAIL_DOMAINS.include?(domain)
+      prefix = local.split("+", 2).first
+      local = prefix unless prefix.empty? # Keep local untouched for a leading "+"
+    end
+
+    if DOT_INSENSITIVE_EMAIL_DOMAINS.include?(domain)
+      local = local.delete(".")
+    end
+
+    "#{local}@#{domain}"
+  end
+
   # Tells if user is an administrator or a root
   def admin?
     return self.administrator? || self.root?
@@ -518,7 +579,29 @@ class User < ActiveRecord::Base
   end
   
   private
-  
+
+  # Keep the canonical_email column in sync with the email (see issue #108)
+  def set_canonical_email
+    self.canonical_email = User.canonical_email(self.email)
+  end
+
+  # Forbid a new account whose e-mail is an *alias* of an existing account's
+  # e-mail (same canonical form but a different spelling, e.g. "foo.bar@gmail.com"
+  # versus "foobar@gmail.com"). Exact duplicates (up to the case) are already
+  # reported by the standard uniqueness validation on :email, so we ignore them
+  # here to avoid showing two error messages for the same problem. See issue #108.
+  def email_is_not_an_alias_of_an_existing_one
+    return unless email_changed? # Only check when the address is set or modified
+    return if email.blank? || canonical_email.blank?
+    # Among the accounts sharing this canonical address, ignore the ones with the
+    # exact same e-mail (already handled by the standard uniqueness validation):
+    # if a genuine alias remains, the address is considered already used.
+    other_accounts = User.where.not(id: id).where(canonical_email: canonical_email)
+    if other_accounts.where.not("LOWER(email) = ?", email.strip.downcase).exists?
+      errors.add(:base, "Cette adresse e-mail est une variante d'une adresse déjà utilisée par un autre compte. Veuillez utiliser une autre adresse e-mail.")
+    end
+  end
+
   # Gives the corrector prefix (if any) for the name
   def corrector_prefix
     if (self.admin? || self.corrector?) && self.correction_level > 0
