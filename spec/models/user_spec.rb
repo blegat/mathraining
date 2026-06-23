@@ -35,6 +35,7 @@
 #  password_strength         :integer          default("unknown_password")
 #  accepted_code_of_conduct  :boolean          default(FALSE)
 #  whitelisted               :boolean          default(FALSE)
+#  canonical_email           :string
 #
 require "spec_helper"
 
@@ -142,7 +143,47 @@ describe User, user: true do
     end
     specify { expect(user.email).to eq(mixed_case_email.downcase) }
   end
-  
+
+  # Canonical email (to make double accounts harder, see issue #108)
+  describe "canonical email" do
+    specify "lowercases and trims any address" do
+      expect(User.canonical_email("  Foo.Bar@Example.COM ")).to eq("foo.bar@example.com")
+    end
+    specify "ignores dots and +suffix for Gmail addresses" do
+      expect(User.canonical_email("f.o.o@gmail.com")).to eq("foo@gmail.com")
+      expect(User.canonical_email("foo+anything@gmail.com")).to eq("foo@gmail.com")
+      expect(User.canonical_email("f.o.o+spam@gmail.com")).to eq("foo@gmail.com")
+    end
+    specify "treats googlemail.com as gmail.com" do
+      expect(User.canonical_email("f.o.o@googlemail.com")).to eq("foo@gmail.com")
+    end
+    specify "ignores +suffix but keeps dots for Outlook/Hotmail addresses" do
+      expect(User.canonical_email("john.doe+news@outlook.com")).to eq("john.doe@outlook.com")
+      expect(User.canonical_email("john+news@hotmail.be")).to eq("john@hotmail.be")
+    end
+    specify "leaves other providers untouched (apart from the case)" do
+      expect(User.canonical_email("f.o.o+bar@example.com")).to eq("f.o.o+bar@example.com")
+    end
+  end
+
+  describe "when email is an alias of an already used address" do
+    before do
+      FactoryBot.create(:user, email: "foo.bar@gmail.com", email_confirmation: "foo.bar@gmail.com")
+      user.email = "foobar+promo@gmail.com"
+      user.email_confirmation = "foobar+promo@gmail.com"
+    end
+    it { should_not be_valid }
+  end
+
+  describe "when email only shares its canonical form with itself" do
+    before do
+      FactoryBot.create(:user, email: "foo.bar@gmail.com", email_confirmation: "foo.bar@gmail.com")
+      user.email = "someone.else@gmail.com"
+      user.email_confirmation = "someone.else@gmail.com"
+    end
+    it { should be_valid }
+  end
+
   # Password
   describe "when password is not present" do
     before { user.password = user.password_confirmation = " " }
