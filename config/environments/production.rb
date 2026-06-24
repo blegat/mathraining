@@ -46,7 +46,7 @@ Rails.application.configure do
   # Include generic and useful information about system operation, but avoid logging too much
   # information to avoid inadvertent exposure of personally identifiable information (PII).
   config.log_level = :info # Set to :debug for more information (not sure it works with lograge)
-  config.log_tags = [ lambda { |req| Time.now}, :remote_ip ] # Include IP address in the logs
+  config.log_tags = [ lambda { |req| Time.now.in_time_zone }, :remote_ip ] # Include IP address in the logs
 
   # Prepend all log lines with the following tags.
   #config.log_tags = [ :request_id ]
