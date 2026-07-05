@@ -274,21 +274,23 @@ module ApplicationHelper
     end
   end
   
-  # Write 1234567 as 1 234 567 (with thin spaces)
+  # Write 1234567 as 1 234 567 (with thin-space class defined in home.scss)
+  # Note that &thinsp;, used before, does not wwork on Safari!
   def write_readable_big_number(n)
-    return "0" if n == 0
+    return n.to_s if n < 1000
     m = n
     num_digits = 0
-    n_string = ""
+    n_string = "</span>"
     while (m > 0)
       if num_digits % 3 == 0 && num_digits > 0
-        n_string = "&thinsp;" + n_string
+        n_string = "</span><span class='thin-space'>" + n_string
       end
       d = m % 10
       n_string = d.to_s + n_string
       m = m/10
       num_digits += 1
     end
+    n_string = "<span>" + n_string
     return n_string.html_safe
   end
   

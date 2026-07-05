@@ -62,4 +62,16 @@ describe ApplicationHelper do
       expect(process_hidden_text("[/hide][hide=Texte caché]Mon texte[/hide][hide]", 0)).to eq(["[/hide](X0)Texte caché(Y0)Mon texte(Z0)[hide]", 1])
     end
   end
+  
+  describe "readable big number" do
+    it do
+      expect(write_readable_big_number(0)).to eq("0")
+      expect(write_readable_big_number(8)).to eq("8")
+      expect(write_readable_big_number(51)).to eq("51")
+      expect(write_readable_big_number(999)).to eq("999")
+      expect(write_readable_big_number(1000)).to eq("<span>1</span><span class='thin-space'>000</span>")
+      expect(write_readable_big_number(12345)).to eq("<span>12</span><span class='thin-space'>345</span>")
+      expect(write_readable_big_number(9876543210)).to eq("<span>9</span><span class='thin-space'>876</span><span class='thin-space'>543</span><span class='thin-space'>210</span>")
+    end
+  end
 end
