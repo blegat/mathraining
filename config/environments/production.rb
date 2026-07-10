@@ -42,6 +42,14 @@ Rails.application.configure do
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = true
+  
+  # Trust OVH SSL Gateway (generated with Gemini...)
+  config.action_dispatch.trusted_proxies = [
+    IPAddr.new("127.0.0.1"),
+    IPAddr.new("::1"),
+    IPAddr.new("213.32.4.0/24"), # range of OVH SSL Gateway
+    IPAddr.new("144.217.9.0/24") # other official range for OVH
+  ]
 
   # Include generic and useful information about system operation, but avoid logging too much
   # information to avoid inadvertent exposure of personally identifiable information (PII).
