@@ -177,7 +177,7 @@ describe "User pages", user: true do
           
           describe "and sets an empty password" do
             before { click_button "Modifier le mot de passe" }
-            it { should have_error_message("Mot de passe est vide") }
+            it { should have_error_message("Mot de passe doit être rempli") }
           end
           
           describe "and sets an incorrect password" do
@@ -278,14 +278,12 @@ describe "User pages", user: true do
         visit edit_user_path(zero_user)
         fill_in "Prénom", with: new_first_name
         fill_in "Nom", with: new_last_name
-        fill_in "Mot de passe", with: new_password
-        fill_in "Confirmation du mot de passe", with: new_password
         click_button "Mettre à jour"
         zero_user.reload
       end
       
       specify do
-        expect(page).to have_selector("h1", text: "Votre compte")
+        expect(page).to have_selector("h1", text: "Compte")
         expect(page).to have_selector("div.alert.alert-success")
         expect(page).to have_link("Déconnexion", href: sessions_path)
         expect(zero_user.first_name).to eq(new_first_name)
@@ -336,6 +334,74 @@ describe "User pages", user: true do
         expect(page).to have_success_message("Votre profil a bien été mis à jour.")
         expect(zero_user.first_name).not_to eq(new_first_name)
         expect(zero_user.last_name).not_to eq(new_last_name)
+      end
+    end
+    
+    describe "edits his password" do
+      before do
+        visit edit_password_path
+        fill_in "Mot de passe actuel", with: zero_user.password
+        fill_in "Nouveau mot de passe", with: new_password
+        fill_in "Confirmation du nouveau mot de passe", with: new_password
+        click_button "Modifier le mot de passe"
+      end
+      
+      it do
+        should have_success_message("Votre mot de passe a bien été modifié")
+        should have_link("Connexion") # Should be automatically disconnected
+      end
+      
+      describe "and tries to sign in with new password" do
+        before do
+          click_link "Connexion"
+          fill_in "header_connect_email", with: zero_user.email
+          fill_in "header_connect_password", with: new_password
+          click_button "header_connect_button"
+        end
+        it { should have_link("Déconnexion", href: sessions_path) }
+      end
+    end
+    
+    describe "tries to edit his password with wrong confirmation" do
+      before do
+        visit edit_password_path
+        fill_in "Mot de passe actuel", with: zero_user.password
+        fill_in "Nouveau mot de passe", with: new_password
+        fill_in "Confirmation du nouveau mot de passe", with: new_password + "2"
+        click_button "Modifier le mot de passe"
+      end
+      
+      it do
+        should have_error_message("Confirmation du mot de passe ne concorde pas avec Mot de passe")
+        should have_no_link("Connexion") # Should NOT be automatically disconnected
+      end
+    end
+    
+    describe "tries to edit his password with wrong current password" do
+      before do
+        visit edit_password_path
+        fill_in "Mot de passe actuel", with: zero_user.password + "2"
+        fill_in "Nouveau mot de passe", with: new_password
+        fill_in "Confirmation du nouveau mot de passe", with: new_password
+        click_button "Modifier le mot de passe"
+      end
+      
+      it do
+        should have_error_message("Mot de passe actuel est incorrect")
+        should have_no_link("Connexion") # Should NOT be automatically disconnected
+      end
+    end
+    
+    describe "forgot his password while being connected" do
+      before do
+        visit edit_password_path
+        click_link("Cliquez ici", href: own_password_forgotten_path)
+        zero_user.reload
+      end
+      
+      specify do
+        expect(page).to have_success_message("Vous allez recevoir un e-mail")
+        expect(zero_user.recup_password_date_limit).to be_within(5.seconds).of(DateTime.now)
       end
     end
     
@@ -507,7 +573,7 @@ describe "User pages", user: true do
       describe "and does not fill the password" do
         before { click_button "Modifier le mot de passe" }
         specify do
-          expect(page).to have_error_message("Mot de passe est vide")
+          expect(page).to have_error_message("Mot de passe doit être rempli")
           expect(page).to have_selector("h1", text: "Mot de passe trop faible")
           expect(zero_user.weak_password?).to eq(true)
         end

@@ -2,11 +2,12 @@
 class UsersController < ApplicationController
   skip_before_action :user_has_some_actions_to_take, only: [:improve_password, :accept_legal, :accept_code_of_conduct]
   
-  before_action :signed_in_user, only: [:edit, :notifs, :groups, :followed, :unset_follow_message, :search]
-  before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :set_administrator, :take_skin, :leave_skin, :set_wepion, :unset_wepion, :set_corrector, :unset_corrector, :change_group, :accept_legal, :accept_code_of_conduct, :follow, :unfollow, :set_follow_message, :validate_names, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name, :set_whitelisted, :unset_whitelisted, :improve_password]
+  before_action :signed_in_user, only: [:edit, :edit_password, :notifs, :groups, :followed, :unset_follow_message, :search]
+  before_action :signed_in_user_danger, only: [:destroy, :destroydata, :update, :update_password, :own_password_forgotten, :set_administrator, :take_skin, :leave_skin, :set_wepion, :unset_wepion, :set_corrector, :unset_corrector, :change_group, :accept_legal, :accept_code_of_conduct, :follow, :unfollow, :set_follow_message, :validate_names, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name, :set_whitelisted, :unset_whitelisted, :improve_password]
   before_action :root_user, only: [:destroy, :destroydata, :take_skin, :set_administrator, :set_corrector, :unset_corrector, :set_wepion, :unset_wepion, :change_group, :validate_names, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name, :set_whitelisted, :unset_whitelisted]
   before_action :signed_out_user, only: [:new, :create, :forgot_password, :password_forgotten]
   before_action :wepion_user, only: [:groups]
+  before_action :user_not_in_skin, only: [:update_password, :own_password_forgotten]
   
   before_action :get_user, only: [:edit, :update, :show, :destroy, :activate, :destroydata, :change_password, :take_skin, :set_administrator, :set_wepion, :unset_wepion, :set_corrector, :unset_corrector, :change_group, :recup_password, :follow, :unfollow, :validate_name, :change_name, :set_can_change_name, :unset_can_change_name, :set_whitelisted, :unset_whitelisted]
   
@@ -188,7 +189,7 @@ class UsersController < ApplicationController
     old_first_name = @user.first_name
 
     allowed_params = [:see_name, :sex, :year, :country_id]
-    allowed_params << [:password, :password_confirmation, :accept_analytics] if @user == current_user
+    allowed_params << [:accept_analytics] if @user == current_user
     allowed_params << [:first_name, :last_name] if @user.can_change_name || current_user.root?
     allowed_params << :email if current_user.root?
     allowed_params << :corrector_color if (@user.admin? || @user.corrector?)
@@ -325,7 +326,24 @@ class UsersController < ApplicationController
     redirect_to root_path
   end
   
-  # Password forgotten: first page
+  # Update own password (show the form)
+  def edit_password
+  end
+  
+  # Update own password (send the form)
+  def update_password
+    if !current_user.authenticate(params[:user][:current_password])
+      render_with_error('edit_password', current_user, "Mot de passe actuel est incorrect")
+    elsif update_with_password_params(current_user)
+      current_user.update_remember_token # Disconnect from all devices
+      flash[:success] = "Votre mot de passe a bien été modifié. Veuillez vous reconnecter."
+      redirect_to root_path
+    else       
+      render 'edit_password'
+    end
+  end
+  
+  # Password forgotten: ask for email and captcha
   def forgot_password
   end
 
@@ -341,14 +359,16 @@ class UsersController < ApplicationController
     end
     
     if @user.email_confirm
-      @user.update(:key => SecureRandom.urlsafe_base64,
-                   :recup_password_date_limit => DateTime.now)
-      UserMailer.forgot_password(@user.id).deliver
-      flash[:info] = "Lien (développement uniquement) : localhost:3000/users/#{@user.id}/recup_password?key=#{@user.key}" if !Rails.env.production?
-      flash[:success] = "Vous allez recevoir un e-mail d'ici quelques minutes pour que vous puissiez changer de mot de passe. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver."
+      send_recup_password_email(@user)
     else
       flash[:danger] = "Veuillez d'abord confirmer votre adresse e-mail à l'aide du lien qui vous a été envoyé à l'inscription. Si vous n'avez pas reçu cet e-mail, alors n'hésitez pas à contacter l'équipe Mathraining (voir 'Contact', en bas à droite de la page)."
     end
+    redirect_to root_path
+  end
+  
+  # Password forgotten: when connected, via link
+  def own_password_forgotten
+    send_recup_password_email(current_user)
     redirect_to root_path
   end
 
@@ -385,15 +405,13 @@ class UsersController < ApplicationController
       flash[:danger] = "Vous avez mis trop de temps à modifier votre mot de passe. Veuillez réitérer votre demande de changement de mot de passe."
       redirect_to root_path
     else
-      if DateTime.now > @user.recup_password_date_limit + 3600.seconds && check_typo_error(params[:user][:password], params[:user][:password_confirmation])
+      if DateTime.now > @user.recup_password_date_limit + 36.seconds && check_typo_error(params[:user][:password], params[:user][:password_confirmation])
         @user.update(:key => SecureRandom.urlsafe_base64, :recup_password_date_limit => nil)
         flash[:info] = "Je ne vous félicite pas : vous avez une mauvaise mémoire, vous êtes en retard et vous tapez trop vite ! Quel personnage, ami de Malika, a également l'un ces défauts ?"
         redirect_to root_path
-      elsif (params[:user][:password].nil? || params[:user][:password].length == 0)
-        @user.errors.add(:base, "Mot de passe est vide")
-        render 'recup_password'
-      elsif @user.update(params.require(:user).permit(:password, :password_confirmation))
+      elsif update_with_password_params(@user)
         @user.update(:key => SecureRandom.urlsafe_base64, :recup_password_date_limit => nil)
+        @user.update_remember_token # Disconnect from all devices
         flash[:success] = "Votre mot de passe a été modifié avec succès. Vous pouvez maintenant vous connecter à votre compte."
         redirect_to root_path
       else
@@ -404,10 +422,7 @@ class UsersController < ApplicationController
   
   # Password too weak: check and set new password
   def improve_password
-    if (params[:user][:password].nil? || params[:user][:password].length == 0)
-      current_user_no_skin.errors.add(:base, "Mot de passe est vide")
-      render 'set_strong_password'
-    elsif current_user_no_skin.update(params.require(:user).permit(:password, :password_confirmation))
+    if update_with_password_params(current_user_no_skin)
       current_user_no_skin.strong_password!
       flash[:success] = "Votre mot de passe a été modifié avec succès."
       redirect_to root_path
@@ -578,7 +593,7 @@ class UsersController < ApplicationController
     end
   end
   
-  # Check that current user is target user (or root)
+  # Check that current user is target user or a root
   def current_user_is_target_user_or_root
     if current_user.id != @user.id && !current_user.root?
       render 'errors/access_refused'
@@ -641,6 +656,23 @@ class UsersController < ApplicationController
     User.where(skin: @user.id).each do |u|
       u.update_attribute(:skin, 0)
     end
+  end
+  
+  # Helper method to update the given user with the password fields, not allowing empty password
+  def update_with_password_params(user)
+    user.enforce_password(true)
+    result = user.update(params.require(:user).permit(:password, :password_confirmation))
+    user.enforce_password(false)
+    return result
+  end
+  
+  # Helper method when password is forgotten
+  def send_recup_password_email(user)
+    user.update(:key => SecureRandom.urlsafe_base64,
+                :recup_password_date_limit => DateTime.now)
+    UserMailer.forgot_password(user.id).deliver
+    flash[:info] = "Lien (développement uniquement) : localhost:3000/users/#{user.id}/recup_password?key=#{user.key}" if !Rails.env.production?
+    flash[:success] = "Vous allez recevoir un e-mail d'ici quelques minutes pour que vous puissiez changer de mot de passe. Vérifiez votre courrier indésirable si celui-ci semble ne pas arriver."
   end
   
   # Helper method to fill @allsec and @maxscore

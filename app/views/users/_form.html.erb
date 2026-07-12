@@ -15,7 +15,7 @@
 <% if modif && !@user.can_change_name && !current_user.root? %>
   <p>(Vous ne pouvez plus modifier votre nom car vous avez abusé de cette possibilité.)</p>
 <% elsif modif && !current_user.root? %>
-  <p>(Les changements de noms sont sujets à vérification, dans un souci d'uniformité entre utilisateurs. En cas d'abus, la possibilité de modifier votre nom vous sera retirée.)</p>
+  <p>(Les changements de noms sont sujets à vérification, dans un souci d'uniformité entre utilisateurs. En cas d'abus, la possibilité de modifier ceux-ci peut être retirée.)</p>
 <% end %>
 
 <!-- Voir nom entier? -->
@@ -83,8 +83,8 @@
 </div>
 <% end %>
 
-<% if !modif || @user == current_user %>
-  <%= render "password_inputs", f: f, show_placeholders: modif %>
+<% if !modif %>
+  <%= render "password_inputs", f: f %>
 <% end %>
 
 <% if !modif && !Rails.env.test? %>

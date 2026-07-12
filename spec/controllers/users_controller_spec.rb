@@ -34,6 +34,9 @@ describe UsersController, type: :controller, user: true do
     it { expect(response).to have_controller_put_path_behavior('unfollow', user1, :access_refused) }
     it { expect(response).to have_controller_put_static_path_behavior('set_follow_message', :access_refused) }
     it { expect(response).to have_controller_get_static_path_behavior('unset_follow_message', :must_be_connected) }
+    it { expect(response).to have_controller_get_static_path_behavior('edit_password', :must_be_connected) }
+    it { expect(response).to have_controller_patch_static_path_behavior('update_password', :access_refused, {:user => {:current_password => user1.password, :password => "Nouveau7", :password_confirmation => "Nouveau7"}}) }
+    it { expect(response).to have_controller_patch_static_path_behavior('own_password_forgotten', :access_refused) }
     
     context "and has lost his password" do
       before { user1.update(:key => SecureRandom.urlsafe_base64, :recup_password_date_limit => DateTime.now - 2.minutes) }
@@ -71,6 +74,9 @@ describe UsersController, type: :controller, user: true do
     it { expect(response).to have_controller_put_path_behavior('unfollow', user2, :ok) }
     it { expect(response).to have_controller_put_static_path_behavior('set_follow_message', :ok) }
     it { expect(response).to have_controller_get_static_path_behavior('unset_follow_message', :ok) }
+    it { expect(response).to have_controller_get_static_path_behavior('edit_password', :ok) }
+    it { expect(response).to have_controller_patch_static_path_behavior('update_password', :ok, {:user => {:current_password => user1.password, :password => "Nouveau7", :password_confirmation => "Nouveau7"}}) }
+    it { expect(response).to have_controller_patch_static_path_behavior('own_password_forgotten', :ok) }
     
     context "and has lost his password" do
       before { user1.update(:key => SecureRandom.urlsafe_base64, :recup_password_date_limit => DateTime.now - 2.minutes) }

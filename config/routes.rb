@@ -230,6 +230,9 @@ Rails.application.routes.draw do
   put '/set_follow_message', to: "users#set_follow_message"
   get '/unset_follow_message', to: "users#unset_follow_message" # Get because it should be doable via email link
   patch '/improve_password', to: 'users#improve_password'
+  get '/edit_password', to: 'users#edit_password'
+  patch '/update_password', to: 'users#update_password'
+  put '/own_password_forgotten', to: 'users#own_password_forgotten'
   
   # Paths relative to no user (yet)
   get '/signup', to: 'users#new'

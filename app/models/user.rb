@@ -170,10 +170,9 @@ class User < ActiveRecord::Base
   validates :email, presence: true, format: { with: VALID_EMAIL_REGEX }, uniqueness: { case_sensitive: false }
   validates :email_confirmation, presence: true, on: :create
   validates_confirmation_of :email, case_sensitive: false
-  validates :password, length: { minimum: 8, maximum: 128 }, on: :create
-  validates :password, length: { minimum: 8, maximum: 128 }, on: :update, allow_blank: true
+  validates :password, presence: true, if: :password_required?
+  validates :password, length: { minimum: 8, maximum: 128 }, allow_blank: true
   validates_with MyPasswordValidator
-  validates :password_confirmation, presence: true, on: :create
   validates :year, presence: true
   validates_with ColorValidator
   
@@ -408,6 +407,11 @@ class User < ActiveRecord::Base
     self.save
   end
   
+  # To forbid the user from entering an empty password in some specific forms
+  def enforce_password(value)
+    @enforce_password = value
+  end
+  
   # Normal characters allowed in user names
   def self.allowed_characters
     Set["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "É", "Ö", "à", "á", "â", "ã", "ä", "ç", "è", "é", "ê", "ë", "î", "ï", "ñ", "ò", "ó", "ô", "ö", "ù", "ü", "š"]
@@ -518,6 +522,11 @@ class User < ActiveRecord::Base
   end
   
   private
+  
+  # Used by password validator to allow updating user without its password
+  def password_required?
+    return @enforce_password
+  end
   
   # Gives the corrector prefix (if any) for the name
   def corrector_prefix

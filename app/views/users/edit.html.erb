@@ -1,7 +1,7 @@
 <% provide(:title, "Compte") %>
 
 <% if @user == current_user %>
-  <h1><%= title_1("Votre compte") %></h1>
+  <h1><%= title_1("Compte") %></h1>
 <% else %>
   <h1><%= title_user(@user, "Modifier") %></h1>
 <% end %>
@@ -12,6 +12,8 @@
 <% end %>
 
 <% if @user == current_user %>
+  <hr class="mt-0">
+  <p class="text-center"><%= link_to "Modifier votre mot de passe", edit_password_path %></p>
   <hr class="mt-0">
   <p>Si vous désirez modifier votre adresse e-mail ou supprimer votre compte, merci de nous contacter à l'adresse</p>
   <p class="text-center"><%= image_tag "contact.svg", :class => "svg-black-white", :style => "width:80%; max-width:250px;" %></p>
