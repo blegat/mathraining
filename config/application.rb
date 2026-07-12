@@ -71,7 +71,7 @@ module Mathraining
     
     config.time_zone = 'Brussels'
     
-    config.active_storage.variant_processor = :mini_magick # default is vips
+    config.active_storage.variant_processor = :disabled # Remove warning about missing image processing gem in logs
     
     # lograge is a gem for 'better' logs
     config.lograge.enabled = true
