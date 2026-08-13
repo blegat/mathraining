@@ -53,7 +53,7 @@ describe "Suspicion pages", suspicion: true do
       
       describe "and submits a new suspicion of AI generated solution" do
         before do
-          select "Utilisation d'une IA", from: "suspicion_cheating_type"
+          select "Utilisation d'une IA", from: "new_suspicion_cheating_type"
           click_button "new_suspicion_button"
         end
         specify do

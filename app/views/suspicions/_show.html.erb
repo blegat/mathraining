@@ -107,7 +107,7 @@
 
 <script>
 function showOrHideSource() {
-  var select = document.getElementById("suspicion_cheating_type");
+  var select = document.getElementById("new_suspicion_cheating_type");
   if (select == undefined) { return; }    
   var source_div = document.getElementById("source_div");
   if (source_div == undefined) { return; }
@@ -121,8 +121,8 @@ function showOrHideSource() {
 </script>
 
 <div class="mb-2">
-  <%= f.label :cheating_type, :class => "form-label" %>
-  <%= f.select(:cheating_type, [["Plagiat", :plagiarism], ["Utilisation d'une IA", :usage_of_ai]], {}, { :class => "form-select", :style => "max-width:170px;", :onchange => "showOrHideSource();" }) %>
+  <%= f.label :cheating_type, :class => "form-label", :for => "new_suspicion_cheating_type" %>
+  <%= f.select(:cheating_type, [["Plagiat", :plagiarism], ["Utilisation d'une IA", :usage_of_ai]], {}, { :id => "new_suspicion_cheating_type", :class => "form-select", :style => "max-width:170px;", :onchange => "showOrHideSource();" }) %>
 </div>
 
   <div class="mb-2" id="source_div">
