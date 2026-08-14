@@ -553,13 +553,13 @@ describe "User pages", user: true do
       
       describe "and follows him but it is too much" do
         before do
-          (1..30).each do |i|
+          (1..50).each do |i|
             u = FactoryBot.create(:user)
             zero_user.followed_users << u
           end
           click_link("Suivre")
         end
-        it { should have_error_message("Vous ne pouvez pas suivre plus de 30 utilisateurs.") }
+        it { should have_error_message("Vous ne pouvez pas suivre plus de 50 utilisateurs.") }
       end
     end
     

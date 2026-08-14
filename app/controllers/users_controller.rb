@@ -539,8 +539,8 @@ class UsersController < ApplicationController
   # Start following a user
   def follow
     unless current_user == @user || current_user.followed_users.exists?(@user.id) || @user.admin?
-      if current_user.followed_users.size >= 30
-        flash[:danger] = "Vous ne pouvez pas suivre plus de 30 utilisateurs."
+      if current_user.followed_users.size >= 50
+        flash[:danger] = "Vous ne pouvez pas suivre plus de 50 utilisateurs."
       else
         current_user.followed_users << @user
         flash[:success] = "Vous suivez maintenant #{ @user.name }."
