@@ -11,8 +11,8 @@ describe "problems/_show.html.erb", type: :view, problem: true do
   let(:bad_corrector) { FactoryBot.create(:corrector) }
   let(:good_corrector) { FactoryBot.create(:corrector) }
   let(:chapter) { FactoryBot.create(:chapter, online: true) }
-  let!(:problem) { FactoryBot.create(:problem, online: true, explanation: "Voici la solution") }
-  let!(:offline_virtualtest) { FactoryBot.create(:virtualtest, online: false) }
+  let!(:problem) { FactoryBot.create(:problem, status: :published, explanation: "Voici la solution") }
+  let!(:offline_virtualtest) { FactoryBot.create(:virtualtest, status: :waiting_publication) }
   let!(:user_submission) { FactoryBot.create(:submission, user: good_user, problem: problem, status: :correct) }
   let!(:user_sp) { FactoryBot.create(:solvedproblem, user: good_user, problem: problem, submission: user_submission) }
   let!(:corrector_submission) { FactoryBot.create(:submission, user: good_corrector, problem: problem, status: :correct) }
@@ -31,7 +31,7 @@ describe "problems/_show.html.erb", type: :view, problem: true do
     before { sign_in_view(admin) }
     
     context "if the problem is offline" do
-      before { problem.update_attribute(:online, false) }
+      before { problem.waiting_publication! }
       
       it "renders the page correctly" do
         render partial: "problems/show"

@@ -13,12 +13,12 @@
 #  markscheme       :text             default("-")
 #  nb_solves        :integer          default(0)
 #  number           :integer          default(1)
-#  online           :boolean          default(FALSE)
 #  origin           :string
 #  position         :integer          default(0)
 #  publication_date :date
 #  reviewed         :boolean          default(FALSE)
 #  statement        :text
+#  status           :integer          default("waiting_publication")
 #  section_id       :integer
 #  virtualtest_id   :integer          default(0)
 #
@@ -30,6 +30,10 @@
 include ApplicationHelper
 
 class Problem < ActiveRecord::Base
+
+  enum :status, {:waiting_publication => 0, # not shown yet to students
+                 :published           => 1, # can be solved by students
+                 :archived            => 2} # submissions are not allowed anymore
 
   # BELONGS_TO, HAS_MANY
 
@@ -64,7 +68,7 @@ class Problem < ActiveRecord::Base
   # Tell if the problem can be seen by the given user
   def can_be_seen_by(user, no_new_submission)
     return true if user.admin?
-    return false if !self.online?
+    return false if self.waiting_publication?
     return false if user.rating < 200
     return false if no_new_submission and self.submissions.where(:user => user).where.not(:status => :draft).count == 0
     if self.virtualtest_id == 0 # Not in a virtualtest: prerequisites should be completed
@@ -95,7 +99,7 @@ class Problem < ActiveRecord::Base
   # Update the nb_solves, first_solve_time and last_solve_time of all problems (done every wednesday at 3 am (see schedule.rb))
   # NB: They are more or less maintained correct, but not when a user is deleted for instance
   def self.update_all_stats
-    Problem.where(:online => true).each do |p|
+    Problem.where.not(:status => :waiting_publication).each do |p|
       p.update_stats
     end
   end

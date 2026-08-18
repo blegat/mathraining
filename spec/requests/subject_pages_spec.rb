@@ -15,7 +15,7 @@ describe "Subject pages", subject: true do
   let!(:section) { FactoryBot.create(:section) }
   let!(:chapter) { FactoryBot.create(:chapter, section: section, online: true) }
   let!(:question) { FactoryBot.create(:exercise, chapter: chapter, online: true, position: 1) }
-  let!(:problem) { FactoryBot.create(:problem, section: section, online: true) }
+  let!(:problem) { FactoryBot.create(:problem, section: section, status: :published) }
   
   let(:sub) { FactoryBot.create(:subject) }
   
@@ -517,7 +517,7 @@ describe "Subject pages", subject: true do
     end
     
     describe "creates a subject in relation with a problem" do
-      let!(:problem2) { FactoryBot.create(:problem, section: section, online: true) }
+      let!(:problem2) { FactoryBot.create(:problem, section: section, status: :published) }
       before do
         visit new_subject_path
         wait_for_js_imports
@@ -602,7 +602,7 @@ describe "Subject pages", subject: true do
     end
     
     describe "creates a subject when problems of a section filter is used" do
-    let!(:problem2) { FactoryBot.create(:problem, section: section, online: true) }
+    let!(:problem2) { FactoryBot.create(:problem, section: section, status: :published) }
       before do
         visit new_subject_path(:q => "pro-" + section.id.to_s)
         wait_for_js_imports
@@ -654,7 +654,7 @@ describe "Subject pages", subject: true do
     let!(:other_section) { FactoryBot.create(:section) }
     let!(:other_chapter) { FactoryBot.create(:chapter, section: section, online: true) }
     let!(:other_question) { FactoryBot.create(:question, chapter: other_chapter, online: true) }
-    let!(:other_problem) { FactoryBot.create(:problem, section: section, online: true) }
+    let!(:other_problem) { FactoryBot.create(:problem, section: section, status: :published) }
     
     describe "tries to update a subject with empty title" do
       before do

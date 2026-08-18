@@ -8,7 +8,7 @@ describe "submissions/new.html.erb", type: :view, submission: true do
   let(:bad_user) { FactoryBot.create(:advanced_user) }
   let(:good_user) { FactoryBot.create(:advanced_user) }
   let(:chapter) { FactoryBot.create(:chapter, online: true) }
-  let!(:problem) { FactoryBot.create(:problem, online: true, explanation: "Voici la solution") }
+  let!(:problem) { FactoryBot.create(:problem, status: :published, explanation: "Voici la solution") }
   let!(:user_submission) { FactoryBot.create(:submission, user: good_user, problem: problem, status: :correct) }
   let!(:user_sp) { FactoryBot.create(:solvedproblem, user: good_user, problem: problem, submission: user_submission) }
   let!(:new_submission) { Submission.new }

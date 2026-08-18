@@ -11,12 +11,12 @@
 #  markscheme       :text             default("-")
 #  nb_solves        :integer          default(0)
 #  number           :integer          default(1)
-#  online           :boolean          default(FALSE)
 #  origin           :string
 #  position         :integer          default(0)
 #  publication_date :date
 #  reviewed         :boolean          default(FALSE)
 #  statement        :text
+#  status           :integer          default("waiting_publication")
 #  section_id       :integer
 #  virtualtest_id   :integer          default(0)
 #
@@ -101,7 +101,7 @@ describe Problem, problem: true do
       let!(:submission_wrong_user5) { FactoryBot.create(:submission, problem: problem, user: user5, status: :wrong) } 
        
       before do
-        problem.update(:online => true)
+        problem.published!
         problem.chapters << chapter
         user2.chapters << chapter
         user3.chapters << chapter
@@ -130,7 +130,7 @@ describe Problem, problem: true do
     
     describe "for a normal offline problem" do    
       before do
-        problem.update(:online => false)
+        problem.waiting_publication!
         problem.chapters << chapter
         user3.chapters << chapter
       end
@@ -149,11 +149,11 @@ describe Problem, problem: true do
     end
     
     describe "for a problem in a virtualtest" do
-      let!(:virtualtest) { FactoryBot.create(:virtualtest, online: true) }
+      let!(:virtualtest) { FactoryBot.create(:virtualtest, status: :published) }
       let!(:submission_wrong_user5) { FactoryBot.create(:submission, problem: problem, user: user5, status: :wrong) }
       
       before do
-        problem.update(:online => true, :virtualtest => virtualtest)
+        problem.update(:status => :published, :virtualtest => virtualtest)
         Takentest.create(user: user3, virtualtest: virtualtest, status: :in_progress, taken_time: DateTime.now - 2.minutes)
         Takentest.create(user: user4, virtualtest: virtualtest, status: :finished, taken_time: DateTime.now - 2.days)
         Takentest.create(user: user5, virtualtest: virtualtest, status: :finished, taken_time: DateTime.now - 2.days)

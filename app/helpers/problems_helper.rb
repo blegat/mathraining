@@ -17,7 +17,7 @@ module ProblemsHelper
                                 LEFT JOIN chapters_problems
                                 ON chapters_problems.problem_id = problems.id
                                 WHERE #{section_condition} 
-                                  (problems.online = false
+                                  (problems.status = 0
                                    OR (problems.virtualtest_id > 0
                                        AND problems.virtualtest_id NOT IN #{virtualtests_done_request(user)})
                                    OR (problems.virtualtest_id = 0

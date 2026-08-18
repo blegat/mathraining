@@ -8,7 +8,7 @@ describe "Star proposal pages", starproposal: true do
   let(:root) { FactoryBot.create(:root) }
   let(:corrector) { FactoryBot.create(:corrector) }
   
-  let!(:problem) { FactoryBot.create(:problem, online: true, level: 1) }
+  let!(:problem) { FactoryBot.create(:problem, status: :published, level: 1) }
   let!(:correct_submission) { FactoryBot.create(:submission, problem: problem, status: :correct) }
   let!(:correct_submission2) { FactoryBot.create(:submission, problem: problem, status: :correct) }
   let!(:wrong_submission) { FactoryBot.create(:submission, problem: problem, status: :wrong) }

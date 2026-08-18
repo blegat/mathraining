@@ -1,5 +1,5 @@
 <!-- On vérifie que ce problème peut bien être vu -->
-<% if problem.online %>
+<% if !problem.waiting_publication? %>
   <% unless problem.can_be_seen_by(current_user, @no_new_submission) %>
     <table class="table table-bordered reference greyy">
     <tr><td class="title">Ce sujet fait référence à un problème auquel vous n'avez pas accès.</td></tr>

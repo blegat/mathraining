@@ -473,7 +473,7 @@ class User < ActiveRecord::Base
       unless s.fondation
         problem_scores_by_section[s.id] = Array.new
         question_scores_by_section[s.id] = Array.new
-        real_max_score = 15 * s.problems.where(:online => true).sum(:level) + 3 * Question.where(:chapter_id => s.chapters, :online => true).sum(:level)
+        real_max_score = 15 * s.problems.where(:status => :published).sum(:level) + 3 * Question.where(:chapter_id => s.chapters, :online => true).sum(:level)
       end
       if s.max_score != real_max_score
         all_warnings.push("Section " + s.id.to_s + " should have max score " + real_max_score.to_s + " instead of " + s.max_score.to_s + "!")

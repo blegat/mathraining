@@ -10,10 +10,10 @@ describe "Virtualtest pages", virtualtest: true do
   let(:user_with_rating_200) { FactoryBot.create(:user, rating: 200) }
   let!(:section) { FactoryBot.create(:section) }
   let!(:chapter) { FactoryBot.create(:chapter, online: true, name: "Mon chapitre prérequis") }
-  let!(:virtualtest) { FactoryBot.create(:virtualtest, online: true, number: 42) }
-  let!(:problem) { FactoryBot.create(:problem, section: section, online: true, level: 1, number: 1123, virtualtest: virtualtest, position: 1, statement: "Statement1") }
-  let!(:problem_with_prerequisite) { FactoryBot.create(:problem, section: section, online: true, level: 2, number: 1224, virtualtest: virtualtest, position: 2, statement: "Statement2") }
-  let!(:offline_problem) { FactoryBot.create(:problem, section: section, online: false, level: 3, number: 1345, position: 3, statement: "Statement3") }
+  let!(:virtualtest) { FactoryBot.create(:virtualtest, status: :published, number: 42) }
+  let!(:problem) { FactoryBot.create(:problem, section: section, status: :published, level: 1, number: 1123, virtualtest: virtualtest, position: 1, statement: "Statement1") }
+  let!(:problem_with_prerequisite) { FactoryBot.create(:problem, section: section, status: :published, level: 2, number: 1224, virtualtest: virtualtest, position: 2, statement: "Statement2") }
+  let!(:offline_problem) { FactoryBot.create(:problem, section: section, status: :waiting_publication, level: 3, number: 1345, position: 3, statement: "Statement3") }
   
   let!(:newsolution) { "Voici ma solution à votre problème" }
   let!(:newsolution2) { "Finalement voici une autre solution" }
@@ -81,7 +81,7 @@ describe "Virtualtest pages", virtualtest: true do
       
       describe "and tries to start the test while already in another test" do
         before do
-          other_virtualtest = FactoryBot.create(:virtualtest, online: true, number: 43, duration: 60)
+          other_virtualtest = FactoryBot.create(:virtualtest, status: :published, number: 43, duration: 60)
           Takentest.create(virtualtest: other_virtualtest, user: user_with_rating_200, taken_time: DateTime.now - 10.minutes, status: :in_progress)
           click_link "Commencer ce test"
         end
@@ -301,7 +301,7 @@ describe "Virtualtest pages", virtualtest: true do
     
     describe "visits test modification page" do
       before do
-        virtualtest.update_attribute(:online, false)
+        virtualtest.waiting_publication!
         visit edit_virtualtest_path(virtualtest)
       end
       it { should have_selector("h1", text: "Modifier un test virtuel") }
@@ -334,7 +334,7 @@ describe "Virtualtest pages", virtualtest: true do
     
     describe "visits an offline test with online problems" do
       before do
-        virtualtest.update_attribute(:online, false)
+        virtualtest.waiting_publication!
         visit virtualtests_path
       end
       specify do
@@ -355,7 +355,7 @@ describe "Virtualtest pages", virtualtest: true do
         end
         specify do
           expect(page).to have_success_message("Test virtuel mis en ligne.")
-          expect(virtualtest.online).to eq(true)
+          expect(virtualtest.published?).to eq(true)
         end
       end
       
@@ -367,7 +367,7 @@ describe "Virtualtest pages", virtualtest: true do
         end
         specify do
           expect(page).to have_no_content("Test virtuel mis en ligne.")
-          expect(virtualtest.online).to eq(false)
+          expect(virtualtest.waiting_publication?).to eq(true)
           expect(page).to have_link("Mettre en ligne", class: "disabled")
           expect(page).to have_content("(Problèmes doivent être en ligne)")
         end

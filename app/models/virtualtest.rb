@@ -7,9 +7,13 @@
 #  id       :integer          not null, primary key
 #  duration :integer
 #  number   :integer          default(1)
-#  online   :boolean
+#  status   :integer          default("waiting_publication")
 #
 class Virtualtest < ActiveRecord::Base
+
+  enum :status, {:waiting_publication => 0, # not shown yet to students
+                 :published           => 1, # can be started by students
+                 :archived            => 2} # cannot be started anymore
 
   # BELONGS_TO, HAS_MANY
 

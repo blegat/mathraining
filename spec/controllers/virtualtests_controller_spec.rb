@@ -6,11 +6,11 @@ describe VirtualtestsController, :type => :controller, virtualtest: true do
   let(:admin) { FactoryBot.create(:admin) }
   let(:user) { FactoryBot.create(:advanced_user) }
   
-  let!(:virtualtest) { FactoryBot.create(:virtualtest, online: true) }
-  let!(:problem) { FactoryBot.create(:problem, online: true,  virtualtest: virtualtest) }
+  let!(:virtualtest) { FactoryBot.create(:virtualtest, status: :published) }
+  let!(:problem) { FactoryBot.create(:problem, status: :published,  virtualtest: virtualtest) }
   let!(:chapter) { FactoryBot.create(:chapter, online: true) }
-  let!(:offline_virtualtest) { FactoryBot.create(:virtualtest, online: false) }
-  let!(:problem2) { FactoryBot.create(:problem, online: true, virtualtest: offline_virtualtest) }
+  let!(:offline_virtualtest) { FactoryBot.create(:virtualtest, status: :waiting_publication) }
+  let!(:problem2) { FactoryBot.create(:problem, status: :published, virtualtest: offline_virtualtest) }
   
   before { problem.chapters << chapter }
   

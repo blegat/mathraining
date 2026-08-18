@@ -15,7 +15,7 @@
 
 <% else %>
 
-<% problems = accessible_problems_from_section(current_user, @section, ["id", "number", "level", "online", "statement", "origin", "virtualtest_id", "nb_solves", "first_solve_time", "last_solve_time", "reviewed"]) %>
+<% problems = accessible_problems_from_section(current_user, @section, ["id", "number", "level", "status", "statement", "origin", "virtualtest_id", "nb_solves", "first_solve_time", "last_solve_time", "reviewed"]) %>
 <% problems_by_level = problems.group_by{|p| p.level} %>
 <% favorite_problems = current_user.favorite_problems.pluck(:id).to_set %>
 
@@ -44,7 +44,7 @@
       <% num_correct_subs = 0 %>
       
       <% classe = "" %>
-      <% if !p.online? %>
+      <% if p.waiting_publication? %>
         <!-- Si pas en ligne : orange -->
         <% classe = "orangey" %>
       <% elsif current_user.admin? %>
@@ -82,7 +82,7 @@
       <% if p.virtualtest_id > 0 %>
         - Test #<%= p.virtualtest.number %>
       <% end %>
-      <%= "(en construction)" if !p.online %>
+      <%= "(en construction)" if p.waiting_publication? %>
       
       <% if current_user.admin? || (current_user.corrector? && classe == "greeny") %>
         <% is_favorite = favorite_problems.include?(p.id) %>

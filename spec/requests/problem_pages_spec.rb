@@ -11,12 +11,12 @@ describe "Problem pages", problem: true do
   let(:user_with_rating_200) { FactoryBot.create(:user, rating: 200) }
   let!(:section) { FactoryBot.create(:section) }
   let!(:chapter) { FactoryBot.create(:chapter, online: true, name: "Mon chapitre prérequis") }
-  let!(:online_problem) { FactoryBot.create(:problem, section: section, online: true, level: 1, number: 1123, statement: "Statement1") }
-  let!(:online_problem_with_prerequisite) { FactoryBot.create(:problem, section: section, online: true, level: 1, number: 1124, statement: "Statement2") }
-  let!(:offline_problem) { FactoryBot.create(:problem, section: section, online: false, level: 1, number: 1134, statement: "Statement3") }
-  let!(:online_virtualtest) { FactoryBot.create(:virtualtest, online: true, number: 42, duration: 10) }
-  let!(:problem_in_virtualtest) { FactoryBot.create(:problem, section: section, online: true, level: 2, number: 1256, statement: "Statement4", position: 1, virtualtest: online_virtualtest) }
-  let!(:offline_virtualtest) { FactoryBot.create(:virtualtest, online: false, number: 23, duration: 15) }
+  let!(:online_problem) { FactoryBot.create(:problem, section: section, status: :published, level: 1, number: 1123, statement: "Statement1") }
+  let!(:online_problem_with_prerequisite) { FactoryBot.create(:problem, section: section, status: :published, level: 1, number: 1124, statement: "Statement2") }
+  let!(:offline_problem) { FactoryBot.create(:problem, section: section, status: :waiting_publication, level: 1, number: 1134, statement: "Statement3") }
+  let!(:online_virtualtest) { FactoryBot.create(:virtualtest, status: :published, number: 42, duration: 10) }
+  let!(:problem_in_virtualtest) { FactoryBot.create(:problem, section: section, status: :published, level: 2, number: 1256, statement: "Statement4", position: 1, virtualtest: online_virtualtest) }
+  let!(:offline_virtualtest) { FactoryBot.create(:virtualtest, status: :waiting_publication, number: 23, duration: 15) }
   
   let(:newstatement) { "Prière de résoudre ce problème de combinatoire." }
   let(:neworigin) { "Origine du problème" }
@@ -253,7 +253,7 @@ describe "Problem pages", problem: true do
             click_link "Mettre en ligne"
             offline_problem.reload
           end
-          specify { expect(offline_problem.online).to eq(true) }
+          specify { expect(offline_problem.published?).to eq(true) }
         end
       end
     end
@@ -327,7 +327,7 @@ describe "Problem pages", problem: true do
           expect(Problem.order(:id).last.level).to eq(newlevel)
           expect(Problem.order(:id).last.number).to be >= 1000*section.id + 100*newlevel
           expect(Problem.order(:id).last.number).to be < 1000*section.id + 100*(newlevel+1)
-          expect(Problem.order(:id).last.online).to eq(false)
+          expect(Problem.order(:id).last.waiting_publication?).to eq(true)
           expect(page).to have_selector("div", text: newstatement)
           expect(page).to have_link("Mettre en ligne", class: "disabled") # Because no prerequisite
         end

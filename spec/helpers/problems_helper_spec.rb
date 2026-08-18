@@ -15,14 +15,14 @@ describe ProblemsHelper, type: :helper, problem: true do
   let(:section) { FactoryBot.create(:section) }
   let!(:chapter1) { FactoryBot.create(:chapter, section: section, online: true) }
   let!(:chapter2) { FactoryBot.create(:chapter, section: section, online: true) }
-  let!(:problem_no_prerequisite) { FactoryBot.create(:problem, section: section, online: true, level: 1, position: 1) } # Should not happen in production but we still want to support such problems
-  let!(:problem1) { FactoryBot.create(:problem, section: section, online: true, level: 1, position: 2) }
-  let!(:problem2) { FactoryBot.create(:problem, section: section, online: true, level: 1, position: 3) }
-  let!(:problem12) { FactoryBot.create(:problem, section: section, online: true, level: 2, position: 1) }
-  let!(:problem_offline) { FactoryBot.create(:problem, section: section, online: false, level: 2, position: 2) }
-  let!(:problem1_other_section) { FactoryBot.create(:problem, online: true, level: 1, position: 1) }
-  let!(:virtualtest) { FactoryBot.create(:virtualtest, online: true) }
-  let!(:problem1_virtualtest) { FactoryBot.create(:problem, section: section, virtualtest: virtualtest, online: true, level: 3, position: 1) }
+  let!(:problem_no_prerequisite) { FactoryBot.create(:problem, section: section, status: :published, level: 1, position: 1) } # Should not happen in production but we still want to support such problems
+  let!(:problem1) { FactoryBot.create(:problem, section: section, status: :published, level: 1, position: 2) }
+  let!(:problem2) { FactoryBot.create(:problem, section: section, status: :published, level: 1, position: 3) }
+  let!(:problem12) { FactoryBot.create(:problem, section: section, status: :published, level: 2, position: 1) }
+  let!(:problem_offline) { FactoryBot.create(:problem, section: section, status: :waiting_publication, level: 2, position: 2) }
+  let!(:problem1_other_section) { FactoryBot.create(:problem, status: :published, level: 1, position: 1) }
+  let!(:virtualtest) { FactoryBot.create(:virtualtest, status: :published) }
+  let!(:problem1_virtualtest) { FactoryBot.create(:problem, section: section, virtualtest: virtualtest, status: :published, level: 3, position: 1) }
   
   before do
     user1.chapters << chapter1

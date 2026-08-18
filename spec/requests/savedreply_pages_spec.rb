@@ -8,7 +8,7 @@ describe "Savedreply pages", savedreply: true do
   let(:admin) { FactoryBot.create(:admin) }
   let(:root) { FactoryBot.create(:root) }
   let!(:section) { FactoryBot.create(:section, short_abbreviation: "A. B.") }
-  let!(:problem) { FactoryBot.create(:problem, section: section, online: true) }
+  let!(:problem) { FactoryBot.create(:problem, section: section, status: :published) }
   let!(:submission) { FactoryBot.create(:submission, problem: problem, status: :waiting) }
   let!(:savedreply_generic) { FactoryBot.create(:savedreply, content: "Es-tu sûr[e] de toi ?") }
   let!(:savedreply_section) { FactoryBot.create(:savedreply, section: problem.section) }

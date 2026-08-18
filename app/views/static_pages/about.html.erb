@@ -15,4 +15,4 @@
 
 <p>Ce n'est toutefois qu'en décembre 2014 que le site fut rendu public avec son premier contenu : 43 chapitres, 232 exercices et 125 problèmes.</p>
 
-<p>À ce jour, le site est composé de <%= Chapter.where(:online => true).count %> chapitres, <%= Question.where(:online => true).count %> exercices, et <%= Problem.where(:online => true).count %> problèmes. Il accueille également de nombreux visiteurs n'ayant pas pour but de participer aux olympiades internationales, mais plutôt poussés par la passion des mathématiques et le désir d'apprendre à se confronter à des problèmes de haut niveau.</p>
+<p>À ce jour, le site est composé de <%= Chapter.where(:online => true).count %> chapitres, <%= Question.where(:online => true).count %> exercices, et <%= Problem.where.not(:status => :waiting_publication).count %> problèmes. Il accueille également de nombreux visiteurs n'ayant pas pour but de participer aux olympiades internationales, mais plutôt poussés par la passion des mathématiques et le désir d'apprendre à se confronter à des problèmes de haut niveau.</p>
