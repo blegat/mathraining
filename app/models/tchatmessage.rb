@@ -6,9 +6,15 @@
 #
 #  id            :integer          not null, primary key
 #  content       :text
-#  user_id       :integer
-#  discussion_id :integer
 #  created_at    :datetime
+#  discussion_id :integer
+#  user_id       :integer
+#
+# Indexes
+#
+#  index_tchatmessages_on_discussion_id                 (discussion_id)
+#  index_tchatmessages_on_discussion_id_and_created_at  (discussion_id,created_at) UNIQUE
+#  index_tchatmessages_on_user_id                       (user_id)
 #
 class Tchatmessage < ActiveRecord::Base
 

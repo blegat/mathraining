@@ -3,9 +3,15 @@
 # Table name: puzzleattempts
 #
 #  id        :bigint           not null, primary key
-#  user_id   :bigint
-#  puzzle_id :bigint
 #  code      :string
+#  puzzle_id :bigint
+#  user_id   :bigint
+#
+# Indexes
+#
+#  index_puzzleattempts_on_puzzle_id              (puzzle_id)
+#  index_puzzleattempts_on_user_id                (user_id)
+#  index_puzzleattempts_on_user_id_and_puzzle_id  (user_id,puzzle_id) UNIQUE
 #
 require "spec_helper"
 

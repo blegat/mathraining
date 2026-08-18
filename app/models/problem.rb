@@ -5,20 +5,25 @@
 # Table name: problems
 #
 #  id               :integer          not null, primary key
-#  statement        :text
-#  online           :boolean          default(FALSE)
-#  level            :integer
 #  explanation      :text             default("-")
-#  section_id       :integer
-#  number           :integer          default(1)
-#  virtualtest_id   :integer          default(0)
-#  position         :integer          default(0)
-#  origin           :string
-#  markscheme       :text             default("-")
-#  nb_solves        :integer          default(0)
 #  first_solve_time :datetime
 #  last_solve_time  :datetime
+#  level            :integer
+#  markscheme       :text             default("-")
+#  nb_solves        :integer          default(0)
+#  number           :integer          default(1)
+#  online           :boolean          default(FALSE)
+#  origin           :string
+#  position         :integer          default(0)
 #  reviewed         :boolean          default(FALSE)
+#  statement        :text
+#  section_id       :integer
+#  virtualtest_id   :integer          default(0)
+#
+# Indexes
+#
+#  index_problems_on_number      (number) UNIQUE
+#  index_problems_on_section_id  (section_id)
 #
 include ApplicationHelper
 

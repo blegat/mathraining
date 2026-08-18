@@ -6,6 +6,16 @@
 #  publication_time :datetime
 #  online           :boolean          default(FALSE)
 #
+# == Schema Information
+#
+# Table name: privacypolicies
+#
+#  id               :integer          not null, primary key
+#  content          :text
+#  description      :text
+#  online           :boolean          default(FALSE)
+#  publication_time :datetime
+#
 require "spec_helper"
 
 describe Privacypolicy, privacypolicy: true do

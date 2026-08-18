@@ -5,10 +5,10 @@
 # Table name: globalstatistics
 #
 #  id                 :bigint           not null, primary key
+#  nb_points          :integer          default(0)
 #  nb_ranked_users    :integer          default(0)
 #  nb_solvedproblems  :integer          default(0)
 #  nb_solvedquestions :integer          default(0)
-#  nb_points          :integer          default(0)
 #
 class Globalstatistic < ActiveRecord::Base
 

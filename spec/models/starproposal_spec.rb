@@ -3,12 +3,19 @@
 # Table name: starproposals
 #
 #  id            :bigint           not null, primary key
-#  submission_id :bigint
-#  user_id       :bigint
-#  reason        :string
 #  answer        :string
+#  reason        :string
 #  status        :integer          default("waiting_treatment")
 #  created_at    :datetime         not null
+#  submission_id :bigint
+#  user_id       :bigint
+#
+# Indexes
+#
+#  index_starproposals_on_created_at     (created_at)
+#  index_starproposals_on_status         (status)
+#  index_starproposals_on_submission_id  (submission_id)
+#  index_starproposals_on_user_id        (user_id)
 #
 require "spec_helper"
 

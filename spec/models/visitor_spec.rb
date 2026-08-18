@@ -4,8 +4,12 @@
 #
 #  id        :integer          not null, primary key
 #  date      :date
-#  nb_users  :integer
 #  nb_admins :integer
+#  nb_users  :integer
+#
+# Indexes
+#
+#  index_visitors_on_date  (date) UNIQUE
 #
 require "spec_helper"
 

@@ -5,10 +5,15 @@
 # Table name: corrections
 #
 #  id            :integer          not null, primary key
-#  user_id       :integer
-#  submission_id :integer
 #  content       :text
 #  created_at    :datetime         not null
+#  submission_id :integer
+#  user_id       :integer
+#
+# Indexes
+#
+#  index_corrections_on_submission_id  (submission_id)
+#  index_corrections_on_user_id        (user_id)
 #
 class Correction < ActiveRecord::Base
 

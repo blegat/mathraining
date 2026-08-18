@@ -4,10 +4,15 @@
 #
 #  id         :integer          not null, primary key
 #  content    :text
+#  erased     :boolean          default(FALSE)
+#  created_at :datetime         not null
 #  subject_id :integer
 #  user_id    :integer
-#  created_at :datetime         not null
-#  erased     :boolean          default(FALSE)
+#
+# Indexes
+#
+#  index_messages_on_subject_id_and_created_at  (subject_id,created_at)
+#  index_messages_on_user_id                    (user_id)
 #
 require "spec_helper"
 

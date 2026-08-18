@@ -3,11 +3,15 @@
 # Table name: theories
 #
 #  id         :integer          not null, primary key
-#  title      :string
 #  content    :text
-#  chapter_id :integer
-#  position   :integer
 #  online     :boolean          default(FALSE)
+#  position   :integer
+#  title      :string
+#  chapter_id :integer
+#
+# Indexes
+#
+#  index_theories_on_chapter_id  (chapter_id)
 #
 include ApplicationHelper
 

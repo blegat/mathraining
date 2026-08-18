@@ -3,11 +3,17 @@
 # Table name: unsolvedquestions
 #
 #  id              :bigint           not null, primary key
-#  user_id         :bigint
-#  question_id     :bigint
 #  guess           :float
-#  nb_guess        :integer
 #  last_guess_time :datetime
+#  nb_guess        :integer
+#  question_id     :bigint
+#  user_id         :bigint
+#
+# Indexes
+#
+#  index_unsolvedquestions_on_question_id              (question_id)
+#  index_unsolvedquestions_on_user_id                  (user_id)
+#  index_unsolvedquestions_on_user_id_and_question_id  (user_id,question_id) UNIQUE
 #
 require "spec_helper"
 

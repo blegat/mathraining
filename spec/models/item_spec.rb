@@ -5,8 +5,12 @@
 #  id          :integer          not null, primary key
 #  ans         :string
 #  ok          :boolean          default(FALSE)
-#  question_id :integer
 #  position    :integer
+#  question_id :integer
+#
+# Indexes
+#
+#  index_items_on_question_id  (question_id)
 #
 require "spec_helper"
 

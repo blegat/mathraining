@@ -4,8 +4,12 @@
 #
 #  id      :bigint           not null, primary key
 #  key     :string
-#  value   :boolean
 #  message :text
+#  value   :boolean
+#
+# Indexes
+#
+#  index_globalvariables_on_key  (key) UNIQUE
 #
 require "spec_helper"
 

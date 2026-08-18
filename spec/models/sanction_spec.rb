@@ -3,11 +3,15 @@
 # Table name: sanctions
 #
 #  id            :bigint           not null, primary key
-#  user_id       :bigint
-#  sanction_type :integer
-#  start_time    :datetime
 #  duration      :integer
 #  reason        :text
+#  sanction_type :integer
+#  start_time    :datetime
+#  user_id       :bigint
+#
+# Indexes
+#
+#  index_sanctions_on_user_id  (user_id)
 #
 require "spec_helper"
 

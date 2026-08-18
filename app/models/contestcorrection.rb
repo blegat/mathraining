@@ -5,8 +5,12 @@
 # Table name: contestcorrections
 #
 #  id                 :integer          not null, primary key
-#  contestsolution_id :integer
 #  content            :text
+#  contestsolution_id :integer
+#
+# Indexes
+#
+#  index_contestcorrections_on_contestsolution_id  (contestsolution_id) UNIQUE
 #
 include ApplicationHelper
 

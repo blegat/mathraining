@@ -3,9 +3,15 @@
 # Table name: links
 #
 #  id            :integer          not null, primary key
+#  nonread       :integer
 #  discussion_id :integer
 #  user_id       :integer
-#  nonread       :integer
+#
+# Indexes
+#
+#  index_links_on_discussion_id              (discussion_id)
+#  index_links_on_user_id                    (user_id)
+#  index_links_on_user_id_and_discussion_id  (user_id,discussion_id) UNIQUE
 #
 require "spec_helper"
 

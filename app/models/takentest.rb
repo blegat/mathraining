@@ -5,10 +5,16 @@
 # Table name: takentests
 #
 #  id             :integer          not null, primary key
+#  status         :integer
+#  taken_time     :datetime
 #  user_id        :integer
 #  virtualtest_id :integer
-#  taken_time     :datetime
-#  status         :integer
+#
+# Indexes
+#
+#  index_takentests_on_user_id                     (user_id)
+#  index_takentests_on_user_id_and_virtualtest_id  (user_id,virtualtest_id) UNIQUE
+#  index_takentests_on_virtualtest_id              (virtualtest_id)
 #
 class Takentest < ActiveRecord::Base
 

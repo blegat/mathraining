@@ -5,9 +5,15 @@
 # Table name: pointspersections
 #
 #  id         :integer          not null, primary key
-#  user_id    :integer
-#  section_id :integer
 #  points     :integer
+#  section_id :integer
+#  user_id    :integer
+#
+# Indexes
+#
+#  index_pointspersections_on_section_id              (section_id)
+#  index_pointspersections_on_user_id                 (user_id)
+#  index_pointspersections_on_user_id_and_section_id  (user_id,section_id) UNIQUE
 #
 class Pointspersection < ActiveRecord::Base
 

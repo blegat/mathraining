@@ -7,8 +7,8 @@
 #  id               :integer          not null, primary key
 #  content          :text
 #  description      :text
-#  publication_time :datetime
 #  online           :boolean          default(FALSE)
+#  publication_time :datetime
 #
 class Privacypolicy < ActiveRecord::Base
 

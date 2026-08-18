@@ -3,19 +3,28 @@
 # Table name: subjects
 #
 #  id                   :integer          not null, primary key
-#  title                :string
-#  chapter_id           :integer
-#  last_comment_time    :datetime
 #  for_correctors       :boolean          default(FALSE)
-#  important            :boolean          default(FALSE)
-#  section_id           :integer
 #  for_wepion           :boolean          default(FALSE)
-#  category_id          :integer
-#  question_id          :integer
-#  contest_id           :integer
-#  problem_id           :integer
-#  last_comment_user_id :integer
+#  important            :boolean          default(FALSE)
+#  last_comment_time    :datetime
 #  subject_type         :integer          default("normal")
+#  title                :string
+#  category_id          :integer
+#  chapter_id           :integer
+#  contest_id           :integer
+#  last_comment_user_id :integer
+#  problem_id           :integer
+#  question_id          :integer
+#  section_id           :integer
+#
+# Indexes
+#
+#  index_subjects_on_chapter_id                       (chapter_id)
+#  index_subjects_on_contest_id                       (contest_id) UNIQUE
+#  index_subjects_on_important_and_last_comment_time  (important,last_comment_time)
+#  index_subjects_on_last_comment_time                (last_comment_time)
+#  index_subjects_on_problem_id                       (problem_id) UNIQUE
+#  index_subjects_on_question_id                      (question_id) UNIQUE
 #
 require "spec_helper"
 

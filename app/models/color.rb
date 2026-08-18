@@ -5,11 +5,11 @@
 # Table name: colors
 #
 #  id           :integer          not null, primary key
-#  pt           :integer
-#  name         :string
 #  color        :string
-#  femininename :string
 #  dark_color   :string
+#  femininename :string
+#  name         :string
+#  pt           :integer
 #
 class Color < ActiveRecord::Base
 

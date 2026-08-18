@@ -5,11 +5,20 @@
 # Table name: solvedproblems
 #
 #  id              :integer          not null, primary key
-#  problem_id      :integer
-#  user_id         :integer
 #  correction_time :datetime
-#  submission_id   :integer
 #  resolution_time :datetime
+#  problem_id      :integer
+#  submission_id   :integer
+#  user_id         :integer
+#
+# Indexes
+#
+#  index_solvedproblems_on_problem_id                   (problem_id)
+#  index_solvedproblems_on_resolution_time              (resolution_time)
+#  index_solvedproblems_on_submission_id                (submission_id)
+#  index_solvedproblems_on_user_id                      (user_id)
+#  index_solvedproblems_on_user_id_and_problem_id       (user_id,problem_id) UNIQUE
+#  index_solvedproblems_on_user_id_and_resolution_time  (user_id,resolution_time)
 #
 class Solvedproblem < ActiveRecord::Base
 

@@ -3,14 +3,18 @@
 # Table name: contestproblems
 #
 #  id              :integer          not null, primary key
-#  contest_id      :integer
-#  number          :integer
-#  statement       :text
-#  origin          :string
-#  start_time      :datetime
 #  end_time        :datetime
-#  status          :integer          default("in_construction")
+#  number          :integer
+#  origin          :string
 #  reminder_status :integer          default("no_reminder_sent")
+#  start_time      :datetime
+#  statement       :text
+#  status          :integer          default("in_construction")
+#  contest_id      :integer
+#
+# Indexes
+#
+#  index_contestproblems_on_contest_id  (contest_id)
 #
 require "spec_helper"
 

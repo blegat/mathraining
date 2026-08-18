@@ -7,6 +7,10 @@
 #  id           :integer          not null, primary key
 #  takentest_id :integer
 #
+# Indexes
+#
+#  index_takentestchecks_on_takentest_id  (takentest_id) UNIQUE
+#
 class Takentestcheck < ActiveRecord::Base
 
   # BELONGS_TO, HAS_MANY

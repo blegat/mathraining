@@ -5,8 +5,12 @@
 # Table name: pictures
 #
 #  id         :integer          not null, primary key
-#  user_id    :integer
 #  access_key :string
+#  user_id    :integer
+#
+# Indexes
+#
+#  index_pictures_on_user_id  (user_id)
 #
 class Picture < ActiveRecord::Base
 

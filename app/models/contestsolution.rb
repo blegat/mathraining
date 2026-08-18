@@ -5,14 +5,20 @@
 # Table name: contestsolutions
 #
 #  id                :integer          not null, primary key
+#  content           :text
+#  corrected         :boolean          default(FALSE)
+#  official          :boolean          default(FALSE)
+#  reservation       :integer          default(0)
+#  score             :integer          default(-1)
+#  star              :boolean          default(FALSE)
 #  contestproblem_id :integer
 #  user_id           :integer
-#  content           :text
-#  official          :boolean          default(FALSE)
-#  star              :boolean          default(FALSE)
-#  reservation       :integer          default(0)
-#  corrected         :boolean          default(FALSE)
-#  score             :integer          default(-1)
+#
+# Indexes
+#
+#  index_contestsolutions_on_contestproblem_id              (contestproblem_id)
+#  index_contestsolutions_on_user_id                        (user_id)
+#  index_contestsolutions_on_user_id_and_contestproblem_id  (user_id,contestproblem_id) UNIQUE
 #
 include ApplicationHelper
 

@@ -3,8 +3,8 @@
 # Table name: actualities
 #
 #  id         :integer          not null, primary key
-#  title      :string
 #  content    :text
+#  title      :string
 #  created_at :datetime         not null
 #
 require "spec_helper"

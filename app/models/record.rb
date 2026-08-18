@@ -5,11 +5,15 @@
 # Table name: records
 #
 #  id                  :integer          not null, primary key
-#  date                :date
-#  nb_submissions      :integer
-#  nb_questions_solved :integer
 #  avg_correction_time :float
 #  complete            :boolean
+#  date                :date
+#  nb_questions_solved :integer
+#  nb_submissions      :integer
+#
+# Indexes
+#
+#  index_records_on_date  (date) UNIQUE
 #
 class Record < ActiveRecord::Base
 

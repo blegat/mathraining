@@ -3,17 +3,21 @@
 # Table name: contests
 #
 #  id               :integer          not null, primary key
-#  number           :integer
-#  description      :text
-#  status           :integer          default("in_construction")
-#  medal            :boolean          default(FALSE)
-#  start_time       :datetime
-#  end_time         :datetime
-#  num_problems     :integer          default(0)
-#  num_participants :integer          default(0)
 #  bronze_cutoff    :integer          default(0)
-#  silver_cutoff    :integer          default(0)
+#  description      :text
+#  end_time         :datetime
 #  gold_cutoff      :integer          default(0)
+#  medal            :boolean          default(FALSE)
+#  num_participants :integer          default(0)
+#  num_problems     :integer          default(0)
+#  number           :integer
+#  silver_cutoff    :integer          default(0)
+#  start_time       :datetime
+#  status           :integer          default("in_construction")
+#
+# Indexes
+#
+#  index_contests_on_number  (number) UNIQUE
 #
 require "spec_helper"
 

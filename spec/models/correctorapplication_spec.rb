@@ -3,11 +3,16 @@
 # Table name: correctorapplications
 #
 #  id              :bigint           not null, primary key
-#  user_id         :bigint
 #  content         :text
 #  processed       :boolean          default(FALSE)
-#  tchatmessage_id :bigint
 #  created_at      :datetime         not null
+#  tchatmessage_id :bigint
+#  user_id         :bigint
+#
+# Indexes
+#
+#  index_correctorapplications_on_tchatmessage_id  (tchatmessage_id)
+#  index_correctorapplications_on_user_id          (user_id)
 #
 require "spec_helper"
 

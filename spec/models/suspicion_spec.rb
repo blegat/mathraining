@@ -3,12 +3,19 @@
 # Table name: suspicions
 #
 #  id            :bigint           not null, primary key
-#  submission_id :bigint
-#  user_id       :bigint
+#  cheating_type :integer          default("plagiarism")
 #  source        :text
 #  status        :integer          default("waiting_confirmation")
 #  created_at    :datetime         not null
-#  cheating_type :integer          default("plagiarism")
+#  submission_id :bigint
+#  user_id       :bigint
+#
+# Indexes
+#
+#  index_suspicions_on_created_at     (created_at)
+#  index_suspicions_on_status         (status)
+#  index_suspicions_on_submission_id  (submission_id)
+#  index_suspicions_on_user_id        (user_id)
 #
 require "spec_helper"
 

@@ -3,17 +3,22 @@
 # Table name: chapters
 #
 #  id                      :integer          not null, primary key
-#  name                    :string
+#  author                  :string
 #  description             :text
 #  level                   :integer
-#  online                  :boolean          default(FALSE)
-#  section_id              :integer
-#  nb_tries                :integer          default(0)
+#  name                    :string
 #  nb_completions          :integer          default(0)
+#  nb_tries                :integer          default(0)
+#  online                  :boolean          default(FALSE)
 #  position                :integer          default(0)
-#  author                  :string
 #  publication_date        :date
 #  submission_prerequisite :boolean          default(FALSE)
+#  section_id              :integer
+#
+# Indexes
+#
+#  index_chapters_on_name        (name) UNIQUE
+#  index_chapters_on_section_id  (section_id)
 #
 require "spec_helper"
 

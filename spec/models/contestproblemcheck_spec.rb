@@ -5,6 +5,10 @@
 #  id                :integer          not null, primary key
 #  contestproblem_id :integer
 #
+# Indexes
+#
+#  index_contestproblemchecks_on_contestproblem_id  (contestproblem_id) UNIQUE
+#
 require "spec_helper"
 
 describe Contestproblemcheck, contestproblem: true do

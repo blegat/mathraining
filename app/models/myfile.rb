@@ -8,6 +8,10 @@
 #  myfiletable_type :string
 #  myfiletable_id   :integer
 #
+# Indexes
+#
+#  index_myfiles_on_myfiletable_type_and_myfiletable_id  (myfiletable_type,myfiletable_id)
+#
 class Myfile < ActiveRecord::Base
 
   # BELONGS_TO, HAS_MANY

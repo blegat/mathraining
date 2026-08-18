@@ -5,10 +5,10 @@
 # Table name: puzzles
 #
 #  id          :bigint           not null, primary key
-#  statement   :text
 #  code        :string
-#  position    :integer
 #  explanation :text
+#  position    :integer
+#  statement   :text
 #
 
 class Puzzle < ActiveRecord::Base

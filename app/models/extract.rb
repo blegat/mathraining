@@ -5,8 +5,12 @@
 # Table name: extracts
 #
 #  id                  :bigint           not null, primary key
-#  externalsolution_id :bigint
 #  text                :string
+#  externalsolution_id :bigint
+#
+# Indexes
+#
+#  index_extracts_on_externalsolution_id  (externalsolution_id)
 #
 include ApplicationHelper
 

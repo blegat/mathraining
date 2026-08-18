@@ -3,13 +3,13 @@
 # Table name: sections
 #
 #  id                 :integer          not null, primary key
-#  name               :string
+#  abbreviation       :string
 #  description        :text
 #  fondation          :boolean          default(FALSE)
-#  max_score          :integer          default(0)
-#  abbreviation       :string
-#  short_abbreviation :string
 #  initials           :string
+#  max_score          :integer          default(0)
+#  name               :string
+#  short_abbreviation :string
 #
 require "spec_helper"
 

@@ -6,8 +6,12 @@
 #
 #  id      :bigint           not null, primary key
 #  key     :string
-#  value   :boolean
 #  message :text
+#  value   :boolean
+#
+# Indexes
+#
+#  index_globalvariables_on_key  (key) UNIQUE
 #
 class Globalvariable < ActiveRecord::Base
 

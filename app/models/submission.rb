@@ -5,15 +5,24 @@
 # Table name: submissions
 #
 #  id                :integer          not null, primary key
+#  content           :text
+#  intest            :boolean          default(FALSE)
+#  last_comment_time :datetime
+#  score             :integer          default(-1)
+#  star              :boolean          default(FALSE)
+#  status            :integer          default("waiting")
+#  created_at        :datetime         not null
 #  problem_id        :integer
 #  user_id           :integer
-#  content           :text
-#  created_at        :datetime         not null
-#  status            :integer          default("waiting")
-#  intest            :boolean          default(FALSE)
-#  score             :integer          default(-1)
-#  last_comment_time :datetime
-#  star              :boolean          default(FALSE)
+#
+# Indexes
+#
+#  index_submissions_on_created_at              (created_at)
+#  index_submissions_on_last_comment_time       (last_comment_time)
+#  index_submissions_on_problem_id              (problem_id)
+#  index_submissions_on_problem_id_and_user_id  (problem_id,user_id)
+#  index_submissions_on_status                  (status)
+#  index_submissions_on_user_id                 (user_id)
 #
 class Submission < ActiveRecord::Base
   

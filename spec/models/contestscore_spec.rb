@@ -3,11 +3,17 @@
 # Table name: contestscores
 #
 #  id         :integer          not null, primary key
-#  contest_id :integer
-#  user_id    :integer
+#  medal      :integer
 #  rank       :integer
 #  score      :integer
-#  medal      :integer
+#  contest_id :integer
+#  user_id    :integer
+#
+# Indexes
+#
+#  index_contestscores_on_contest_id              (contest_id)
+#  index_contestscores_on_user_id                 (user_id)
+#  index_contestscores_on_user_id_and_contest_id  (user_id,contest_id) UNIQUE
 #
 require "spec_helper"
 

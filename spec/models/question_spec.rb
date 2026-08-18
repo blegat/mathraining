@@ -3,19 +3,23 @@
 # Table name: questions
 #
 #  id               :integer          not null, primary key
-#  statement        :text
-#  is_qcm           :boolean
-#  decimal          :boolean          default(FALSE)
 #  answer           :float
-#  many_answers     :boolean          default(FALSE)
-#  chapter_id       :integer
-#  position         :integer
-#  online           :boolean          default(FALSE)
+#  decimal          :boolean          default(FALSE)
 #  explanation      :text
+#  is_qcm           :boolean
 #  level            :integer          default(1)
-#  nb_first_guesses :integer          default(0)
+#  many_answers     :boolean          default(FALSE)
 #  nb_correct       :integer          default(0)
+#  nb_first_guesses :integer          default(0)
 #  nb_wrong         :integer          default(0)
+#  online           :boolean          default(FALSE)
+#  position         :integer
+#  statement        :text
+#  chapter_id       :integer
+#
+# Indexes
+#
+#  index_questions_on_chapter_id  (chapter_id)
 #
 require "spec_helper"
 

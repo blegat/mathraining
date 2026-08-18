@@ -3,8 +3,14 @@
 # Table name: prerequisites
 #
 #  id              :integer          not null, primary key
-#  prerequisite_id :integer
 #  chapter_id      :integer
+#  prerequisite_id :integer
+#
+# Indexes
+#
+#  index_prerequisites_on_chapter_id                      (chapter_id)
+#  index_prerequisites_on_chapter_id_and_prerequisite_id  (chapter_id,prerequisite_id) UNIQUE
+#  index_prerequisites_on_prerequisite_id                 (prerequisite_id)
 #
 require "spec_helper"
 

@@ -5,8 +5,12 @@
 # Table name: externalsolutions
 #
 #  id         :bigint           not null, primary key
-#  problem_id :bigint
 #  url        :text
+#  problem_id :bigint
+#
+# Indexes
+#
+#  index_externalsolutions_on_problem_id  (problem_id)
 #
 include ApplicationHelper
 

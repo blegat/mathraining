@@ -5,12 +5,19 @@
 # Table name: savedreplies
 #
 #  id         :bigint           not null, primary key
-#  problem_id :bigint
+#  approved   :boolean
 #  content    :text
 #  nb_uses    :integer          default(0)
+#  problem_id :bigint
 #  section_id :bigint
-#  approved   :boolean
 #  user_id    :bigint
+#
+# Indexes
+#
+#  index_savedreplies_on_approved    (approved)
+#  index_savedreplies_on_problem_id  (problem_id)
+#  index_savedreplies_on_section_id  (section_id)
+#  index_savedreplies_on_user_id     (user_id)
 #
 
 class Savedreply < ActiveRecord::Base

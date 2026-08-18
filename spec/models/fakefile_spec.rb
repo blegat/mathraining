@@ -3,12 +3,17 @@
 # Table name: fakefiles
 #
 #  id                 :integer          not null, primary key
-#  fakefiletable_type :string
-#  fakefiletable_id   :integer
-#  filename           :string
-#  content_type       :string
 #  byte_size          :integer
+#  content_type       :string
+#  fakefiletable_type :string
+#  filename           :string
 #  created_at         :datetime
+#  fakefiletable_id   :integer
+#
+# Indexes
+#
+#  index_fakefiles_on_byte_size                                (byte_size)
+#  index_fakefiles_on_fakefiletable_type_and_fakefiletable_id  (fakefiletable_type,fakefiletable_id)
 #
 require "spec_helper"
 

@@ -5,38 +5,49 @@
 # Table name: users
 #
 #  id                        :integer          not null, primary key
-#  first_name                :string
-#  last_name                 :string
+#  accept_analytics          :boolean          default(TRUE)
+#  accepted_code_of_conduct  :boolean          default(FALSE)
+#  can_change_name           :boolean          default(TRUE)
+#  consent_time              :datetime
+#  correction_level          :integer          default(0)
+#  corrector                 :boolean          default(FALSE)
+#  corrector_color           :string
 #  email                     :string
-#  password_digest           :string
-#  remember_token            :string
-#  created_at                :datetime         not null
-#  key                       :string
 #  email_confirm             :boolean          default(TRUE)
-#  skin                      :integer          default(0)
-#  see_name                  :integer          default(1)
-#  sex                       :integer          default(0)
-#  wepion                    :boolean          default(FALSE)
-#  year                      :integer          default(0)
-#  rating                    :integer          default(0)
-#  last_forum_visit_time     :datetime         default(Thu, 01 Jan 2009 01:00:00.000000000 CET +01:00)
-#  last_connexion_date       :date             default(Thu, 01 Jan 2009)
+#  first_name                :string
 #  follow_message            :boolean          default(FALSE)
 #  group                     :string           default("")
-#  valid_name                :boolean          default(FALSE)
-#  consent_time              :datetime
-#  country_id                :integer
-#  recup_password_date_limit :datetime
+#  key                       :string
+#  last_connexion_date       :date             default(Thu, 01 Jan 2009)
+#  last_forum_visit_time     :datetime         default(2009-01-01 01:00:00.000000000 CET +01:00)
+#  last_name                 :string
 #  last_policy_read          :boolean          default(FALSE)
-#  accept_analytics          :boolean          default(TRUE)
-#  can_change_name           :boolean          default(TRUE)
-#  correction_level          :integer          default(0)
-#  corrector_color           :string
-#  corrector                 :boolean          default(FALSE)
-#  role                      :integer          default("student")
+#  password_digest           :string
 #  password_strength         :integer          default("unknown_password")
-#  accepted_code_of_conduct  :boolean          default(FALSE)
+#  rating                    :integer          default(0)
+#  recup_password_date_limit :datetime
+#  remember_token            :string
+#  role                      :integer          default("student")
+#  see_name                  :integer          default(1)
+#  sex                       :integer          default(0)
+#  skin                      :integer          default(0)
+#  valid_name                :boolean          default(FALSE)
+#  wepion                    :boolean          default(FALSE)
 #  whitelisted               :boolean          default(FALSE)
+#  year                      :integer          default(0)
+#  created_at                :datetime         not null
+#  country_id                :integer
+#
+# Indexes
+#
+#  index_users_on_country_id                      (country_id)
+#  index_users_on_email                           (email) UNIQUE
+#  index_users_on_rating                          (rating)
+#  index_users_on_remember_token                  (remember_token)
+#  index_users_on_role_and_corrector              (role,corrector)
+#  index_users_on_role_and_country_id_and_rating  (role,country_id,rating DESC)
+#  index_users_on_role_and_rating                 (role,rating DESC)
+#  index_users_on_valid_name_and_email_confirm    (valid_name,email_confirm)
 #
 include ERB::Util
 

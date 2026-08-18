@@ -6,6 +6,10 @@
 #  myfiletable_type :string
 #  myfiletable_id   :integer
 #
+# Indexes
+#
+#  index_myfiles_on_myfiletable_type_and_myfiletable_id  (myfiletable_type,myfiletable_id)
+#
 require "spec_helper"
 
 describe Myfile, myfile: true do

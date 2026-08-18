@@ -3,9 +3,9 @@
 # Table name: faqs
 #
 #  id       :bigint           not null, primary key
-#  question :text
 #  answer   :text
 #  position :integer
+#  question :text
 #
 require "spec_helper"
 

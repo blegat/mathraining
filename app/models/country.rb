@@ -3,9 +3,14 @@
 # Table name: countries
 #
 #  id                  :integer          not null, primary key
-#  name                :string
 #  code                :string
+#  name                :string
 #  name_without_accent :string
+#
+# Indexes
+#
+#  index_countries_on_name                 (name) UNIQUE
+#  index_countries_on_name_without_accent  (name_without_accent)
 #
 class Country < ActiveRecord::Base
 

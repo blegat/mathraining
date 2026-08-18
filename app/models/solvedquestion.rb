@@ -5,10 +5,18 @@
 # Table name: solvedquestions
 #
 #  id              :integer          not null, primary key
-#  user_id         :integer
-#  question_id     :integer
 #  nb_guess        :integer
 #  resolution_time :datetime
+#  question_id     :integer
+#  user_id         :integer
+#
+# Indexes
+#
+#  index_solvedquestions_on_question_id                  (question_id)
+#  index_solvedquestions_on_resolution_time              (resolution_time)
+#  index_solvedquestions_on_user_id                      (user_id)
+#  index_solvedquestions_on_user_id_and_question_id      (user_id,question_id) UNIQUE
+#  index_solvedquestions_on_user_id_and_resolution_time  (user_id,resolution_time)
 #
 include ApplicationHelper
 
