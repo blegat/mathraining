@@ -3,6 +3,7 @@
 # Table name: problems
 #
 #  id               :integer          not null, primary key
+#  archiving_date   :date
 #  explanation      :text             default("-")
 #  first_solve_time :datetime
 #  last_solve_time  :datetime
@@ -13,6 +14,7 @@
 #  online           :boolean          default(FALSE)
 #  origin           :string
 #  position         :integer          default(0)
+#  publication_date :date
 #  reviewed         :boolean          default(FALSE)
 #  statement        :text
 #  section_id       :integer
