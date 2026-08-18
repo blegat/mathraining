@@ -15,9 +15,9 @@ describe "solvedproblems/index.html.erb", solvedproblem: true do
   let(:user2) { FactoryBot.create(:user, rating: 345) }
   let(:user3) { FactoryBot.create(:user, rating: 1234) }
   
-  let!(:problem1) { FactoryBot.create(:problem, online: true, level: 1) }
-  let!(:problem2_with_prerequisite) { FactoryBot.create(:problem, online: true, level: 2) }
-  let!(:problem3) { FactoryBot.create(:problem, online: true, level: 3) }
+  let!(:problem1) { FactoryBot.create(:problem, status: :published, level: 1) }
+  let!(:problem2_with_prerequisite) { FactoryBot.create(:problem, status: :published, level: 2) }
+  let!(:problem3) { FactoryBot.create(:problem, status: :published, level: 3) }
   let!(:chapter) { FactoryBot.create(:chapter, online: true) }
   
   let!(:date_today) { Date.today }

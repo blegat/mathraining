@@ -11,7 +11,7 @@ describe "Myfile pages", myfile: true do
   let(:sub) { FactoryBot.create(:subject) } # Don't use name "subject" because it is used for the page
   let(:message) { FactoryBot.create(:message, subject: sub) }
   
-  let(:problem) { FactoryBot.create(:problem, online: true) }
+  let(:problem) { FactoryBot.create(:problem, status: :published) }
   let(:submission) { FactoryBot.create(:submission, problem: problem, status: :correct) }
   let(:correction) { FactoryBot.create(:correction, submission: submission) }
   

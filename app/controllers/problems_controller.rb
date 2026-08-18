@@ -52,7 +52,6 @@ class ProblemsController < ApplicationController
   # Create a problem (send the form)
   def create
     @problem = Problem.new(params.require(:problem).permit(:statement, :origin, :level, :publication_date))
-    @problem.online = false
     @problem.section = @section
 
     nombre = 0
@@ -74,13 +73,13 @@ class ProblemsController < ApplicationController
   def update
     @problem.statement = params[:problem][:statement]
     @problem.origin = params[:problem][:origin]
-    if !@problem.online?
+    if @problem.waiting_publication?
       @problem.publication_date = params[:problem][:publication_date]
     else
       @problem.archiving_date = params[:problem][:archiving_date]
     end
 
-    if !@problem.online
+    if @problem.waiting_publication?
       if @problem.level != params[:problem][:level].to_i
         @problem.level = params[:problem][:level]
         nombre = 0
@@ -108,7 +107,7 @@ class ProblemsController < ApplicationController
 
   # Put a problem online
   def put_online
-    @problem.update_attribute(:online, true)
+    @problem.published!
     if @problem.virtualtest_id == 0
       @problem.update_attribute(:markscheme, "")
     end
@@ -243,7 +242,9 @@ class ProblemsController < ApplicationController
 
   # Check that the problem is offline
   def offline_problem
-    return if check_online_object(@problem)
+    if !@problem.waiting_publication?
+      render 'errors/access_refused'
+    end
   end
 
   # Check that the problem can be put online

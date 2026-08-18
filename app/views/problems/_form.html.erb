@@ -16,7 +16,7 @@
 </div>
 
 <!-- Niveau -->
-<% if !problem.nil? && problem.online %>
+<% if !problem.nil? && !problem.waiting_publication? %>
   <p>Niveau (entre 1 et 5) : <b><%= problem.level %></b></p>
 <% else %>
   <div class="mb-2">
@@ -25,7 +25,7 @@
   </div>
 <% end %>
 
-<% if problem.nil? || !problem.online %>
+<% if problem.nil? || problem.waiting_publication? %>
   <!-- Date de publication automatique -->
   <div class="mb-2">
     <%= f.label :publication_date, :class => "form-label" %>

@@ -350,7 +350,7 @@ describe User, user: true do
   
   describe "pb_solved? and chap_solved?" do
     let!(:user1) { FactoryBot.create(:advanced_user) }
-    let!(:problem) { FactoryBot.create(:problem, online: true) }
+    let!(:problem) { FactoryBot.create(:problem, status: :published) }
     let!(:chapter) { FactoryBot.create(:chapter, online: true) }
     specify do
       expect(user1.pb_solved?(problem)).to eq(false)
@@ -370,7 +370,7 @@ describe User, user: true do
   # test_status
   describe "test_status" do
     let!(:user1) { FactoryBot.create(:advanced_user) }
-    let!(:virtualtest) { FactoryBot.create(:virtualtest, online: true) }
+    let!(:virtualtest) { FactoryBot.create(:virtualtest, status: :published) }
     
     describe "when test was not started" do
       specify { expect(user1.test_status(virtualtest)).to eq("not_started") }
@@ -393,9 +393,9 @@ describe User, user: true do
     let!(:time) { DateTime.new(2025, 11, 2, 20, 36, 12) }
     let!(:admin) { FactoryBot.create(:admin) }
     let!(:corrector) { FactoryBot.create(:corrector) }
-    let!(:problem1) { FactoryBot.create(:problem, online: true, level: 1) }
-    let!(:problem2) { FactoryBot.create(:problem, online: true, level: 2) }
-    let!(:problem3) { FactoryBot.create(:problem, online: true, level: 3) }
+    let!(:problem1) { FactoryBot.create(:problem, status: :published, level: 1) }
+    let!(:problem2) { FactoryBot.create(:problem, status: :published, level: 2) }
+    let!(:problem3) { FactoryBot.create(:problem, status: :published, level: 3) }
     let!(:sp1) { FactoryBot.create(:solvedproblem, problem: problem1, user: corrector) }
     let!(:sp2) { FactoryBot.create(:solvedproblem, problem: problem2, user: corrector) }
     let!(:submission11) { FactoryBot.create(:submission, problem: problem1, status: :waiting, created_at: time - 2.hours) } # today
@@ -633,8 +633,8 @@ describe User, user: true do
     let!(:question) { FactoryBot.create(:exercise, :chapter => chapter, :level => 2, :online => true) }
     let!(:question2) { FactoryBot.create(:exercise, :chapter => chapter, :level => 3, :online => true) }
     let!(:question_fondation) { FactoryBot.create(:exercise, :chapter => chapter_fondation, :level => 4, :online => true) }
-    let!(:problem) { FactoryBot.create(:problem, :section => section2, :level => 4, :online => true) }
-    let!(:problem_offline) { FactoryBot.create(:problem, :section => section, :level => 5, :online => false) }
+    let!(:problem) { FactoryBot.create(:problem, :section => section2, :level => 4, :status => :published) }
+    let!(:problem_offline) { FactoryBot.create(:problem, :section => section, :level => 5, :status => :waiting_publication) }
     let!(:submission) { FactoryBot.create(:submission, :problem => problem, :user => user1, :status => "correct") }
     let!(:solvedproblem) { FactoryBot.create(:solvedproblem, :problem => problem, :user => user1, :submission => submission) }
     let!(:solvedquestion) { FactoryBot.create(:solvedquestion, :question => question, :user => user1) }

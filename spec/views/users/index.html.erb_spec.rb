@@ -14,8 +14,8 @@ describe "users/index.html.erb", user: true do
   let!(:section_fondation) { FactoryBot.create(:section, fondation: true) }
   let!(:chapter)  { FactoryBot.create(:chapter, section: section, online: true) }
   let!(:chapter_fondation) { FactoryBot.create(:chapter, section: section_fondation, online: true) }
-  let!(:problem1) { FactoryBot.create(:problem, section: section, level: 1, online: true) }
-  let!(:problem2) { FactoryBot.create(:problem, section: section, level: 2, online: true) }
+  let!(:problem1) { FactoryBot.create(:problem, section: section, level: 1, status: :published) }
+  let!(:problem2) { FactoryBot.create(:problem, section: section, level: 2, status: :published) }
   let!(:question1) { FactoryBot.create(:exercise, chapter: chapter, level: 1, online: true) }
   let!(:question2) { FactoryBot.create(:exercise_decimal, chapter: chapter, level: 2, online: true) }
   let!(:question3) { FactoryBot.create(:exercise, chapter: chapter_fondation, level: 3, online: true) }

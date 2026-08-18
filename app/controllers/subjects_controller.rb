@@ -267,7 +267,7 @@ class SubjectsController < ApplicationController
           return "Un problème doit être sélectionné."
         end
         @subject.problem = Problem.find_by_id(problem_id)
-        return "Une erreur est survenue." if @subject.problem.nil? || !@subject.problem.online?
+        return "Une erreur est survenue." if @subject.problem.nil? || @subject.problem.waiting_publication?
         # Here we can check that the user has indeed access to the problem but it is annoying to do
       elsif chapter_id > 0
         @subject.chapter = Chapter.find_by_id(chapter_id)

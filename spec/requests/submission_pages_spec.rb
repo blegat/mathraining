@@ -15,8 +15,8 @@ describe "Submission pages", submission: true do
   
   let!(:section) { FactoryBot.create(:section) }
   
-  let!(:problem) { FactoryBot.create(:problem, online: true, section: section, level: 1) }
-  let!(:problem_with_submissions) { FactoryBot.create(:problem, online: true, section: section, level: 1) }
+  let!(:problem) { FactoryBot.create(:problem, status: :published, section: section, level: 1) }
+  let!(:problem_with_submissions) { FactoryBot.create(:problem, status: :published, section: section, level: 1) }
   
   let!(:waiting_submission) { FactoryBot.create(:submission, problem: problem_with_submissions, user: user, status: :waiting) } 
   let!(:wrong_submission) { FactoryBot.create(:submission, problem: problem_with_submissions, user: other_user, status: :wrong) }
@@ -217,7 +217,7 @@ describe "Submission pages", submission: true do
     end
     
     describe "sends a submission to a virtualtest problem (later)" do
-      let!(:virtualtest) { FactoryBot.create(:virtualtest, online: true) }
+      let!(:virtualtest) { FactoryBot.create(:virtualtest, status: :published) }
       let!(:takentest) { Takentest.create(virtualtest: virtualtest, user: user, status: :finished, taken_time: DateTime.now - 2.days) }
       before do
         problem.update_attribute(:virtualtest, virtualtest)
@@ -749,7 +749,7 @@ describe "Submission pages", submission: true do
     end
     
     describe "visits reserved virtualtest submission" do
-      let!(:virtualtest) { FactoryBot.create(:virtualtest, online: true, number: 12) }
+      let!(:virtualtest) { FactoryBot.create(:virtualtest, status: :published, number: 12) }
       let!(:problem_in_test) { FactoryBot.create(:problem, virtualtest: virtualtest, section: section) }
       let!(:waiting_submission_in_test) { FactoryBot.create(:submission, problem: problem_in_test, user: user, status: :waiting, intest: true) }
       before do

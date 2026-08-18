@@ -4,8 +4,8 @@ require "spec_helper"
 describe SubmissionsController, type: :controller, submission: true do
 
   let(:chapter) { FactoryBot.create(:chapter, online: true) }
-  let(:problem) { FactoryBot.create(:problem, online: true) }
-  let(:other_problem) { FactoryBot.create(:problem, online: true) }
+  let(:problem) { FactoryBot.create(:problem, status: :published) }
+  let(:other_problem) { FactoryBot.create(:problem, status: :published) }
   
   let(:user1) { FactoryBot.create(:advanced_user) }
   let(:user2) { FactoryBot.create(:advanced_user) }

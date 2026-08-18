@@ -42,7 +42,7 @@
   <% nb_p = 0 %>
   
   <% numberexo = Question.where("level > 0 AND online = ?", true).count %>
-  <% numberpb = Problem.where("online = ?", true).count %>
+  <% numberpb = Problem.where(:status => :published).count %>
 
   <% premier = nil %>
   <% dernier = nil %>
