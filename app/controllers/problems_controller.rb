@@ -51,7 +51,7 @@ class ProblemsController < ApplicationController
 
   # Create a problem (send the form)
   def create
-    @problem = Problem.new(params.require(:problem).permit(:statement, :origin, :level))
+    @problem = Problem.new(params.require(:problem).permit(:statement, :origin, :level, :publication_date))
     @problem.online = false
     @problem.section = @section
 
@@ -74,6 +74,11 @@ class ProblemsController < ApplicationController
   def update
     @problem.statement = params[:problem][:statement]
     @problem.origin = params[:problem][:origin]
+    if !@problem.online?
+      @problem.publication_date = params[:problem][:publication_date]
+    else
+      @problem.archiving_date = params[:problem][:archiving_date]
+    end
 
     if !@problem.online
       if @problem.level != params[:problem][:level].to_i

@@ -24,3 +24,17 @@
   <%= f.number_field :level, :class => "form-control", :style => "width:70px;", :min => 1, :max => 5 %>
   </div>
 <% end %>
+
+<% if problem.nil? || !problem.online %>
+  <!-- Date de publication automatique -->
+  <div class="mb-2">
+    <%= f.label :publication_date, :class => "form-label" %>
+    <%= f.date_field :publication_date, :class => "form-control", :style => "max-width:150px;" %>
+  </div>
+<% else %>
+  <!-- Date d'archivage automatique -->
+  <div class="mb-2">
+    <%= f.label :archiving_date, :class => "form-label" %>
+    <%= f.date_field :archiving_date, :class => "form-control", :style => "max-width:150px;" %>
+  </div>
+<% end %>
