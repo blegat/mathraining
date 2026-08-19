@@ -2,13 +2,13 @@
   <% show_new_button = true %>
 <% end %>
 
-<% provide(:title, "Problème ##{ @problem.number }") %>
+<% provide(:title, "Problème ##{ @problem.full_number }") %>
 
 <% problem_solved = current_user.admin? ? false : current_user.pb_solved?(@problem) %>
 
 <div class="split-title-lg">
   <div class="part-1">
-    <h1><%= title_problems(@problem.section, "Problème&nbsp;##{ @problem.number }#{ (' - Test&nbsp;#' +  @problem.virtualtest.number.to_s ) if @problem.virtualtest_id != 0 } #{ '(en construction)' if @problem.waiting_publication? }".html_safe) %></h1>
+    <h1><%= title_problems(@problem.section, "Problème&nbsp;##{ @problem.full_number }#{ (' - Test&nbsp;#' +  @problem.virtualtest.number.to_s ) if @problem.virtualtest_id != 0 } #{ '(en construction)' if @problem.waiting_publication? }".html_safe) %></h1>
   </div>
   <div class="part-2 mb-2">
     <span class="badge rounded-pill py-2 px-3 fs-5 <%= problem_solved ? 'bg-success' : 'bg-secondary' %>"><%= @problem.value %>&nbsp;points</span>

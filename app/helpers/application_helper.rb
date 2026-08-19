@@ -369,11 +369,11 @@ module ApplicationHelper
   end
   
   def title_problem(problem, title)
-    return title_4("Problèmes", (link_to problem.section.name, section_problems_path(problem.section)), (link_to "Problème ##{ problem.number }", problem), title)
+    return title_4("Problèmes", (link_to problem.section.name, section_problems_path(problem.section)), (link_to "Problème ##{ problem.full_number }", problem), title)
   end
   
   def title_submission(submission, title)
-    return title_4("Problèmes", (link_to submission.problem.section.name, section_problems_path(submission.problem.section)), (link_to "Problème ##{ submission.problem.number }", problem_submission_path(submission.problem, submission)), title)
+    return title_4("Problèmes", (link_to submission.problem.section.name, section_problems_path(submission.problem.section)), (link_to "Problème ##{ submission.problem.full_number }", problem_submission_path(submission.problem, submission)), title)
   end
   
   # Titles concerning contests / contestproblems

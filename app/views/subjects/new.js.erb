@@ -95,13 +95,13 @@
     
   <% if probvisibles %>
     <% some_prob_hidden = false %>
-    <% access_prob = accessible_problems_from_section(current_user, section, ["id", "number"]).to_a %>
+    <% access_prob = accessible_problems_from_section(current_user, section, ["id", "number", "status"]).to_a %>
     <% prob_with_subject = Subject.select(:problem_id).where(:problem_id => access_prob.map(&:id)).to_a.map!(&:problem_id) %>
     
     <% access_prob.each do |p| %>
       <% if (p.id == edit_prob_id || !prob_with_subject.include?(p.id)) %>
         var opt = document.createElement('option');
-        opt.text = "Problème #<%= p.number %>"
+        opt.text = "Problème #<%= p.full_number %>"
         opt.value = <%= p.id %>
         oldSel2.add(opt, null);
       <% else %>
