@@ -78,7 +78,7 @@
       <table class="table table-bordered problem <%= classe %>" id="problem<%= p.id %>">
       <tr><td class="title text-center">
       <h4>
-      <%= link_to "Problème ##{ p.number }", problem_path(p, :auto => 1) %>
+      <%= link_to "Problème ##{ p.full_number }", problem_path(p, :auto => 1) %>
       <% if p.virtualtest_id > 0 %>
         - Test #<%= p.virtualtest.number %>
       <% end %>

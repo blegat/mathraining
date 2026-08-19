@@ -65,6 +65,11 @@ class Problem < ActiveRecord::Base
     return 15*level
   end
   
+  # Return the number with the star if archived
+  def full_number
+    return self.number.to_s + (self.archived? ? "*" : "")
+  end
+  
   # Tell if the problem can be seen by the given user
   def can_be_seen_by(user, no_new_submission)
     return true if user.admin?

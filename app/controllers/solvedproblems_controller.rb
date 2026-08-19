@@ -12,6 +12,6 @@ class SolvedproblemsController < ApplicationController
     else
       @date = @max_date
     end
-    @solvedproblems = Solvedproblem.joins(:problem).joins(problem: :section).joins("LEFT JOIN followings ON followings.submission_id = solvedproblems.submission_id").select("solvedproblems.user_id, solvedproblems.problem_id, solvedproblems.submission_id, problems.number AS problem_number, problems.level, solvedproblems.correction_time, sections.short_abbreviation AS section_short_abbreviation, followings.user_id AS corrector_id").includes(:user, submission: {followings: :user}).where(followings: {kind: :first_corrector}).where(correction_time: @date.all_day).order("correction_time DESC").to_a
+    @solvedproblems = Solvedproblem.joins(:problem).joins(problem: :section).joins("LEFT JOIN followings ON followings.submission_id = solvedproblems.submission_id").select("solvedproblems.user_id, solvedproblems.problem_id, solvedproblems.submission_id, problems.number AS problem_number, problems.status AS problem_status, problems.level, solvedproblems.correction_time, sections.short_abbreviation AS section_short_abbreviation, followings.user_id AS corrector_id").includes(:user, submission: {followings: :user}).where(followings: {kind: :first_corrector}).where(correction_time: @date.all_day).order("correction_time DESC").to_a
   end
 end

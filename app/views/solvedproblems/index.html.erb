@@ -25,12 +25,13 @@
     <td class="d-none d-md-table-cell"><%= s.section_short_abbreviation %></td>
     <td class="d-none d-md-table-cell">Niv. <%= s.level %></td>
     <td>
+    <% full_number = s.problem_number.to_s + (s.problem_status == Problem.statuses[:archived] ? "*" : "") %>
     <% if non_accessible_problems_set != "all" && !non_accessible_problems_set.include?(s.problem_id) %>
       <% can_see_submission = (fully_accessible_problems_set == "all" || fully_accessible_problems_set.include?(s.problem_id)) %>
-      <span class="d-none d-lg-inline"><%= link_to "Problème ##{s.problem_number}", problem_submission_path(s.problem_id, s.submission_id), :class => "#{'text-color-dark-light-blue' if !can_see_submission}" %></span>
-      <span class="d-inline d-lg-none"><%= link_to "##{s.problem_number}", problem_submission_path(s.problem_id, s.submission_id), :class => "#{'text-color-dark-light-blue' if !can_see_submission}" %></span>
+      <span class="d-none d-lg-inline"><%= link_to "Problème ##{full_number}", problem_submission_path(s.problem_id, s.submission_id), :class => "#{'text-color-dark-light-blue' if !can_see_submission}" %></span>
+      <span class="d-inline d-lg-none"><%= link_to "##{full_number}", problem_submission_path(s.problem_id, s.submission_id), :class => "#{'text-color-dark-light-blue' if !can_see_submission}" %></span>
     <% else %>
-      <span class="d-none d-lg-inline">Problème </span>#<%= s.problem_number %>
+      <span class="d-none d-lg-inline">Problème </span>#<%= full_number %>
     <% end %>
     </td>
     <% if signed_in? %>

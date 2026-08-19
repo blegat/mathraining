@@ -395,11 +395,12 @@
           <% end %>
           - <%= a[:chapter_name] %>
         <% elsif a[:type] == "P" %>
+          <% full_number = a[:number].to_s + (a[:status] == Problem.statuses[:archived] ? "*" : "") %>
           <% if non_accessible_problems_set != "all" && !non_accessible_problems_set.include?(a[:id])  %>
             <% can_see_submission = (fully_accessible_problems_set == "all" || fully_accessible_problems_set.include?(a[:id])) %>
-            <%= link_to "Problème ##{a[:number]}", problem_submission_path(a[:id], a[:sub]), :class => "#{'text-color-dark-light-blue' if !can_see_submission}" %>
+            <%= link_to "Problème ##{full_number}", problem_submission_path(a[:id], a[:sub]), :class => "#{'text-color-dark-light-blue' if !can_see_submission}" %>
           <% else %>
-            Problème #<%= a[:number] %>
+            Problème #<%= full_number %>
           <% end %>
            - <%= allsec_name[a[:section_id]] %>
         <% end %>
