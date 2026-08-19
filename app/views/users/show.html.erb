@@ -32,7 +32,7 @@
   
   <% questions = @user.solvedquestions.joins(question: :chapter).select("solvedquestions.question_id AS id, solvedquestions.resolution_time AS time, questions.level AS level, questions.chapter_id AS chapter_id, questions.number AS number, chapters.name AS chapter_name").order("resolution_time DESC").to_a %>
 
-  <% problems = @user.solvedproblems.joins(:problem).select("solvedproblems.problem_id AS id, solvedproblems.resolution_time AS time, solvedproblems.submission_id AS submission_id, problems.level AS level, problems.number AS number, problems.virtualtest_id AS virtualtest_id, problems.section_id AS section_id").order("resolution_time DESC").to_a %>
+  <% problems = @user.solvedproblems.joins(:problem).select("solvedproblems.problem_id AS id, solvedproblems.resolution_time AS time, solvedproblems.submission_id AS submission_id, problems.level AS level, problems.number AS number, problems.status AS status, problems.archiving_date AS archiving_date, problems.virtualtest_id AS virtualtest_id, problems.section_id AS section_id").order("resolution_time DESC").to_a %>
 
   <% act = Array.new %>
   <% q_encours = 0 %>
@@ -80,7 +80,7 @@
         <% premier = p.time.in_time_zone %>
       <% end %>
       <% p_encours = p_encours + 1 %>
-      <% act.push({:time => p.time, :type => "P", :id => p.id, :sub => p.submission_id, :pt => 15 * p.level, :number => p.number, :section_id => p.section_id}) %>
+      <% act.push({:time => p.time, :type => "P", :id => p.id, :sub => p.submission_id, :pt => 15 * p.level, :number => p.number, :status => p.status, :archiving_date => p.archiving_date, :section_id => p.section_id}) %>
     <% end %>
   <% end %>
   
@@ -324,9 +324,7 @@
     <div class="container_title">Résolutions</div>
     <div class="resolution_container_table">
     
-    <% actperday = Array.new %>
-     <% previousdate = Date.new(1980,1,1) %>
-    <% encours = -1 %>
+    <% actperday = Hash.new %>
 
     <% parquoi = "" %>
 
@@ -361,13 +359,20 @@
           <% dateday = Time.zone.local(date.year, date.month, date.day, date.hour, date.min, 0) %>
         <% end %>
         <% if a[:pt] > 0 %>
-          <% if dateday != previousdate %>
-            <% encours = encours+1 %>
-            <% actperday.push({:time => dateday, :pt => a[:pt]}) %>
+          <% if actperday.key?(dateday) %>
+            <% actperday[dateday] += a[:pt] %>
           <% else %>
-            <% actperday[encours][:pt] = actperday[encours][:pt] + a[:pt] %>
+            <% actperday[dateday] = a[:pt] %>
           <% end %>
-          <% previousdate = dateday %>
+          <% if a[:type] == "P" && a[:status] == Problem.statuses[:archived] && !a[:archiving_date].nil? %>
+            <% archivedate = a[:archiving_date] %>
+            <% archivedateday = Time.zone.local(archivedate.year, archivedate.month, archivedate.day, (parquoi == "jour" ? 0 : 8), 0, 0) %>
+            <% if actperday.key?(archivedateday) %>
+              <% actperday[archivedateday] -= a[:pt] %>
+            <% else %>
+              <% actperday[archivedateday] = -a[:pt] %>
+            <% end %>
+          <% end %>
         <% end %>
         <tr>
         <% remove_border = "" %>
@@ -528,47 +533,49 @@
     </center>
 
     <!-- Script pour le graphique de l'évolution -->
+    
+    <% graph_int_times = Array.new %>
+    <% graph_times = Array.new %>
+    <% graph_points = Array.new %>
+    <% cur_rating = 0 %>
+    <% max_rating = 0 %>
+      
+    <% actperday.sort.each do |time, pt| %>
+      <% graph_int_times.push(time.to_i) %>
+      <% graph_points.push(pt) %>
+      <% t = "" %>
+      <% if parquoi == "jour" %>
+        <% t = write_date_only_small(time) %>
+      <% elsif parquoi == "heure" %>
+        <% t = write_hour_only(time) %>
+      <% else %>
+        <% t = write_hour(time) %>
+      <% end %>
+      <% graph_times.push(t) %>
+      <% cur_rating += pt %>
+      <% max_rating = cur_rating if cur_rating > max_rating %>
+    <% end %>
+      
+    <% maxi = 1.15 * max_rating %>
+      
     <% niveaux = Color.get_all %>
 
-    <% i = 1 %>
+    <% nombrelevel = 0 %>
     <% numerolevel = 0 %>
 
     <% niveaux.each do |n| %>
       <% if niveau.id == n.id %>
-        <% numerolevel = i %>
+        <% numerolevel = nombrelevel %>
       <% end %>
-      <% i = i+1 %>
+      <% nombrelevel += 1 %>
     <% end %>
 
-    <% nombrelevel = i-1 %>
-
-    <% maxi = 0 %>
-
-
-    <% if numerolevel == nombrelevel %>
-      <% maxi = 1.2*actualrating %>
-    <% else %>
-      <% maxi = 1.1*niveaux[numerolevel][:pt] %>
+    <% if numerolevel+1 < nombrelevel %>
+      <% alt_maxi = 1.1 * niveaux[numerolevel+1][:pt] %>
+      <% maxi = alt_maxi if alt_maxi > maxi %>
     <% end %>
-    
+      
     <script type="text/javascript">
-    
-      <% graph_int_times = Array.new %>
-      <% graph_times = Array.new %>
-      <% graph_points = Array.new %>
-      <% actperday.each do |a| %>
-        <% graph_int_times.push(a[:time].to_i) %>
-        <% graph_points.push(a[:pt]) %>
-        <% t = "" %>
-        <% if parquoi == "jour" %>
-          <% t = "#{'0' if a[:time].day < 10 }#{ a[:time].day }/#{ '0' if a[:time].month < 10 }#{ a[:time].month }/#{ '0' if (a[:time].year % 2000) < 10 }#{ (a[:time].year % 2000) }" %>
-        <% elsif parquoi == "heure" %>
-          <% t = write_hour_only(a[:time]) %>
-        <% else %>
-          <% t = write_hour(a[:time]) %>
-        <% end %>
-        <% graph_times.push(t) %>
-      <% end %>
       
       function respondCanvas(){
         var graph_int_times = <%= ruby_to_javascript(graph_int_times) %>;
@@ -637,8 +644,8 @@
 
         // On trace maintenant le graphique
 
-        var last = graph_int_times[0];
-        var first = graph_int_times[graph_int_times.length - 1];
+        var first = graph_int_times[0];
+        var last = graph_int_times[graph_int_times.length - 1];
         
         // Commencement du graphique
         <% if parquoi == "jour" %>
@@ -660,7 +667,7 @@
         ctx.strokeStyle = (is_dark ? 'white' : 'black');
 
         // De droite vers la gauche : calcul où on met les verticales pointillées
-        for (let j = 0; j < graph_int_times.length; j++) {
+        for (let j = graph_int_times.length-1; j >= 0; j--) {
           var w = W_internal_offset + W_internal_size * (graph_int_times[j] - first) / (last - first);
 
           if (previousw - w > 55) {
@@ -686,7 +693,7 @@
         ctx.moveTo(W_offset + w, H_offset + h);
 
         // De gauche vers la droite : on trace le graphe
-        for (let j = graph_int_times.length - 1; j >= 0; j--) {
+        for (let j = 0; j < graph_int_times.length; j++) {
           w = W_internal_offset + W_internal_size * (graph_int_times[j] - first) / (last - first);
           r = previousr + graph_points[j];
           previousr = r;
@@ -702,7 +709,7 @@
         h = H_size;
         
         // De gauche vers la droite : on met les points
-        for (let j = graph_int_times.length - 1; j >= 0; j--) {
+        for (let j = 0; j < graph_int_times.length; j++) {
           w = W_internal_offset + W_internal_size * (graph_int_times[j] - first) / (last - first);
           r = previousr + graph_points[j];
           previousr = r;
