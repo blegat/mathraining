@@ -185,10 +185,7 @@ class Submission < ActiveRecord::Base
     end
 
     # Delete the drafts of the user to the problem
-    draft = pb.submissions.where(:user => u, :status => :draft).first
-    if !draft.nil?
-      draft.destroy
-    end
+    pb.submissions.where(:user => u, :status => :draft).destroy_all
   end
   
   # Mark the submission as wrong
