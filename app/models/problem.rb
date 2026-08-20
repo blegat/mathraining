@@ -101,11 +101,46 @@ class Problem < ActiveRecord::Base
     end
   end
   
+  # Publish the problem
+  def set_published
+    if self.waiting_publication?
+      self.published!
+      section = self.section
+      section.update_attribute(:max_score, section.max_score + self.value)
+    end
+  end
+  
+  # Archive a problem
+  def set_archived
+    if self.published?
+      self.archived!
+      section = self.section
+      section.update_attribute(:max_score, section.max_score - self.value)
+      # Deduct the problem points for all users who solved it
+      ActiveRecord::Base.connection.execute("UPDATE users SET rating = rating - #{self.value} FROM solvedproblems WHERE users.id = solvedproblems.user_id AND solvedproblems.problem_id = #{self.id}")
+      ActiveRecord::Base.connection.execute("UPDATE pointspersections SET points = points - #{self.value} FROM solvedproblems WHERE pointspersections.user_id = solvedproblems.user_id AND solvedproblems.problem_id = #{self.id} AND pointspersections.section_id = #{self.section_id}")
+    end
+  end
+  
   # Update the nb_solves, first_solve_time and last_solve_time of all problems (done every wednesday at 3 am (see schedule.rb))
   # NB: They are more or less maintained correct, but not when a user is deleted for instance
   def self.update_all_stats
     Problem.where.not(:status => :waiting_publication).each do |p|
       p.update_stats
+    end
+  end
+  
+  # Automatically archive the problems whose archiving date is today (done every day at 8 am (see schedule.rb))
+  def self.auto_archive
+    Problem.where(:status => :published, :archiving_date => Date.today).each do |p|
+      p.set_archived
+    end
+  end
+  
+  # Automatically publish the problems whose publication date is today (done every day at 8 am (see schedule.rb))
+  def self.auto_publish
+    Problem.where(:status => :waiting_publication, :publication_date => Date.today).each do |p|
+      p.set_published
     end
   end
 end

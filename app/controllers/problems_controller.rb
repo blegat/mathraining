@@ -107,12 +107,7 @@ class ProblemsController < ApplicationController
 
   # Put a problem online
   def put_online
-    @problem.published!
-    if @problem.virtualtest_id == 0
-      @problem.update_attribute(:markscheme, "")
-    end
-    @section = @problem.section
-    @section.update_attribute(:max_score, @section.max_score + @problem.value)
+    @problem.set_published
     redirect_to problem_path(@problem)
   end
 

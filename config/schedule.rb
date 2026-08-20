@@ -57,3 +57,8 @@ end
 every 23.minutes do
   runner "Discussion.answer_puzzle_questions(2)" # Answer to tchatmessages addressed to J. H.
 end
+
+every :day, :at => '8am' do
+  runner "Problem.auto_archive" # Automatically archive problems that need to be archived today
+  runner "Problem.auto_publish" # Automatically publish problems that need to be published today
+end
