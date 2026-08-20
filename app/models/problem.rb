@@ -119,6 +119,8 @@ class Problem < ActiveRecord::Base
       # Deduct the problem points for all users who solved it
       ActiveRecord::Base.connection.execute("UPDATE users SET rating = rating - #{self.value} FROM solvedproblems WHERE users.id = solvedproblems.user_id AND solvedproblems.problem_id = #{self.id}")
       ActiveRecord::Base.connection.execute("UPDATE pointspersections SET points = points - #{self.value} FROM solvedproblems WHERE pointspersections.user_id = solvedproblems.user_id AND solvedproblems.problem_id = #{self.id} AND pointspersections.section_id = #{self.section_id}")
+      # Remove the draft submissions
+      self.submissions.where(:status => :draft).destroy_all
     end
   end
   
