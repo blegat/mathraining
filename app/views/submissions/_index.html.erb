@@ -127,19 +127,19 @@ var showFalse = function() {
 <% else %>
 
   <!-- Dernières soumissions de l'étudiant en question -->
-  <% @cansendnewsub = !current_user.has_sanction_of_type(:no_submission) %>
+  <% @cansendnewsub = !problem.archived? && !current_user.has_sanction_of_type(:no_submission) %>
   <% @cansendnewcomment = @cansendnewsub %>
   <% date_submission_allowed = nil %>
   <% nonewcomment_reason = nil %>
-  <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).where(:user => current_user).where.not(:status => :draft).order('created_at DESC') %>
+  <% mysubmissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).where(:user => current_user).where.not(:status => :draft).order('created_at DESC') %>
 
   <% current_user_has_star = false %>
-  <% if !submissions.empty? %>
+  <% if !mysubmissions.empty? %>
     <h3>Vos soumissions</h3>
     
     <table class="table table-bordered" style="width:auto;">
     <%= render 'submissions/line_header', hide_user: true %>
-    <% submissions.each do |s| %>
+    <% mysubmissions.each do |s| %>
       <%= render 'submissions/line', s: s, hide_user: true %>
       <% if s.waiting? || s.waiting_forever? || s.correct? %>
         <% @cansendnewsub = false %>
@@ -158,7 +158,7 @@ var showFalse = function() {
 
   <% end %>
   
-  <% if !date_submission_allowed.nil? and date_submission_allowed > Date.today and !current_user.pb_solved?(problem) %>
+  <% if !problem.archived? && !date_submission_allowed.nil? && date_submission_allowed > Date.today && !current_user.pb_solved?(problem) %>
     <% @cansendnewsub = false %>
     <% @cansendnewcomment = false %>
     <% if nonewcomment_reason == "plagiarized" %>
@@ -170,8 +170,8 @@ var showFalse = function() {
     <% end %>
   <% end %>
 
-  <!-- Si l'étudiant a résolu le problème, on lui montre les autres soumissions -->
-  <% if current_user.pb_solved?(problem) %>
+  <!-- Si l'étudiant a résolu le problème (ou s'il est archivé), on lui montre les autres soumissions -->
+  <% if problem.archived? || current_user.pb_solved?(problem) %>
   
     <% show_star_submissions(problem, current_user_has_star) %>
 

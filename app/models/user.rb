@@ -483,7 +483,7 @@ class User < ActiveRecord::Base
       end
     end
     
-    User.joins(solvedproblems: :problem).select("users.id, problems.section_id, 15*sum(problems.level) AS x").group("users.id, problems.section_id").each do |u|
+    User.joins(solvedproblems: :problem).where("problems.status = ?", Problem.statuses[:published]).select("users.id, problems.section_id, 15*sum(problems.level) AS x").group("users.id, problems.section_id").each do |u|
       problem_scores_by_section[u.section_id][u.id] = u.x
       problem_scores[u.id] = 0 if problem_scores[u.id].nil?
       problem_scores[u.id] += u.x
