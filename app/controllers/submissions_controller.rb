@@ -20,6 +20,7 @@ class SubmissionsController < ApplicationController
   before_action :user_can_see_problem, only: [:show, :new]
   before_action :user_can_see_submission, only: [:show]
   before_action :user_can_see_problem_or_in_test, only: [:create]
+  before_action :problem_is_not_archived, only: [:create]
   before_action :user_did_not_solve_problem, only: [:create]
   before_action :user_can_write_submission_to_problem, only: [:create, :send_draft]
   before_action :author_of_submission_or_root, only: [:update, :destroy]
@@ -368,6 +369,13 @@ class SubmissionsController < ApplicationController
       user_can_see_problem # Defined in problem_concern.rb
     end
   end
+  
+  # Check that the problem is not archived
+  def problem_is_not_archived
+    if @problem.archived?
+      render 'errors/access_refused'
+    end
+  end
 
   # Check that current user did not already solve the problem
   def user_did_not_solve_problem
@@ -442,9 +450,9 @@ class SubmissionsController < ApplicationController
     @what = params[:what].to_i
     redirect_to root_path if (@what != 0 && @what != 1 && @what != 2)
     if @what == 0 || @what == 2 # See correct submissions (need to have solved problem or to be admin)
-      redirect_to root_path if !current_user.admin? && !current_user.pb_solved?(@problem)
-    else # (@what == 1) # See incorrect submissions (need to be admin or corrector)
-      redirect_to root_path if !current_user.admin? && !current_user.corrector?
+      redirect_to root_path unless current_user.admin? || @problem.archived? || current_user.pb_solved?(@problem)
+    else # (@what == 1) # See incorrect submissions (need to be admin or corrector having solved the problem)
+      redirect_to root_path unless current_user.admin? || (current_user.corrector? && current_user.pb_solved?(@problem))
     end
   end
   
