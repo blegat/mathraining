@@ -12,8 +12,8 @@
 class Virtualtest < ActiveRecord::Base
 
   enum :status, {:waiting_publication => 0, # not shown yet to students
-                 :published           => 1, # can be started by students
-                 :archived            => 2} # cannot be started anymore
+                 :published           => 1} # can be started by students
+  # NB: The intention is to add :archived the day we want to archive a test (not implemented today)
 
   # BELONGS_TO, HAS_MANY
 
