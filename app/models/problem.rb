@@ -141,7 +141,7 @@ class Problem < ActiveRecord::Base
   
   # Automatically publish the problems whose publication date is today (done every day at 8 am (see schedule.rb))
   def self.auto_publish
-    Problem.where(:status => :waiting_for_publication, :publication_date => Date.today).each do |p|
+    Problem.where(:status => :waiting_publication, :publication_date => Date.today).each do |p|
       p.set_published
     end
   end
