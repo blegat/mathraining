@@ -1,6 +1,13 @@
 <%= render 'submissions/fix_header_script' %>
 
 <script type="text/javascript">
+var showFriends = function() {
+  document.getElementById("btn_friends").style.display = 'none';
+  document.getElementById("loading_friends").style.display = 'block';
+  $.getScript("<%= problem_submissions_url(problem, :what => 2) %>").done(function(script, textStatus) {
+    fixLastCellWidthOfTableHeader("all_friends");
+  });
+}
 var showCorrect = function() {
   document.getElementById("btn_correct").style.display = 'none';
   document.getElementById("loading_correct").style.display = 'block';
@@ -17,28 +24,49 @@ var showFalse = function() {
 }
 </script>
 
-<!-- Cette page affiche toutes les soumissions que l'utilisateur peut voir pour le problème problem -->
-
-<!-- Si administrateur : peut voir toutes les soumissions correctes -->
-<% if current_user.admin? %>
-  <h3>Soumissions étoilées</h3>
-  <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where(:status => :correct, :star => true).order('created_at') %>
-  <% if submissions.empty? %>
+<% def show_star_submissions(problem, current_user_has_star = false) %>
+  <% if current_user_has_star %>
+    <h3>Autres soumissions étoilées</h3>
+  <% else %>
+    <h3>Soumissions étoilées</h3>
+  <% end %>
+  <% starsubmissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where.not(:user => current_user).where(:status => :correct, :star => true).order('created_at') %>
+  <% if starsubmissions.empty? %>
     <p>Aucune soumission.</p>
   <% else %>
     <table class="table table-bordered" style="width:auto;">
       <%= render 'submissions/line_header' %>
-      <% submissions.each do |s| %>
+      <% starsubmissions.each do |s| %>
         <%= render 'submissions/line', s: s %>
       <% end %>
     </table>
   <% end %>
-  
+<% end %>
+
+<% def show_friends_submissions(problem) %>
+  <% friends = current_user.followed_users.ids %>
+  <% return if friends.empty? %>
+  <% return if problem.submissions.where(:user => friends, :status => :correct, :star => false).count == 0 %>
+  <h3>Soumissions correctes d'utilisateurs suivis</h3>
+  <p id="btn_friends"><%= link_to "Afficher les soumissions correctes des utilisateurs suivis", "javascript:showFriends()" %></p>
+  <p id="loading_friends" style="display:none;">Chargement...</p>
+  <p id="none_friends" style="display:none;">Aucune soumission.</p>
+  <table class="table table-bordered fixed-scroll" style="width:auto; display:none;" id="all_friends">
+  <thead>
+    <%= render 'submissions/line_header', scroll: true %>
+  </thead>
+  <tbody>
+    <!-- This body is filled via javascript, see showFriends() -->
+  </tbody>
+  </table>
+<% end %>
+
+<% def show_correct_submissions(problem) %>
   <h3>Autres soumissions correctes</h3>
   <p id="btn_correct"><%= link_to "Afficher les autres soumissions correctes", "javascript:showCorrect()" %></p>
   <p id="loading_correct" style="display:none;">Chargement...</p>
-  <p id="none_correct" style="display:none;">Aucune soumission</p>
-  <table class="table table-bordered fixed-scroll" style="width:840px; display:none;" id="all_correct">
+  <p id="none_correct" style="display:none;">Aucune soumission.</p>
+  <table class="table table-bordered fixed-scroll" style="width:auto; display:none;" id="all_correct">
   <thead>
     <%= render 'submissions/line_header', scroll: true %>
   </thead>
@@ -46,6 +74,54 @@ var showFalse = function() {
     <!-- This body is filled via javascript, see showCorrect() -->
   </tbody>
   </table>
+<% end %>
+
+<% def show_wrong_submissions(problem) %>
+  <h3>Soumissions erronées</h3>
+  <p id="btn_false"><%= link_to "Afficher les soumissions erronées", "javascript:showFalse()" %></p>
+  <p id="loading_false" style="display:none;">Chargement...</p>
+  <p id="none_false" style="display:none;">Aucune soumission.</p>
+  <table class="table table-bordered fixed-scroll" style="width:auto; display:none;" id="all_false">
+  <thead>
+    <%= render 'submissions/line_header', scroll: true %>
+  </thead>
+  <tbody>
+    <!-- This body is filled via javascript, see showFalse() -->
+  </tbody>
+  </table>
+<% end %>
+
+<% def show_waiting_submissions(problem) %>
+  <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where.not(:user => current_user).where(:status => :waiting).order('created_at') %>
+  
+  <% if !submissions.empty? %>
+    <h3>Soumissions en attente</h3>
+    <table class="table table-bordered fixed-scroll" style="width:auto;" id="all_waiting">
+    <thead>
+      <%= render 'submissions/line_header', scroll: true %>
+    </thead>
+    <tbody>
+      <% submissions.each do |s| %>
+        <%= render 'submissions/line', s: s, show_num_waiting_days_from: "created_at" %>
+      <% end %>
+    </tbody>
+    </table>
+    <script>
+      fixLastCellWidthOfTableHeader("all_waiting");
+    </script>
+  <% end %>
+<% end %>
+
+<!-- Cette page affiche toutes les soumissions que l'utilisateur peut voir pour le problème problem -->
+
+<!-- Si administrateur : peut voir toutes les soumissions correctes -->
+<% if current_user.admin? %>
+
+  <% show_star_submissions(problem) %>
+
+  <% show_friends_submissions(problem) %>
+
+  <% show_correct_submissions(problem) %>
 
 <!-- Si étudiant -->
 <% else %>
@@ -57,6 +133,7 @@ var showFalse = function() {
   <% nonewcomment_reason = nil %>
   <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).where(:user => current_user).where.not(:status => :draft).order('created_at DESC') %>
 
+  <% current_user_has_star = false %>
   <% if !submissions.empty? %>
     <h3>Vos soumissions</h3>
     
@@ -72,6 +149,9 @@ var showFalse = function() {
           <% date_submission_allowed = one_date_submission_allowed %>
           <% nonewcomment_reason = s.status %>
         <% end %>
+      <% end %>
+      <% if s.star %>
+        <% current_user_has_star = true %>
       <% end %>
     <% end %>
     </table>
@@ -93,32 +173,11 @@ var showFalse = function() {
   <!-- Si l'étudiant a résolu le problème, on lui montre les autres soumissions -->
   <% if current_user.pb_solved?(problem) %>
   
-    <h3>Autres soumissions, étoilées</h3>
-    <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where.not(:user => current_user).where(:status => :correct, :star => true).order('created_at') %>
+    <% show_star_submissions(problem, current_user_has_star) %>
 
-    <% if !submissions.empty? %>
-      <table class="table table-bordered" style="width:auto;">
-      <%= render 'submissions/line_header' %>
-      <% submissions.each do |s| %>
-        <%= render 'submissions/line', s: s %>
-      <% end %>
-      </table>
-    <% else %>
-    	<p>Aucune soumission.</p>
-    <% end %>
+    <% show_friends_submissions(problem) %>
 
-    <h3>Autres soumissions, correctes</h3>
-    <p id="btn_correct"><%= link_to "Afficher les autres soumissions correctes", "javascript:showCorrect()" %></p>
-    <p id="loading_correct" style="display:none;">Chargement...</p>
-    <p id="none_correct" style="display:none;">Aucune soumission.</p>
-    <table class="table table-bordered fixed-scroll" style="width:auto; display:none;" id="all_correct">
-    <thead>
-      <%= render 'submissions/line_header', scroll: true %>
-    </thead>
-    <tbody>
-      <!-- This body is filled via javascript, see showCorrect() -->
-    </tbody>
-    </table>
+    <% show_correct_submissions(problem) %>
 
   <% end %>
 
@@ -127,36 +186,8 @@ var showFalse = function() {
 <!-- Si administrateur ou correcteur (ayant résolu le problème) : peut voir toutes les soumissions erronées, en attente ou plagiées -->
 <% if current_user.admin? || (current_user.corrector? && current_user.pb_solved?(problem)) %>
 
-  <h3>Soumissions erronées</h3>
-  <p id="btn_false"><%= link_to "Afficher les soumissions erronées", "javascript:showFalse()" %></p>
-  <p id="loading_false" style="display:none;">Chargement...</p>
-  <p id="none_false" style="display:none;">Aucune soumission.</p>
-  <table class="table table-bordered fixed-scroll" style="width:auto; display:none;" id="all_false">
-  <thead>
-    <%= render 'submissions/line_header', scroll: true %>
-  </thead>
-  <tbody>
-    <!-- This body is filled via javascript, see showFalse() -->
-  </tbody>
-  </table>
+  <% show_wrong_submissions(problem) %>
   
-  <% submissions = problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where.not(:user => current_user).where(:status => :waiting).order('created_at') %>
-  
-  <% if !submissions.empty? %>
-    <h3>Soumissions en attente</h3>
-    <table class="table table-bordered fixed-scroll" style="width:auto;" id="all_waiting">
-    <thead>
-      <%= render 'submissions/line_header', scroll: true %>
-    </thead>
-    <tbody>
-      <% submissions.each do |s| %>
-        <%= render 'submissions/line', s: s, show_num_waiting_days_from: "created_at" %>
-      <% end %>
-    </tbody>
-    </table>
-    <script>
-      fixLastCellWidthOfTableHeader("all_waiting");
-    </script>
-  <% end %>
+  <% show_waiting_submissions(problem) %>
 
 <% end %>

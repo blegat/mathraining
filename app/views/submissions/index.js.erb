@@ -1,7 +1,9 @@
 <% if @what == 0 %>
   <% str = "correct" %>
-<% else %>
+<% elsif @what == 1 %>
   <% str = "false" %>
+<% elsif @what == 2 %>
+  <% str = "friends" %>
 <% end %>
 var loading = document.getElementById("loading_<%= str %>");
 var none = document.getElementById("none_<%= str %>");

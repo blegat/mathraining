@@ -40,9 +40,11 @@ class SubmissionsController < ApplicationController
 
   # Show all submissions to a problem (only through js)
   def index
-    if @what == 0
-      @submissions = @problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where.not(:user => current_user).where(:status => :correct, :star => false).order('created_at DESC')
-    elsif @what == 1
+    if @what == 2 # Correct (non-star) friend submissions
+      @submissions = @problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where(:user => current_user.followed_users.ids, :status => :correct, :star => false).order('created_at DESC')
+    elsif @what == 0 # Other correct (non-star) friend submissions
+      @submissions = @problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where.not(:user => current_user.followed_users.ids + [current_user.id]).where(:status => :correct, :star => false).order('created_at DESC')
+    elsif @what == 1 # Wrong submissions
       @submissions = @problem.submissions.select(:id, :status, :star, :user_id, :problem_id, :intest, :created_at, :last_comment_time).includes(:user).where.not(:user => current_user).where(:status => [:wrong, :wrong_to_read, :plagiarized, :generated_with_ai, :closed]).order('created_at DESC')
     end
 
@@ -438,8 +440,8 @@ class SubmissionsController < ApplicationController
   def user_can_see_submissions
     redirect_to root_path if !(params.has_key?:what)
     @what = params[:what].to_i
-    redirect_to root_path if (@what != 0 && @what != 1)
-    if @what == 0    # See correct submissions (need to have solved problem or to be admin)
+    redirect_to root_path if (@what != 0 && @what != 1 && @what != 2)
+    if @what == 0 || @what == 2 # See correct submissions (need to have solved problem or to be admin)
       redirect_to root_path if !current_user.admin? && !current_user.pb_solved?(@problem)
     else # (@what == 1) # See incorrect submissions (need to be admin or corrector)
       redirect_to root_path if !current_user.admin? && !current_user.corrector?

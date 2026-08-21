@@ -942,6 +942,21 @@ describe "Submission pages", submission: true do
       end
     end
     
+    describe "shows correct submissions from followed users to a problem" do
+      before do
+        admin.followed_users << other_user2
+        visit problem_path(problem_with_submissions)
+        wait_for_js_imports
+        click_link "Afficher les soumissions correctes des utilisateurs suivis"
+        wait_for_ajax
+      end
+      it do
+        should have_link(other_user2.name, href: user_path(other_user2))
+        should have_link("Voir", href: problem_submission_path(problem_with_submissions, good_submission))
+        should have_no_link("Voir", href: problem_submission_path(problem_with_submissions, good_corrector_submission))
+      end
+    end
+    
     describe "shows correct submissions to a problem" do
       before do
         visit problem_path(problem_with_submissions)
