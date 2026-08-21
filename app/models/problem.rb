@@ -70,6 +70,16 @@ class Problem < ActiveRecord::Base
     return self.number.to_s + (self.archived? ? "*" : "")
   end
   
+  # Compute a new number for this problem
+  def compute_new_number
+    x = 0
+    loop do
+      x = self.section.id * 1000 + self.level * 100 + rand(100)
+      break if Problem.where(:number => x).count == 0
+    end
+    return x
+  end
+  
   # Tell if the problem can be seen by the given user
   def can_be_seen_by(user, no_new_submission)
     return true if user.admin?

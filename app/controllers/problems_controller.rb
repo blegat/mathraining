@@ -53,13 +53,7 @@ class ProblemsController < ApplicationController
   def create
     @problem = Problem.new(params.require(:problem).permit(:statement, :origin, :level, :publication_date))
     @problem.section = @section
-
-    nombre = 0
-    loop do
-      nombre = @problem.section.id * 1000 + @problem.level * 100 + rand(100)
-      break if Problem.where(:number => nombre).count == 0
-    end
-    @problem.number = nombre
+    @problem.number = @problem.compute_new_number
 
     if @problem.save
       flash[:success] = "Problème ajouté."
@@ -71,26 +65,11 @@ class ProblemsController < ApplicationController
 
   # Update a problem (send the form)
   def update
-    @problem.statement = params[:problem][:statement]
-    @problem.origin = params[:problem][:origin]
-    if @problem.waiting_publication?
-      @problem.publication_date = params[:problem][:publication_date]
-    else
-      @problem.archiving_date = params[:problem][:archiving_date]
-    end
-
-    if @problem.waiting_publication?
-      if @problem.level != params[:problem][:level].to_i
-        @problem.level = params[:problem][:level]
-        nombre = 0
-        loop do
-          nombre = @problem.level*100 + @problem.section.id*1000+rand(100)
-          break if Problem.where(number: nombre).count == 0
-        end
-        @problem.number = nombre
+    old_level = @problem.level
+    if @problem.update(params.require(:problem).permit(:statement, :origin, :level, :publication_date, :archiving_date))
+      if @problem.waiting_publication? && @problem.level != old_level
+        @problem.update_attribute(:number, @problem.compute_new_number)
       end
-    end
-    if @problem.save
       flash[:success] = "Problème modifié."
       redirect_to problem_path(@problem)
     else
