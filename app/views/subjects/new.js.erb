@@ -44,20 +44,18 @@
     
   <% if exovisibles %>
     <% some_exo_hidden = false %>
-    <% i = 1 %>
-    <% visible_questions = chapter.questions.select(:id).where(:online => true).order(:position).to_a %>
+    <% visible_questions = chapter.questions.select(:id, :number).where(:online => true).order(:position).to_a %>
     <% questions_with_subject = Subject.select(:question_id).where(:question_id => visible_questions.map(&:id)).to_a.map!(&:question_id) %>
     
-    <% visible_questions.each do |e| %>
-      <% if (e.id == edit_exo_id || !questions_with_subject.include?(e.id)) %>
+    <% visible_questions.each do |q| %>
+      <% if (q.id == edit_exo_id || !questions_with_subject.include?(q.id)) %>
         var opt = document.createElement('option');
-        opt.text = "Exercice <%= i %>"
-        opt.value = <%= e.id %>
+        opt.text = "Exercice <%= q.number %>"
+        opt.value = <%= q.id %>
         oldSel2.add(opt, null);
       <% else %>
         <% some_exo_hidden = true %>
       <% end %>
-      <% i = i+1 %>
     <% end %>
 
     <% if some_exo_hidden %>

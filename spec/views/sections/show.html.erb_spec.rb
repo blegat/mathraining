@@ -14,27 +14,27 @@ describe "sections/show.html.erb", type: :view, section: true do
   let!(:theory11) { FactoryBot.create(:theory, chapter: chapter1, online: true, position: 1) }
   let!(:theory12) { FactoryBot.create(:theory, chapter: chapter1, online: true, position: 2) }
   let!(:theory13_offline) { FactoryBot.create(:theory, chapter: chapter1, online: false, position: 3) }
-  let!(:question11) { FactoryBot.create(:exercise, chapter: chapter1, online: true, position: 1) }
-  let!(:question12) { FactoryBot.create(:exercise, chapter: chapter1, online: true, position: 2) }
+  let!(:question11) { FactoryBot.create(:exercise, chapter: chapter1, online: true, position: 1, number: 1) }
+  let!(:question12) { FactoryBot.create(:exercise, chapter: chapter1, online: true, position: 2, number: 2) }
   let!(:question13_offline) { FactoryBot.create(:exercise, chapter: chapter1, online: false, position: 3) }
-  let!(:question14) { FactoryBot.create(:exercise, chapter: chapter1, online: true, position: 4) }
+  let!(:question14) { FactoryBot.create(:exercise, chapter: chapter1, online: true, position: 4, number: 3) }
   
   let!(:chapter2) { FactoryBot.create(:chapter, section: section, online: true, level: 1, position: 2) }
   let!(:theory21) { FactoryBot.create(:theory, chapter: chapter2, online: true, position: 1) }
   let!(:theory22_offline) { FactoryBot.create(:theory, chapter: chapter2, online: false, position: 2) }
-  let!(:question21) { FactoryBot.create(:exercise, chapter: chapter2, online: true, position: 1) }
+  let!(:question21) { FactoryBot.create(:exercise, chapter: chapter2, online: true, position: 1, number: 1) }
   let!(:question22_offline) { FactoryBot.create(:exercise, chapter: chapter2, online: false, position: 2) }
   
   let!(:chapter3) { FactoryBot.create(:chapter, section: section, online: true, level: 1, position: 3) }
   let!(:theory31) { FactoryBot.create(:theory, chapter: chapter3, online: true, position: 1) }
-  let!(:question31) { FactoryBot.create(:exercise, chapter: chapter3, online: true, position: 1) }
+  let!(:question31) { FactoryBot.create(:exercise, chapter: chapter3, online: true, position: 1, number: 1) }
   
   let!(:chapter4) { FactoryBot.create(:chapter, section: section, online: true, level: 1, position: 4) }
-  let!(:question41) { FactoryBot.create(:exercise, chapter: chapter4, online: true, position: 1) }
+  let!(:question41) { FactoryBot.create(:exercise, chapter: chapter4, online: true, position: 1, number: 1) }
   
   let!(:chapter5_offline) { FactoryBot.create(:chapter, section: section, online: false, level: 1, position: 5) }
-  let!(:theory51_offline) { FactoryBot.create(:theory, chapter: chapter5_offline, online: false) }
-  let!(:question51_offline) { FactoryBot.create(:question, chapter: chapter5_offline, online: false) }
+  let!(:theory51_offline) { FactoryBot.create(:theory, chapter: chapter5_offline, online: false, position: 1) }
+  let!(:question51_offline) { FactoryBot.create(:question, chapter: chapter5_offline, online: false, position: 1) }
   
   before do
     chapter2.prerequisites << chapter1

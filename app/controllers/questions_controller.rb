@@ -139,6 +139,7 @@ class QuestionsController < ApplicationController
     question2 = @chapter.questions.where("position = ?", params[:new_position]).first
     if !question2.nil? && question2 != @question
       res = swap_position(@question, question2)
+      @chapter.renumber_questions
       flash[:success] = "Exercice déplacé#{res}." 
     end
     redirect_to chapter_question_path(@chapter, @question)
@@ -147,6 +148,7 @@ class QuestionsController < ApplicationController
   # Put a question online
   def put_online
     @question.update_attribute(:online, true)
+    @chapter.renumber_questions
     @section.update_attribute(:max_score, @section.max_score + @question.value)
     redirect_to chapter_question_path(@chapter, @question)
   end

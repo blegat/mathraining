@@ -134,7 +134,7 @@ function checkWepion() {
   <%= f.select(:chapter_id, options_for_select(listechap, selected_chapter), {}, { :class => "form-select", :style => "width:100%; max-width:400px; #{'display:none;' if !seechap}", :onchange => ("javascript: checkChapter();")}) %>
 </div>
 
-<% selected_exercise = 0 %>
+<% selected_question = 0 %>
 <% seeexo = false %>
 
 <!-- Exercice (visible lorsque chapitre choisi) -->
@@ -143,7 +143,7 @@ function checkWepion() {
   <% chap = Chapter.find(selected_chapter) %>
   <% if use_subject_obj %>
     <% if !@subject.question_id.nil? %>
-      <% selected_exercise = @subject.question_id %>
+      <% selected_question = @subject.question_id %>
     <% end %>
   <% end %>
 <% end %>
@@ -167,20 +167,18 @@ function checkWepion() {
   <% listeexo.push(["Aucun exercice en particulier", 0]) %>
   
   <% if exovisibles %>
-    <% i = 1 %>
-    <% visible_questions = chap.questions.select(:id).where(:online => true).order(:position).to_a %>
+    <% visible_questions = chap.questions.select(:id, :number).where(:online => true).order(:position).to_a %>
     <% questions_with_subject = Subject.select(:question_id).where.not(:id => @subject.id).where(:question_id => visible_questions.map(&:id)).to_a.map!(&:question_id) %>
     
-    <% visible_questions.each do |e| %>
-      <% if !questions_with_subject.include?(e.id) %>
-        <% listeexo.push(["Exercice #{i}", e.id]) %>
-        <% if selected_exercise == e.id %>
-          <% forced_title = "Exercice #{i}" %>
+    <% visible_questions.each do |q| %>
+      <% if !questions_with_subject.include?(q.id) %>
+        <% listeexo.push(["Exercice #{q.number}", q.id]) %>
+        <% if selected_question == q.id %>
+          <% forced_title = "Exercice #{q.number}" %>
         <% end %>
       <% else %>
         <% some_exo_hidden = true %>
       <% end %>
-      <% i = i+1 %>
     <% end %>
   <% end %>
 <% end %>
@@ -189,7 +187,7 @@ function checkWepion() {
   <%= f.label :question_id, :class => "form-label", :style => "#{ 'display:none;' if !seeexo }", :id => "label_exo" %>
   <p id="alert-no-exercise-access" style="<%= 'display:none;' if exovisibles %>" class="text-color-red mb-1">Vous n'avez pas accès aux exercices de ce chapitre.</p>
   <p id="alert-some-exercise-hidden" style="<%= 'display:none;' if !some_exo_hidden %>" class="text-color-orange mb-1">Certains exercices n'apparaissent pas dans la liste suivante car un sujet a déjà été ouvert à leur propos.</p>
-  <%= f.select(:question_id, options_for_select(listeexo, selected_exercise), {}, { :class => "form-select", :style => "width:100%; max-width:400px; #{ 'display:none;' if !seeexo }", :onchange => ("javascript: checkQuestion();")}) %>
+  <%= f.select(:question_id, options_for_select(listeexo, selected_question), {}, { :class => "form-select", :style => "width:100%; max-width:400px; #{ 'display:none;' if !seeexo }", :onchange => ("javascript: checkQuestion();")}) %>
 </div>
 
 
@@ -242,7 +240,7 @@ function checkWepion() {
 
 
 <!-- Titre -->
-<% if selected_exercise > 0 || selected_problem > 0 %>
+<% if selected_question > 0 || selected_problem > 0 %>
   <div class="mb-2">
     <%= f.label :title, :class => "form-label" %>
     <%= f.text_field :title, :class => "form-control", :maxlength => "255", :style => "width:100%; max-width:400px;", :name => "osef", :disabled => "disabled", :value => forced_title %>

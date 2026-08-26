@@ -21,16 +21,16 @@
 
 <% if !@user.admin? %>
 
-  <!-- On détermine ce que la personne peut voir ou ne pas voir -->
+  <!-- On détermine ce que la personne peut voir ou ne pas voir (NB: on peut tout voir sur son propre profil) -->
   
-  <% non_accessible_chapters_set = non_accessible_chapters_ids(current_user) %>
-  <% non_accessible_problems_set = non_accessible_problems_ids(current_user) %>
-  <% fully_accessible_problems_set = fully_accessible_problems_ids(current_user) %>
-  <% fully_accessible_questions_set = fully_accessible_questions_ids(current_user) %>
+  <% non_accessible_chapters_set = (@user == current_user ? Set.new : non_accessible_chapters_ids(current_user)) %>
+  <% non_accessible_problems_set = (@user == current_user ? Set.new : non_accessible_problems_ids(current_user)) %>
+  <% fully_accessible_problems_set = (@user == current_user ? "all" : fully_accessible_problems_ids(current_user)) %>
+  <% fully_accessible_questions_set = (@user == current_user ? "all" : fully_accessible_questions_ids(current_user)) %>
   
   <!-- On va parcourir tous les exercices et problèmes -->
   
-  <% questions = @user.solvedquestions.joins(question: :chapter).select("solvedquestions.question_id AS id, solvedquestions.resolution_time AS time, questions.level AS level, questions.chapter_id AS chapter_id, chapters.name AS chapter_name").order("resolution_time DESC").to_a %>
+  <% questions = @user.solvedquestions.joins(question: :chapter).select("solvedquestions.question_id AS id, solvedquestions.resolution_time AS time, questions.level AS level, questions.chapter_id AS chapter_id, questions.number AS number, chapters.name AS chapter_name").order("resolution_time DESC").to_a %>
 
   <% problems = @user.solvedproblems.joins(:problem).select("solvedproblems.problem_id AS id, solvedproblems.resolution_time AS time, solvedproblems.submission_id AS submission_id, problems.level AS level, problems.number AS number, problems.virtualtest_id AS virtualtest_id, problems.section_id AS section_id").order("resolution_time DESC").to_a %>
 
@@ -71,7 +71,7 @@
         <% end %>
       <% end %>
       <% q_encours = q_encours + 1 %>
-      <% act.push({:time => q.time, :type => "Q", :id => q.id, :pt => 3 * q.level, :chapter_name => q.chapter_name, :chapter_id => q.chapter_id}) %>
+      <% act.push({:time => q.time, :type => "Q", :id => q.id, :pt => 3 * q.level, :number => q.number, :chapter_name => q.chapter_name, :chapter_id => q.chapter_id}) %>
     <% elsif bestqui == "P" %>
       <% p = problems[p_encours] %>
       <% nb_p = nb_p+1 %>
@@ -384,9 +384,9 @@
         <% if a[:type] == "Q" %>
           <% if !non_accessible_chapters_set.include?(a[:chapter_id]) %>
             <% can_see_solution = (fully_accessible_questions_set == "all" || fully_accessible_questions_set.include?(a[:id])) %>
-            <%= link_to "Exercice", chapter_question_path(a[:chapter_id], a[:id]), :class => "#{'text-color-dark-light-blue' if !can_see_solution}" %>
+            <%= link_to "Exercice #{a[:number]}", chapter_question_path(a[:chapter_id], a[:id]), :class => "#{'text-color-dark-light-blue' if !can_see_solution}" %>
           <% else %>
-            Exercice
+            Exercice <%= a[:number] %>
           <% end %>
           - <%= a[:chapter_name] %>
         <% elsif a[:type] == "P" %>

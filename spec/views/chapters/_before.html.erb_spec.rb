@@ -14,9 +14,9 @@ describe "chapters/_before.html.erb", type: :view, chapter: true do
   let!(:theory2_offline) { FactoryBot.create(:theory, chapter: chapter, online: false, position: 2) }
   let!(:theory3) { FactoryBot.create(:theory, chapter: chapter, online: true, position: 3) }
   let!(:question1_offline) { FactoryBot.create(:exercise, chapter: chapter, online: false, position: 1) }
-  let!(:question2) { FactoryBot.create(:exercise_decimal, chapter: chapter, online: true, position: 2) }
-  let!(:question3) { FactoryBot.create(:qcm, chapter: chapter, online: true, position: 4) }
-  let!(:question4) { FactoryBot.create(:qcm_multiple, chapter: chapter, online: true, position: 5) }
+  let!(:question2) { FactoryBot.create(:exercise_decimal, chapter: chapter, online: true, position: 2, number: 1) }
+  let!(:question3) { FactoryBot.create(:qcm, chapter: chapter, online: true, position: 4, number: 2) }
+  let!(:question4) { FactoryBot.create(:qcm_multiple, chapter: chapter, online: true, position: 5, number: 3) }
   let!(:sq3) { FactoryBot.create(:solvedquestion, user: user, question: question3) }
   let!(:sq4) { FactoryBot.create(:unsolvedquestion, user: user, question: question4) }
   

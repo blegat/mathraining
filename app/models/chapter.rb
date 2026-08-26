@@ -62,6 +62,20 @@ class Chapter < ActiveRecord::Base
     visited.to_a
   end
   
+  # To automatically renumber all questions after a change
+  def renumber_questions
+    return if !self.online
+    i = 1
+    self.questions.where(:online => true).order(:position).each do |q|
+      q.update_attribute(:number, i)
+      s = q.subject
+      if !s.nil?
+        s.update_attribute(:title, "Exercice #{i}")
+      end
+      i += 1
+    end
+  end
+  
   # Update nb_tries and nb_completions
   def update_stats
     real_nb_tries = Solvedquestion.where(:question => self.questions).distinct.count(:user_id)

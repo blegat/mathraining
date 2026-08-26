@@ -50,7 +50,6 @@
 
     <!-- Exercices -->
     <% first_shown = true %>
-    <% question_number = 1 %>
     <% questions = @chapter.questions.order(:position).to_a %>
     <% questions_ids = questions.map { |q| q.id } %>
     <% solvedquestions = nil %>
@@ -67,7 +66,7 @@
           <% actif = "" %>
           <% if active == 'question-' + q.id.to_s %>
             <% actif = "active" %>
-            <% @number = question_number %>
+            <% @number = q.number %>
           <% end %>
             
           <% kind = "" %>
@@ -90,11 +89,10 @@
           <% else %>
             <% kind = "list-group-item-warning" %>
           <% end %>
-          <%= link_to "Exercice #{question_number if q.online}", chapter_question_path(@chapter, q), :id => "menu-question-#{q.id}", :class => "list-group-item list-group-item-action #{kind} #{actif}" %>
+          <%= link_to "Exercice #{q.number if q.online}", chapter_question_path(@chapter, q), :id => "menu-question-#{q.id}", :class => "list-group-item list-group-item-action #{kind} #{actif}" %>
         <% else %>
-          <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true"><%= "Exercice #{question_number}" %></a>
+          <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true"><%= "Exercice #{q.number}" %></a>
         <% end %> 
-        <% question_number += 1 if q.online %>
       <% end %>
     <% end %>
     

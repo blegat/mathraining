@@ -1,4 +1,3 @@
-<% j = 1 %>
 <% k = 1 %>
 
 <% nb_questions = 0 %>
@@ -34,12 +33,11 @@
           <% classe = "btn btn-ld-light-dark" %>
         <% end %>
         
-        <%= link_to "#{j if q.online}#{'!' if !q.online}", chapter_question_path(chapter, q), :class => classe %>
+        <%= link_to "#{q.number if q.online}#{'!' if !q.online}", chapter_question_path(chapter, q), :class => classe %>
       <% else %>
-        <button class="btn btn-ld-light-dark disabled" id="disabled-question-<%= q.id %>"><%= j %></button>
+        <button class="btn btn-ld-light-dark disabled" id="disabled-question-<%= q.id %>"><%= q.number %></button>
       <% end %>
-      <% j = j+1 if q.online %>
-      <% k = k+1 %>
+      <% k += 1 %>
       
       <% if check_if_chapter_solved && all_questions_solved && q.online? && @question_status[q.id] != "correct" %>
         <% all_questions_solved = false %>

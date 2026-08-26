@@ -9,8 +9,8 @@ describe "Question pages", question: true do
   let(:user) { FactoryBot.create(:user) }
   let!(:chapter) { FactoryBot.create(:chapter, online: true) }
   let!(:empty_chapter) { FactoryBot.create(:chapter, online: true) }
-  let!(:online_exercise) { FactoryBot.create(:exercise, chapter: chapter, online: true, position: 1) }
-  let!(:online_qcm) { FactoryBot.create(:qcm, chapter: chapter, online: true, position: 2) }
+  let!(:online_exercise) { FactoryBot.create(:exercise, chapter: chapter, online: true, position: 1, number: 1) }
+  let!(:online_qcm) { FactoryBot.create(:qcm, chapter: chapter, online: true, position: 2, number: 2) }
   let!(:online_item_correct) { FactoryBot.create(:item_correct, question: online_qcm, position: 1) }
   let!(:online_item_incorrect) { FactoryBot.create(:item, question: online_qcm, position: 2) }
   let!(:offline_exercise) { FactoryBot.create(:exercise_decimal, chapter: chapter, online: false, position: 3) }
@@ -100,7 +100,10 @@ describe "Question pages", question: true do
           click_link "Mettre en ligne"
           offline_exercise.reload
         end
-        specify { expect(offline_exercise.online).to eq(true) }
+        specify do
+          expect(offline_exercise.online).to eq(true)
+          expect(offline_exercise.number).to eq(3)
+        end
       end
     end
     
@@ -138,14 +141,19 @@ describe "Question pages", question: true do
       end
       
       describe "and modifies it" do
+        let!(:exercise_sub) { FactoryBot.create(:subject, section: chapter.section, chapter: chapter, question: online_exercise, title: "Exercice 1") }
         before do
           click_link "bas"
           online_exercise.reload
           online_qcm.reload
+          exercise_sub.reload
         end
         specify do
           expect(online_exercise.position).to eq(2)
           expect(online_qcm.position).to eq(1)
+          expect(online_exercise.number).to eq(2)
+          expect(online_qcm.number).to eq(1)
+          expect(exercise_sub.title).to eq("Exercice 2")
           expect(page).to have_link "bas" # Because position 2 out of >= 4
           expect(page).to have_link "haut"
         end
@@ -155,10 +163,14 @@ describe "Question pages", question: true do
             click_link "haut"
             online_exercise.reload
             online_qcm.reload
+            exercise_sub.reload
           end
           specify do
             expect(online_exercise.position).to eq(1)
             expect(online_qcm.position).to eq(2)
+            expect(online_exercise.number).to eq(1)
+            expect(online_qcm.number).to eq(2)
+            expect(exercise_sub.title).to eq("Exercice 1")
           end
         end
       end

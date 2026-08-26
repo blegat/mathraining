@@ -58,7 +58,7 @@
   <% end %>
 <% end %>
 
-<% @questions_by_chapter = Question.select(:id, :online, :chapter_id).where(:chapter_id => chapters_id).order(:chapter_id, :position).group_by{|q| q.chapter_id} %>
+<% @questions_by_chapter = Question.select(:id, :number, :online, :chapter_id).where(:chapter_id => chapters_id).order(:chapter_id, :position).group_by{|q| q.chapter_id} %>
 <% @theories_by_chapter = Theory.select(:id, :online, :title, :chapter_id).where(:chapter_id => chapters_id).order(:chapter_id, :position).group_by{|t| t.chapter_id} %>
 
 <% num_level = (@section.fondation ? 1 : 3) %>
