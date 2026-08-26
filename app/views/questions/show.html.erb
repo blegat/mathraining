@@ -91,7 +91,7 @@ var checkAnswer = function() {
 <!-- Titre -->
 <div class="split-title-lg">
   <div class="part-1">
-    <h3>Exercice&nbsp;<%= @number if @question.online? %></h3>
+    <h3>Exercice&nbsp;<%= @question.number if @question.online? %></h3>
   </div>
   <div id="question-badges" class="part-2 mb-2">
     <%= render 'questions/title_badges', question: @question, solved: !solvedquestion.nil? %>
