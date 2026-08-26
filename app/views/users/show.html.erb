@@ -366,7 +366,7 @@
           <% end %>
           <% if a[:type] == "P" && a[:status] == Problem.statuses[:archived] && !a[:archiving_date].nil? %>
             <% archivedate = a[:archiving_date] %>
-            <% archivedateday = Time.zone.local(archivedate.year, archivedate.month, archivedate.day, (parquoi == "jour" ? 0 : 8), 0, 0) %>
+            <% archivedateday = Time.zone.local(archivedate.year, archivedate.month, archivedate.day, 0, 0, 0) %>
             <% if actperday.key?(archivedateday) %>
               <% actperday[archivedateday] -= a[:pt] %>
             <% else %>
@@ -556,7 +556,7 @@
       <% cur_rating += pt %>
       <% max_rating = cur_rating if cur_rating > max_rating %>
     <% end %>
-      
+
     <% maxi = 1.15 * max_rating %>
       
     <% niveaux = Color.get_all %>
@@ -582,6 +582,7 @@
         var graph_int_times = <%= ruby_to_javascript(graph_int_times) %>;
         var graph_times = <%= ruby_to_javascript_string(graph_times) %>;
         var graph_points = <%= ruby_to_javascript(graph_points) %>;
+        var max_rating = <%= max_rating %>;
         var maxi = <%= maxi %>;
       
         // Check light or dark theme
@@ -718,6 +719,21 @@
           ctx.beginPath(); 
           ctx.arc(W_offset + w, H_offset + h, 3, 0, 2 * Math.PI, true);
           ctx.fill();
+          
+          if (r == max_rating && j < graph_int_times.length - 1) {
+            ctx.font = "bold 14px Arial";
+            text_size = ctx.measureText(max_rating).width;
+            adapted_w = w;
+            up_limit = W_size - text_size / 2 - 5;
+            if (adapted_w > up_limit) {
+              adapted_w = up_limit;
+            }
+            down_limit = text_size / 2 + 5;
+            if (adapted_w < down_limit) {
+              adapted_w = down_limit;
+            }
+            ctx.fillText(max_rating, W_offset + adapted_w, H_offset + h - 8);
+          }
         }
         
         // Contour du canvas
