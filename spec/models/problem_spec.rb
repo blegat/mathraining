@@ -176,5 +176,70 @@ describe Problem, problem: true do
       end
     end
   end
-
+  
+  # auto_publish
+  describe "auto_publish" do
+    let!(:today) { Date.today }
+    let!(:section) { FactoryBot.create(:section) }
+    let!(:problem_to_publish) { FactoryBot.create(:problem, section: section, status: :waiting_publication, publication_date: today) }
+    let!(:problem_to_publish_tomorrow) { FactoryBot.create(:problem, section: section, status: :waiting_publication, publication_date: today + 1.day) }
+    let!(:old_max_score) { section.max_score }
+    
+    before do
+      Problem.auto_publish
+      problem_to_publish.reload
+      problem_to_publish_tomorrow.reload
+      section.reload
+    end
+    
+    specify do
+      expect(problem_to_publish.published?).to eq(true)
+      expect(problem_to_publish_tomorrow.waiting_publication?).to eq(true)
+      expect(section.max_score).to eq(old_max_score + problem_to_publish.value)
+    end
+  end
+  
+  # auto_archive
+  describe "auto_archive" do
+    let!(:today) { Date.today }
+    let!(:section) { FactoryBot.create(:section) }
+    let!(:other_section) { FactoryBot.create(:section) }
+    let!(:problem_to_archive) { FactoryBot.create(:problem, section: section, status: :published, archiving_date: today) }
+    let!(:problem_to_archive_tomorrow) { FactoryBot.create(:problem, section: section, status: :published, archiving_date: today + 1.day) }
+    let!(:old_rating) { 200 }
+    let!(:user) { FactoryBot.create(:user, rating: old_rating) }
+    let!(:solvedproblem) { FactoryBot.create(:solvedproblem, user: user, problem: problem_to_archive) }
+    let!(:pps_section) { user.pointspersections.where(section: section).first }
+    let!(:pps_other_section) { user.pointspersections.where(section: other_section).first }
+    let!(:old_max_score) { section.max_score }
+    let!(:other_user) { FactoryBot.create(:user, rating: old_rating) }
+    let!(:other_pps_section) { other_user.pointspersections.where(section: section).first }
+    
+    before do
+      pps_section.update_attribute(:points, old_rating)
+      pps_other_section.update_attribute(:points, old_rating)
+      other_pps_section.update_attribute(:points, old_rating)
+      Problem.auto_archive
+      problem_to_archive.reload
+      problem_to_archive_tomorrow.reload
+      section.reload
+      other_section.reload
+      user.reload
+      other_user.reload
+      pps_section.reload
+      pps_other_section.reload
+      other_pps_section.reload
+    end
+    
+    specify do
+      expect(problem_to_archive.archived?).to eq(true)
+      expect(problem_to_archive_tomorrow.published?).to eq(true)
+      expect(section.max_score).to eq(old_max_score - problem_to_archive.value)
+      expect(user.rating).to eq(old_rating - problem_to_archive.value)
+      expect(other_user.rating).to eq(old_rating)
+      expect(pps_section.points).to eq(old_rating - problem_to_archive.value)
+      expect(pps_other_section.points).to eq(old_rating)
+      expect(other_pps_section.points).to eq(old_rating)
+    end
+  end
 end

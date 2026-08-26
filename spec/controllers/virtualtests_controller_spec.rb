@@ -12,7 +12,10 @@ describe VirtualtestsController, :type => :controller, virtualtest: true do
   let!(:offline_virtualtest) { FactoryBot.create(:virtualtest, status: :waiting_publication) }
   let!(:problem2) { FactoryBot.create(:problem, status: :published, virtualtest: offline_virtualtest) }
   
-  before { problem.chapters << chapter }
+  before do
+    problem.chapters << chapter
+    problem2.chapters << chapter
+  end
   
   describe "if the user is not signed in" do
     it { expect(response).to have_controller_index_behavior(:ok) }
@@ -49,6 +52,7 @@ describe VirtualtestsController, :type => :controller, virtualtest: true do
     it { expect(response).to have_controller_destroy_behavior(offline_virtualtest, :access_refused) }
     it { expect(response).to have_controller_put_path_behavior('put_online', offline_virtualtest, :access_refused) }
     it { expect(response).to have_controller_put_path_behavior('begin_test', virtualtest, :ok) }
+    it { expect(response).to have_controller_put_path_behavior('begin_test', offline_virtualtest, :access_refused) }
     
     describe "and has started the test" do
       before { Takentest.create(virtualtest: virtualtest, user: user, taken_time: DateTime.now - 2.minutes, status: :in_progress) }
