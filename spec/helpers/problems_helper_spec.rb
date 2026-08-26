@@ -53,6 +53,17 @@ describe ProblemsHelper, type: :helper, problem: true do
     end
   end
   
+  describe "fully accessible problems" do
+    let!(:solvedproblem1) { FactoryBot.create(:solvedproblem, problem: problem1, user: user1) }
+    it do
+      expect(fully_accessible_problems_ids(admin)).to eq("all")
+      expect(fully_accessible_problems_ids(user1)).to eq(Set[problem1.id]) # User 1 solved problem 1
+      expect(fully_accessible_problems_ids(user2)).to eq(Set.new) # User 2 hasn't solved problem 2
+      expect(fully_accessible_problems_ids(user_bad)).to eq(Set.new)
+      expect(fully_accessible_problems_ids(nil)).to eq(Set.new) # not signed in
+    end
+  end
+  
   describe "non-accessible problems from section" do
     it do      
       expect(non_accessible_problems_ids(admin, section)).to eq(Set.new)

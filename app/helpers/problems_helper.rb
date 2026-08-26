@@ -37,6 +37,15 @@ module ProblemsHelper
     return section.problems.select(get_problem_columns_string(columns)).where.not(:id => ids_to_reject).order("level, number")
   end
   
+  # Get all accessible problem ids for which the current user can see the (correct) submissions
+  def fully_accessible_problems_ids(user)
+    return Set.new if !has_enough_points(user)
+    
+    return "all" if user.admin?
+    
+    return user.solvedproblems.pluck(:problem_id).to_set
+  end
+  
   def get_problem_columns_string(columns)
     columns_string = ""
     columns.each do |c|

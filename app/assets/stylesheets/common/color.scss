@@ -80,12 +80,18 @@
 
 [data-bs-theme="light"] {
   .text-color-dark-light-blue {
-    color: #0000bb!important;
+    color: #0000dd!important;
+  }
+  .text-color-dark-light-blue:hover {
+    color: #000099!important;
   }
 }
 
 [data-bs-theme="dark"] {
   .text-color-dark-light-blue {
+    color: #b0b0ff!important;
+  }
+  .text-color-dark-light-blue:hover {
     color: #c0c0ff!important;
   }
 }

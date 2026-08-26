@@ -25,6 +25,8 @@
   
   <% non_accessible_chapters_set = non_accessible_chapters_ids(current_user) %>
   <% non_accessible_problems_set = non_accessible_problems_ids(current_user) %>
+  <% fully_accessible_problems_set = fully_accessible_problems_ids(current_user) %>
+  <% fully_accessible_questions_set = fully_accessible_questions_ids(current_user) %>
   
   <!-- On va parcourir tous les exercices et problèmes -->
   
@@ -68,9 +70,8 @@
           <% premier = q.time.in_time_zone %>
         <% end %>
       <% end %>
-      <% peutvoir = !non_accessible_chapters_set.include?(q.chapter_id) %>
       <% q_encours = q_encours + 1 %>
-      <% act.push({:time => q.time, :type => "Q", :id => q.id, :peutvoir => peutvoir, :pt => 3 * q.level, :chapter_name => q.chapter_name, :chapter_id => q.chapter_id}) %>
+      <% act.push({:time => q.time, :type => "Q", :id => q.id, :pt => 3 * q.level, :chapter_name => q.chapter_name, :chapter_id => q.chapter_id}) %>
     <% elsif bestqui == "P" %>
       <% p = problems[p_encours] %>
       <% nb_p = nb_p+1 %>
@@ -78,9 +79,8 @@
       <% if premier.nil? %>
         <% premier = p.time.in_time_zone %>
       <% end %>
-      <% peutvoir = non_accessible_problems_set != "all" && !non_accessible_problems_set.include?(p.id) %>
       <% p_encours = p_encours + 1 %>
-      <% act.push({:time => p.time, :type => "P", :id => p.id, :sub => p.submission_id, :peutvoir => peutvoir, :pt => 15 * p.level, :number => p.number, :section_id => p.section_id}) %>
+      <% act.push({:time => p.time, :type => "P", :id => p.id, :sub => p.submission_id, :pt => 15 * p.level, :number => p.number, :section_id => p.section_id}) %>
     <% end %>
   <% end %>
   
@@ -382,15 +382,17 @@
         <td class="d-none d-md-table-cell text-center" style="width:60px; <%= remove_border %>"><%= write_hour(date) %></td>
         <td style="<%= remove_border %>">
         <% if a[:type] == "Q" %>
-          <% if a[:peutvoir] %>
-            <%= link_to "Exercice", chapter_question_path(a[:chapter_id], a[:id]) %>
+          <% if !non_accessible_chapters_set.include?(a[:chapter_id]) %>
+            <% can_see_solution = (fully_accessible_questions_set == "all" || fully_accessible_questions_set.include?(a[:id])) %>
+            <%= link_to "Exercice", chapter_question_path(a[:chapter_id], a[:id]), :class => "#{'text-color-dark-light-blue' if !can_see_solution}" %>
           <% else %>
             Exercice
           <% end %>
           - <%= a[:chapter_name] %>
         <% elsif a[:type] == "P" %>
-          <% if a[:peutvoir] %>
-            <%= link_to "Problème ##{a[:number]}", problem_submission_path(a[:id], a[:sub]) %>
+          <% if non_accessible_problems_set != "all" && !non_accessible_problems_set.include?(a[:id])  %>
+            <% can_see_submission = (fully_accessible_problems_set == "all" || fully_accessible_problems_set.include?(a[:id])) %>
+            <%= link_to "Problème ##{a[:number]}", problem_submission_path(a[:id], a[:sub]), :class => "#{'text-color-dark-light-blue' if !can_see_submission}" %>
           <% else %>
             Problème #<%= a[:number] %>
           <% end %>
