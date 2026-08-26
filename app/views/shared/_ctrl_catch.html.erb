@@ -1,0 +1,27 @@
+<% if !defined?(postfix) %>
+  <% postfix = "" %>
+<% end %>
+<% if !defined?(hiddentext) %>
+  <% hiddentext = false %>
+<% end %>
+
+<script>
+window.addEventListener('load', () => {
+  form = document.getElementById('MathInput<%= postfix %>');
+  form.addEventListener('keydown', function(event) {
+    if (event.ctrlKey || event.metaKey) { // Ctrl or Cmd is pressed
+      letter = event.key.toLowerCase();
+      if (letter === 'b' || letter === 'u' || letter === 'i') {
+        event.preventDefault(); // Remove default action from browser
+        Insert.insert('<%= opening.html_safe %>' + letter + '<%= closing.html_safe %>', '<%= opening.html_safe %>/' + letter + '<%= closing.html_safe %>', 'MathInput<%= postfix %>');
+      }
+      <% if hiddentext %>
+        if (letter === 'h') {
+          event.preventDefault(); // Remove default action from browser
+          Insert.insert('[hide=Texte caché]\n', '\n[/hide]', 'MathInput<%= postfix %>');
+        }
+      <% end %>
+    }
+  })
+})
+</script>
