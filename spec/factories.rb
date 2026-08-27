@@ -196,7 +196,7 @@ FactoryBot.define do
     level { 1 }
     sequence(:number) { |n| n }
     sequence(:origin) { |n| "Compétition numéro #{n}" }
-    online { false }
+    status { :waiting_publication }
   end
   
   # Puzzle
@@ -385,6 +385,6 @@ FactoryBot.define do
   factory :virtualtest do
     duration { 120 }
     sequence(:number) { |n| n }
-    online { false }
+    status { :waiting_publication }
   end
 end

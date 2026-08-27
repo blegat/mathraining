@@ -252,7 +252,7 @@ describe "layouts/_header.html.erb", type: :view, layout: true do
     end
     
     context "and there is a star proposal" do
-      let!(:problem) { FactoryBot.create(:problem, online: true, reviewed: true) }
+      let!(:problem) { FactoryBot.create(:problem, status: :published, reviewed: true) }
       let!(:submission) { FactoryBot.create(:submission, problem: problem, status: :correct) }
       let!(:starproposal) { FactoryBot.create(:starproposal, submission: submission) }
       

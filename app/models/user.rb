@@ -473,7 +473,7 @@ class User < ActiveRecord::Base
       unless s.fondation
         problem_scores_by_section[s.id] = Array.new
         question_scores_by_section[s.id] = Array.new
-        real_max_score = 15 * s.problems.where(:online => true).sum(:level) + 3 * Question.where(:chapter_id => s.chapters, :online => true).sum(:level)
+        real_max_score = 15 * s.problems.where(:status => :published).sum(:level) + 3 * Question.where(:chapter_id => s.chapters, :online => true).sum(:level)
       end
       if s.max_score != real_max_score
         all_warnings.push("Section " + s.id.to_s + " should have max score " + real_max_score.to_s + " instead of " + s.max_score.to_s + "!")
@@ -483,7 +483,7 @@ class User < ActiveRecord::Base
       end
     end
     
-    User.joins(solvedproblems: :problem).select("users.id, problems.section_id, 15*sum(problems.level) AS x").group("users.id, problems.section_id").each do |u|
+    User.joins(solvedproblems: :problem).where("problems.status = ?", Problem.statuses[:published]).select("users.id, problems.section_id, 15*sum(problems.level) AS x").group("users.id, problems.section_id").each do |u|
       problem_scores_by_section[u.section_id][u.id] = u.x
       problem_scores[u.id] = 0 if problem_scores[u.id].nil?
       problem_scores[u.id] += u.x

@@ -6,9 +6,9 @@ describe "Takentestcheck pages", virtualtest: true do
   subject { page }
   
   let!(:user) { FactoryBot.create(:advanced_user) }
-  let!(:virtualtest) { FactoryBot.create(:virtualtest, online: true) }
-  let!(:problem1) { FactoryBot.create(:problem, virtualtest: virtualtest, online: true, position: 1) }
-  let!(:problem2) { FactoryBot.create(:problem, virtualtest: virtualtest, online: true, position: 2) }
+  let!(:virtualtest) { FactoryBot.create(:virtualtest, status: :published) }
+  let!(:problem1) { FactoryBot.create(:problem, virtualtest: virtualtest, status: :published, position: 1) }
+  let!(:problem2) { FactoryBot.create(:problem, virtualtest: virtualtest, status: :published, position: 2) }
   let!(:takentest) { Takentest.create(user: user, virtualtest: virtualtest, taken_time: DateTime.now, status: :in_progress) }
   let!(:submission) { FactoryBot.create(:submission, user: user, problem: problem1, intest: true, status: :draft) }
   

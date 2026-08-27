@@ -4,9 +4,9 @@ class ProblemsController < ApplicationController
   
   before_action :signed_in_user, only: [:show, :new, :edit, :edit_explanation, :edit_markscheme, :manage_externalsolutions]
   before_action :signed_in_user_danger, only: [:create, :update, :destroy, :order, :put_online, :update_explanation, :update_markscheme, :add_prerequisite, :delete_prerequisite, :add_virtualtest, :mark_favorite, :unmark_favorite, :mark_reviewed, :unmark_reviewed]
-  before_action :admin_user, only: [:new, :create, :edit, :update, :destroy, :order, :put_online, :edit_explanation, :update_explanation, :edit_markscheme, :update_markscheme, :add_prerequisite, :delete_prerequisite, :add_virtualtest, :manage_externalsolutions]
+  before_action :admin_user, only: [:new, :create, :edit, :update, :destroy, :order, :edit_explanation, :update_explanation, :edit_markscheme, :update_markscheme, :add_prerequisite, :delete_prerequisite, :add_virtualtest, :manage_externalsolutions]
   before_action :corrector_user, only: [:mark_favorite, :unmark_favorite]
-  before_action :root_user, only: [:mark_reviewed, :unmark_reviewed]
+  before_action :root_user, only: [:put_online, :mark_reviewed, :unmark_reviewed]
   
   before_action :get_problem, only: [:show, :edit, :update, :destroy, :edit_explanation, :update_explanation, :edit_markscheme, :update_markscheme, :order, :add_prerequisite, :delete_prerequisite, :add_virtualtest, :put_online, :manage_externalsolutions, :mark_favorite, :unmark_favorite, :mark_reviewed, :unmark_reviewed]
   before_action :get_section, only: [:index, :new, :create]
@@ -51,16 +51,9 @@ class ProblemsController < ApplicationController
 
   # Create a problem (send the form)
   def create
-    @problem = Problem.new(params.require(:problem).permit(:statement, :origin, :level))
-    @problem.online = false
+    @problem = Problem.new(params.require(:problem).permit(:statement, :origin, :level, :publication_date))
     @problem.section = @section
-
-    nombre = 0
-    loop do
-      nombre = @problem.section.id * 1000 + @problem.level * 100 + rand(100)
-      break if Problem.where(:number => nombre).count == 0
-    end
-    @problem.number = nombre
+    @problem.number = @problem.compute_new_number
 
     if @problem.save
       flash[:success] = "Problème ajouté."
@@ -72,21 +65,11 @@ class ProblemsController < ApplicationController
 
   # Update a problem (send the form)
   def update
-    @problem.statement = params[:problem][:statement]
-    @problem.origin = params[:problem][:origin]
-
-    if !@problem.online
-      if @problem.level != params[:problem][:level].to_i
-        @problem.level = params[:problem][:level]
-        nombre = 0
-        loop do
-          nombre = @problem.level*100 + @problem.section.id*1000+rand(100)
-          break if Problem.where(number: nombre).count == 0
-        end
-        @problem.number = nombre
+    old_level = @problem.level
+    if @problem.update(params.require(:problem).permit(:statement, :origin, :level, :publication_date, :archiving_date))
+      if @problem.waiting_publication? && @problem.level != old_level
+        @problem.update_attribute(:number, @problem.compute_new_number)
       end
-    end
-    if @problem.save
       flash[:success] = "Problème modifié."
       redirect_to problem_path(@problem)
     else
@@ -103,12 +86,7 @@ class ProblemsController < ApplicationController
 
   # Put a problem online
   def put_online
-    @problem.update_attribute(:online, true)
-    if @problem.virtualtest_id == 0
-      @problem.update_attribute(:markscheme, "")
-    end
-    @section = @problem.section
-    @section.update_attribute(:max_score, @section.max_score + @problem.value)
+    @problem.set_published
     redirect_to problem_path(@problem)
   end
 
@@ -238,7 +216,9 @@ class ProblemsController < ApplicationController
 
   # Check that the problem is offline
   def offline_problem
-    return if check_online_object(@problem)
+    if !@problem.waiting_publication?
+      render 'errors/access_refused'
+    end
   end
 
   # Check that the problem can be put online

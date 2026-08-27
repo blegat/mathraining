@@ -57,3 +57,11 @@ end
 every 23.minutes do
   runner "Discussion.answer_puzzle_questions(2)" # Answer to tchatmessages addressed to J. H.
 end
+
+every :day, :at => '12:01am' do # 1-minute delay to be sure that Date.today is correct
+  runner "Problem.auto_archive" # Automatically archive problems that need to be archived today
+end
+
+every :day, :at => '8am' do
+  runner "Problem.auto_publish" # Automatically publish problems that need to be published today
+end

@@ -16,11 +16,27 @@
 </div>
 
 <!-- Niveau -->
-<% if !problem.nil? && problem.online %>
+<% if !problem.nil? && !problem.waiting_publication? %>
   <p>Niveau (entre 1 et 5) : <b><%= problem.level %></b></p>
 <% else %>
   <div class="mb-2">
   <%= f.label :level, :class => "form-label" %>
   <%= f.number_field :level, :class => "form-control", :style => "width:70px;", :min => 1, :max => 5 %>
   </div>
+<% end %>
+
+<% if current_user.root? %>
+  <% if problem.nil? || problem.waiting_publication? %>
+    <!-- Date de publication automatique -->
+    <div class="mb-2">
+      <%= f.label :publication_date, :class => "form-label" %>
+      <%= f.date_field :publication_date, :class => "form-control", :style => "max-width:150px;" %>
+    </div>
+  <% elsif problem.published? && problem.virtualtest_id == 0 %>
+    <!-- Date d'archivage automatique -->
+    <div class="mb-2">
+      <%= f.label :archiving_date, :class => "form-label" %>
+      <%= f.date_field :archiving_date, :class => "form-control", :style => "max-width:150px;" %>
+    </div>
+  <% end %>
 <% end %>

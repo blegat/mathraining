@@ -5,6 +5,7 @@
 # Table name: problems
 #
 #  id               :integer          not null, primary key
+#  archiving_date   :date
 #  explanation      :text             default("-")
 #  first_solve_time :datetime
 #  last_solve_time  :datetime
@@ -12,11 +13,12 @@
 #  markscheme       :text             default("-")
 #  nb_solves        :integer          default(0)
 #  number           :integer          default(1)
-#  online           :boolean          default(FALSE)
 #  origin           :string
 #  position         :integer          default(0)
+#  publication_date :date
 #  reviewed         :boolean          default(FALSE)
 #  statement        :text
+#  status           :integer          default("waiting_publication")
 #  section_id       :integer
 #  virtualtest_id   :integer          default(0)
 #
@@ -28,6 +30,10 @@
 include ApplicationHelper
 
 class Problem < ActiveRecord::Base
+
+  enum :status, {:waiting_publication => 0, # not shown yet to students
+                 :published           => 1, # can be solved by students
+                 :archived            => 2} # submissions are not allowed anymore
 
   # BELONGS_TO, HAS_MANY
 
@@ -59,10 +65,25 @@ class Problem < ActiveRecord::Base
     return 15*level
   end
   
+  # Return the number with the star if archived
+  def full_number
+    return self.number.to_s + (self.archived? ? "*" : "")
+  end
+  
+  # Compute a new number for this problem
+  def compute_new_number
+    x = 0
+    loop do
+      x = self.section.id * 1000 + self.level * 100 + rand(100)
+      break if Problem.where(:number => x).count == 0
+    end
+    return x
+  end
+  
   # Tell if the problem can be seen by the given user
   def can_be_seen_by(user, no_new_submission)
     return true if user.admin?
-    return false if !self.online?
+    return false if self.waiting_publication?
     return false if user.rating < 200
     return false if no_new_submission and self.submissions.where(:user => user).where.not(:status => :draft).count == 0
     if self.virtualtest_id == 0 # Not in a virtualtest: prerequisites should be completed
@@ -90,11 +111,48 @@ class Problem < ActiveRecord::Base
     end
   end
   
+  # Publish the problem
+  def set_published
+    if self.waiting_publication?
+      self.published!
+      section = self.section
+      section.update_attribute(:max_score, section.max_score + self.value)
+    end
+  end
+  
+  # Archive a problem
+  def set_archived
+    if self.published?
+      self.archived!
+      section = self.section
+      section.update_attribute(:max_score, section.max_score - self.value)
+      # Deduct the problem points for all users who solved it
+      ActiveRecord::Base.connection.execute("UPDATE users SET rating = rating - #{self.value} FROM solvedproblems WHERE users.id = solvedproblems.user_id AND solvedproblems.problem_id = #{self.id}")
+      ActiveRecord::Base.connection.execute("UPDATE pointspersections SET points = points - #{self.value} FROM solvedproblems WHERE pointspersections.user_id = solvedproblems.user_id AND solvedproblems.problem_id = #{self.id} AND pointspersections.section_id = #{self.section_id}")
+      # Remove the draft submissions
+      self.submissions.where(:status => :draft).destroy_all
+    end
+  end
+  
   # Update the nb_solves, first_solve_time and last_solve_time of all problems (done every wednesday at 3 am (see schedule.rb))
   # NB: They are more or less maintained correct, but not when a user is deleted for instance
   def self.update_all_stats
-    Problem.where(:online => true).each do |p|
+    Problem.where.not(:status => :waiting_publication).each do |p|
       p.update_stats
+    end
+  end
+  
+  # Automatically archive the problems whose archiving date is today (done every day at 8 am (see schedule.rb))
+  def self.auto_archive
+    Problem.where(:status => :published, :archiving_date => Date.today).each do |p|
+      p.set_archived
+    end
+  end
+  
+  # Automatically publish the problems whose publication date is today (done every day at 8 am (see schedule.rb))
+  def self.auto_publish
+    Problem.where(:status => :waiting_publication, :publication_date => Date.today).each do |p|
+      p.set_published
     end
   end
 end

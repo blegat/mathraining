@@ -6,7 +6,7 @@ describe CorrectionsController, type: :controller, correction: true do
   let(:admin) { FactoryBot.create(:admin) }
   let(:user) { FactoryBot.create(:user) }
   let(:other_user) { FactoryBot.create(:user) }
-  let(:problem) { FactoryBot.create(:problem, online: true) }
+  let(:problem) { FactoryBot.create(:problem, status: :published) }
   let(:submission) { FactoryBot.create(:submission, problem: problem, user: user) }
   
   context "if the user is the author of the submission" do

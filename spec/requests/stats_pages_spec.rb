@@ -155,8 +155,8 @@ describe "Stats pages" do
   describe "admin" do
     before { sign_in admin }
     let!(:now) { DateTime.now }
-    let!(:problem) { FactoryBot.create(:problem, section: section, online: true) }
-    let!(:problem2) { FactoryBot.create(:problem, section: section, online: true) }
+    let!(:problem) { FactoryBot.create(:problem, section: section, status: :published) }
+    let!(:problem2) { FactoryBot.create(:problem, section: section, status: :published) }
     let!(:submission1) { FactoryBot.create(:submission, problem: problem, user: user1, created_at: now - 7.days) }
     let!(:submission2) { FactoryBot.create(:submission, problem: problem, user: user2, created_at: now - 4.days) }
     let!(:submission3) { FactoryBot.create(:submission, problem: problem, user: user3, created_at: now - 2.days) }
@@ -270,9 +270,9 @@ describe "Stats pages" do
       let!(:now) { Time.zone.local(2015, 1, 21, 5, 0, 0) } # Wednesday 21/01/2015 at 5 am
       let!(:today) { now.in_time_zone.to_date }
       let!(:mondaybeforelastmonday) { today - 9 } # 12/01/2015
-      let!(:problem1) { FactoryBot.create(:problem, section: section, online: true, number: 1111, level: 1) }
-      let!(:problem2) { FactoryBot.create(:problem, section: section, online: true, number: 1112, level: 2) }
-      let!(:problem3) { FactoryBot.create(:problem, section: section, online: true, number: 1113, level: 3) }
+      let!(:problem1) { FactoryBot.create(:problem, section: section, status: :published, number: 1111, level: 1) }
+      let!(:problem2) { FactoryBot.create(:problem, section: section, status: :published, number: 1112, level: 2) }
+      let!(:problem3) { FactoryBot.create(:problem, section: section, status: :published, number: 1113, level: 3) }
       let!(:sub11) { FactoryBot.create(:submission, user: user1, problem: problem1, status: :correct, created_at: now-35.days) } # 17/12
       let!(:cor11) { FactoryBot.create(:correction, user: admin, submission: sub11, created_at: now-33.days) } # 2 days later
       let!(:sub12) { FactoryBot.create(:submission, user: user1, problem: problem2, status: :correct, created_at: now-28.days) } # 24/12
@@ -284,8 +284,8 @@ describe "Stats pages" do
       let!(:sub22) { FactoryBot.create(:submission, user: user2, problem: problem2, status: :waiting, created_at: now-21.days) } # 31/12
       let!(:sub23) { FactoryBot.create(:submission, user: user2, problem: problem3, status: :draft, created_at: now-21.days) }
       
-      let!(:virtualtest) { FactoryBot.create(:virtualtest, online: true, duration: 2880) } # Test taking 2 days
-      let!(:problem4_in_test) { FactoryBot.create(:problem, section: section, online: true, number: 1114, level: 4, virtualtest: virtualtest) }
+      let!(:virtualtest) { FactoryBot.create(:virtualtest, status: :published, duration: 2880) } # Test taking 2 days
+      let!(:problem4_in_test) { FactoryBot.create(:problem, section: section, status: :published, number: 1114, level: 4, virtualtest: virtualtest) }
       let!(:takentest) { Takentest.create(user: user1, virtualtest: virtualtest, taken_time: now-17.days, status: :in_progress) } # 04/01
       let!(:sub14) { FactoryBot.create(:submission, user: user1, problem: problem4_in_test, status: :waiting, intest: true, created_at: takentest.taken_time + virtualtest.duration.minutes)} # 04/01 + 2 days = 06/01
       

@@ -7,8 +7,8 @@ describe ProblemsController, type: :controller, problem: true do
   let(:user) { FactoryBot.create(:user, rating: 200) }
   let(:section) { FactoryBot.create(:section) }
   let(:chapter) { FactoryBot.create(:chapter, online: true) }
-  let(:online_problem) { FactoryBot.create(:problem, online: true) }
-  let(:offline_problem) { FactoryBot.create(:problem, online: false) }
+  let(:online_problem) { FactoryBot.create(:problem, status: :published) }
+  let(:offline_problem) { FactoryBot.create(:problem, status: :waiting_publication) }
   let(:submission) { FactoryBot.create(:submission, problem: online_problem, user: user, status: :waiting) }
   
   before { online_problem.chapters << chapter }
@@ -56,6 +56,7 @@ describe ProblemsController, type: :controller, problem: true do
     before { sign_in_controller(admin) }
     
     it { expect(response).to have_controller_destroy_behavior(online_problem, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('put_online', offline_problem, :access_refused) } # Only roots
     it { expect(response).to have_controller_put_path_behavior('put_online', online_problem, :access_refused) }
     it { expect(response).to have_controller_post_path_behavior('add_prerequisite', online_problem, :access_refused) }
     it { expect(response).to have_controller_put_path_behavior('delete_prerequisite', online_problem, :access_refused) }

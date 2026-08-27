@@ -214,14 +214,14 @@ function checkWepion() {
   <% listeprob.push(["Choisissez un problème...", 0]) %>
 
   <% if probvisibles %>
-    <% access_prob = accessible_problems_from_section(current_user, sect, ["id", "number"]).to_a %>
+    <% access_prob = accessible_problems_from_section(current_user, sect, ["id", "number", "status"]).to_a %>
     <% prob_with_subject = Subject.select(:problem_id).where.not(:id => @subject.id).where(:problem_id => access_prob.map(&:id)).to_a.map!(&:problem_id) %>
   
     <% access_prob.each do |p| %>
       <% if !prob_with_subject.include?(p.id) %>
-        <% listeprob.push(["Problème ##{p.number}", p.id]) %>
+        <% listeprob.push(["Problème ##{p.full_number}", p.id]) %>
         <% if selected_problem == p.id %>
-          <% forced_title = "Problème ##{p.number}" %>
+          <% forced_title = "Problème ##{p.full_number}" %>
         <% end %>
       <% else %>
         <% some_prob_hidden = true %>

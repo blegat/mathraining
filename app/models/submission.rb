@@ -99,21 +99,31 @@ class Submission < ActiveRecord::Base
   
   # Tell if the submission can be seen by the given user
   def can_be_seen_by(user)
-    return true  if user.admin?                     # Admins can see all submissions
-    return false if self.draft?                     # Drafts (including submissions in a virtualtest that is in progress) cannot be seen, not even by the user itself
-    return true  if self.user == user               # One can always see his own submission
-    return false if !user.pb_solved?(self.problem)  # One cannot see other submissions if he didn't solve the problem
-    return true  if self.correct?                   # One can see all other correct submissions (if he solved the problem)
-    return true  if user.corrector?                 # Corrector can see all (non-draft) submissions (if he solved the problem)
+    return true  if user.admin?                             # Admins can see all submissions
+    return false if self.draft?                             # Drafts (including submissions in a virtualtest that is in progress) cannot be seen, not even by the user itself
+    return true  if self.user == user                       # One can always see his own submission
+    return true  if self.correct? && self.problem.archived? # Correct submissions to archived problems are visibile by everyone
+    return false if !user.pb_solved?(self.problem)          # One cannot see other submissions if he didn't solve the problem
+    return true  if self.correct?                           # One can see all other correct submissions (if he solved the problem)
+    return true  if user.corrector?                         # Correctors can see all (non-draft) submissions (if they solved the problem)
     return false
   end
   
   # Tell if the submission can be corrected by the given user
   def can_be_corrected_by(user)
+    return false if self.user == user     # One can never correct his own submission
     return true if user.admin?            # Admins can correct all submissions
     return false if !user.corrector?      # Non-correctors cannot correct anything
-    return false if self.user == user     # One can never correct his own submission
-    return user.pb_solved?(self.problem)  # Corrector can only solve problems he solved
+    return user.pb_solved?(self.problem)  # Correctors can only solve problems they solved
+  end
+  
+  # Tell if the submission can be commented by the given user
+  def can_be_commented_by(user)
+    if self.user == user
+      return !self.problem.archived?
+    else
+      return self.can_be_corrected_by(user)
+    end
   end
   
   # Tell if the submission has had some activity recently
@@ -148,7 +158,7 @@ class Submission < ActiveRecord::Base
     unless u.pb_solved?(pb)
       # Give points to the user
       Globalstatistic.get.update_after_problem_solved(pb.value)
-      if u.student?
+      if u.student? && !pb.archived?
         u.update_attribute(:rating, u.rating + pb.value)
         pps = u.pointspersections.where(:section_id => pb.section.id).first
         pps.update_attribute(:points, pps.points + pb.value)
@@ -175,10 +185,7 @@ class Submission < ActiveRecord::Base
     end
 
     # Delete the drafts of the user to the problem
-    draft = pb.submissions.where(:user => u, :status => :draft).first
-    if !draft.nil?
-      draft.destroy
-    end
+    pb.submissions.where(:user => u, :status => :draft).destroy_all
   end
   
   # Mark the submission as wrong
@@ -195,7 +202,7 @@ class Submission < ActiveRecord::Base
         # If only correct submission, then user score must be decreased
         sp = Solvedproblem.where(:submission => self).first
         sp.destroy unless sp.nil? # Should never be nil, but for security (and for tests)
-        if u.student?
+        if u.student? && !pb.archived?
           u.update_attribute(:rating, u.rating - pb.value)
           pps = Pointspersection.where(:user => u, :section_id => pb.section).first
           pps.update_attribute(:points, pps.points - pb.value)

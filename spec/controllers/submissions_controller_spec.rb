@@ -4,8 +4,9 @@ require "spec_helper"
 describe SubmissionsController, type: :controller, submission: true do
 
   let(:chapter) { FactoryBot.create(:chapter, online: true) }
-  let(:problem) { FactoryBot.create(:problem, online: true) }
-  let(:other_problem) { FactoryBot.create(:problem, online: true) }
+  let(:problem) { FactoryBot.create(:problem, status: :published) }
+  let(:other_problem) { FactoryBot.create(:problem, status: :published) }
+  let(:archived_problem) { FactoryBot.create(:problem, status: :archived) }
   
   let(:user1) { FactoryBot.create(:advanced_user) }
   let(:user2) { FactoryBot.create(:advanced_user) }
@@ -23,6 +24,7 @@ describe SubmissionsController, type: :controller, submission: true do
   
   before do
     problem.chapters << chapter
+    archived_problem.chapters << chapter
     user1.chapters << chapter
     user2.chapters << chapter
     good_corrector.chapters << chapter
@@ -44,6 +46,7 @@ describe SubmissionsController, type: :controller, submission: true do
     it { expect(response).to have_controller_show_behavior(submission_wrong, :access_refused, {:problem_id => other_problem.id}) } # Wrong problem id
     it { expect(response).to have_controller_new_behavior(:ok, {:problem_id => problem.id}) }
     it { expect(response).to have_controller_create_behavior('submission', :ok, {:problem_id => problem.id}) }
+    it { expect(response).to have_controller_create_behavior('submission', :access_refused, {:problem_id => archived_problem.id}) }
     it { expect(response).to have_controller_update_behavior(submission_draft, :ok) }
     it { expect(response).to have_controller_update_behavior(submission_wrong, :danger) } # Not allowed but smooth redirect
     it { expect(response).to have_controller_destroy_behavior(submission_draft, :ok) }

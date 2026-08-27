@@ -32,7 +32,7 @@
   
   <% questions = @user.solvedquestions.joins(question: :chapter).select("solvedquestions.question_id AS id, solvedquestions.resolution_time AS time, questions.level AS level, questions.chapter_id AS chapter_id, questions.number AS number, chapters.name AS chapter_name").order("resolution_time DESC").to_a %>
 
-  <% problems = @user.solvedproblems.joins(:problem).select("solvedproblems.problem_id AS id, solvedproblems.resolution_time AS time, solvedproblems.submission_id AS submission_id, problems.level AS level, problems.number AS number, problems.virtualtest_id AS virtualtest_id, problems.section_id AS section_id").order("resolution_time DESC").to_a %>
+  <% problems = @user.solvedproblems.joins(:problem).select("solvedproblems.problem_id AS id, solvedproblems.resolution_time AS time, solvedproblems.submission_id AS submission_id, problems.level AS level, problems.number AS number, problems.status AS status, problems.archiving_date AS archiving_date, problems.virtualtest_id AS virtualtest_id, problems.section_id AS section_id").order("resolution_time DESC").to_a %>
 
   <% act = Array.new %>
   <% q_encours = 0 %>
@@ -42,7 +42,7 @@
   <% nb_p = 0 %>
   
   <% numberexo = Question.where("level > 0 AND online = ?", true).count %>
-  <% numberpb = Problem.where("online = ?", true).count %>
+  <% numberpb = Problem.where(:status => :published).count %>
 
   <% premier = nil %>
   <% dernier = nil %>
@@ -80,7 +80,7 @@
         <% premier = p.time.in_time_zone %>
       <% end %>
       <% p_encours = p_encours + 1 %>
-      <% act.push({:time => p.time, :type => "P", :id => p.id, :sub => p.submission_id, :pt => 15 * p.level, :number => p.number, :section_id => p.section_id}) %>
+      <% act.push({:time => p.time, :type => "P", :id => p.id, :sub => p.submission_id, :pt => 15 * p.level, :number => p.number, :status => p.status, :archiving_date => p.archiving_date, :section_id => p.section_id}) %>
     <% end %>
   <% end %>
   
@@ -324,9 +324,7 @@
     <div class="container_title">Résolutions</div>
     <div class="resolution_container_table">
     
-    <% actperday = Array.new %>
-     <% previousdate = Date.new(1980,1,1) %>
-    <% encours = -1 %>
+    <% actperday = Hash.new %>
 
     <% parquoi = "" %>
 
@@ -360,14 +358,22 @@
         <% else %>
           <% dateday = Time.zone.local(date.year, date.month, date.day, date.hour, date.min, 0) %>
         <% end %>
+        <% is_archived = (a[:type] == "P" && a[:status] == Problem.statuses[:archived]) %>
         <% if a[:pt] > 0 %>
-          <% if dateday != previousdate %>
-            <% encours = encours+1 %>
-            <% actperday.push({:time => dateday, :pt => a[:pt]}) %>
+          <% if actperday.key?(dateday) %>
+            <% actperday[dateday] += a[:pt] %>
           <% else %>
-            <% actperday[encours][:pt] = actperday[encours][:pt] + a[:pt] %>
+            <% actperday[dateday] = a[:pt] %>
           <% end %>
-          <% previousdate = dateday %>
+          <% if is_archived && !a[:archiving_date].nil? %>
+            <% archivedate = a[:archiving_date] %>
+            <% archivedateday = Time.zone.local(archivedate.year, archivedate.month, archivedate.day, 0, 0, 0) %>
+            <% if actperday.key?(archivedateday) %>
+              <% actperday[archivedateday] -= a[:pt] %>
+            <% else %>
+              <% actperday[archivedateday] = -a[:pt] %>
+            <% end %>
+          <% end %>
         <% end %>
         <tr>
         <% remove_border = "" %>
@@ -377,7 +383,7 @@
         <% if numact == act.size %>
           <% remove_border += "border-bottom:0px;" %>
         <% end %>
-        <td class="text-center fw-bold <%= @user.color_class %>" style="width:50px; <%= remove_border %>"><%= "+ #{a[:pt]}" if a[:pt] > 0 %></td>
+        <td class="text-center fw-bold <%= @user.color_class %> <%= 'text-decoration-line-through' if is_archived %>" style="width:50px; <%= remove_border %>"><%= "+ #{a[:pt]}" if a[:pt] > 0 %></td>
         <td class="text-center" style="width:75px; <%= remove_border %>"><%= write_date_only_small(date) %><span class="d-inline d-md-none"><br/><%= write_hour(date) %></span></td>
         <td class="d-none d-md-table-cell text-center" style="width:60px; <%= remove_border %>"><%= write_hour(date) %></td>
         <td style="<%= remove_border %>">
@@ -390,11 +396,12 @@
           <% end %>
           - <%= a[:chapter_name] %>
         <% elsif a[:type] == "P" %>
+          <% full_number = a[:number].to_s + (is_archived ? "*" : "") %>
           <% if non_accessible_problems_set != "all" && !non_accessible_problems_set.include?(a[:id])  %>
             <% can_see_submission = (fully_accessible_problems_set == "all" || fully_accessible_problems_set.include?(a[:id])) %>
-            <%= link_to "Problème ##{a[:number]}", problem_submission_path(a[:id], a[:sub]), :class => "#{'text-color-dark-light-blue' if !can_see_submission}" %>
+            <%= link_to "Problème ##{full_number}", problem_submission_path(a[:id], a[:sub]), :class => "#{'text-color-dark-light-blue' if !can_see_submission}" %>
           <% else %>
-            Problème #<%= a[:number] %>
+            Problème #<%= full_number %>
           <% end %>
            - <%= allsec_name[a[:section_id]] %>
         <% end %>
@@ -528,52 +535,55 @@
     </center>
 
     <!-- Script pour le graphique de l'évolution -->
+    
+    <% graph_int_times = Array.new %>
+    <% graph_times = Array.new %>
+    <% graph_points = Array.new %>
+    <% cur_rating = 0 %>
+    <% max_rating = 0 %>
+      
+    <% actperday.sort.each do |time, pt| %>
+      <% graph_int_times.push(time.to_i) %>
+      <% graph_points.push(pt) %>
+      <% t = "" %>
+      <% if parquoi == "jour" %>
+        <% t = write_date_only_small(time) %>
+      <% elsif parquoi == "heure" %>
+        <% t = write_hour_only(time) %>
+      <% else %>
+        <% t = write_hour(time) %>
+      <% end %>
+      <% graph_times.push(t) %>
+      <% cur_rating += pt %>
+      <% max_rating = cur_rating if cur_rating > max_rating %>
+    <% end %>
+
+    <% maxi = 1.15 * max_rating %>
+      
     <% niveaux = Color.get_all %>
 
-    <% i = 1 %>
+    <% nombrelevel = 0 %>
     <% numerolevel = 0 %>
 
     <% niveaux.each do |n| %>
       <% if niveau.id == n.id %>
-        <% numerolevel = i %>
+        <% numerolevel = nombrelevel %>
       <% end %>
-      <% i = i+1 %>
+      <% nombrelevel += 1 %>
     <% end %>
 
-    <% nombrelevel = i-1 %>
-
-    <% maxi = 0 %>
-
-
-    <% if numerolevel == nombrelevel %>
-      <% maxi = 1.2*actualrating %>
-    <% else %>
-      <% maxi = 1.1*niveaux[numerolevel][:pt] %>
+    <% if numerolevel+1 < nombrelevel %>
+      <% alt_maxi = 1.1 * niveaux[numerolevel+1][:pt] %>
+      <% maxi = alt_maxi if alt_maxi > maxi %>
     <% end %>
-    
+      
     <script type="text/javascript">
-    
-      <% graph_int_times = Array.new %>
-      <% graph_times = Array.new %>
-      <% graph_points = Array.new %>
-      <% actperday.each do |a| %>
-        <% graph_int_times.push(a[:time].to_i) %>
-        <% graph_points.push(a[:pt]) %>
-        <% t = "" %>
-        <% if parquoi == "jour" %>
-          <% t = "#{'0' if a[:time].day < 10 }#{ a[:time].day }/#{ '0' if a[:time].month < 10 }#{ a[:time].month }/#{ '0' if (a[:time].year % 2000) < 10 }#{ (a[:time].year % 2000) }" %>
-        <% elsif parquoi == "heure" %>
-          <% t = write_hour_only(a[:time]) %>
-        <% else %>
-          <% t = write_hour(a[:time]) %>
-        <% end %>
-        <% graph_times.push(t) %>
-      <% end %>
       
       function respondCanvas(){
         var graph_int_times = <%= ruby_to_javascript(graph_int_times) %>;
         var graph_times = <%= ruby_to_javascript_string(graph_times) %>;
         var graph_points = <%= ruby_to_javascript(graph_points) %>;
+        var max_rating = <%= max_rating %>;
         var maxi = <%= maxi %>;
       
         // Check light or dark theme
@@ -637,8 +647,8 @@
 
         // On trace maintenant le graphique
 
-        var last = graph_int_times[0];
-        var first = graph_int_times[graph_int_times.length - 1];
+        var first = graph_int_times[0];
+        var last = graph_int_times[graph_int_times.length - 1];
         
         // Commencement du graphique
         <% if parquoi == "jour" %>
@@ -660,7 +670,7 @@
         ctx.strokeStyle = (is_dark ? 'white' : 'black');
 
         // De droite vers la gauche : calcul où on met les verticales pointillées
-        for (let j = 0; j < graph_int_times.length; j++) {
+        for (let j = graph_int_times.length-1; j >= 0; j--) {
           var w = W_internal_offset + W_internal_size * (graph_int_times[j] - first) / (last - first);
 
           if (previousw - w > 55) {
@@ -686,7 +696,7 @@
         ctx.moveTo(W_offset + w, H_offset + h);
 
         // De gauche vers la droite : on trace le graphe
-        for (let j = graph_int_times.length - 1; j >= 0; j--) {
+        for (let j = 0; j < graph_int_times.length; j++) {
           w = W_internal_offset + W_internal_size * (graph_int_times[j] - first) / (last - first);
           r = previousr + graph_points[j];
           previousr = r;
@@ -702,7 +712,7 @@
         h = H_size;
         
         // De gauche vers la droite : on met les points
-        for (let j = graph_int_times.length - 1; j >= 0; j--) {
+        for (let j = 0; j < graph_int_times.length; j++) {
           w = W_internal_offset + W_internal_size * (graph_int_times[j] - first) / (last - first);
           r = previousr + graph_points[j];
           previousr = r;
@@ -710,6 +720,21 @@
           ctx.beginPath(); 
           ctx.arc(W_offset + w, H_offset + h, 3, 0, 2 * Math.PI, true);
           ctx.fill();
+          
+          if (r == max_rating && j < graph_int_times.length - 1) {
+            ctx.font = "bold 14px Arial";
+            text_size = ctx.measureText(max_rating).width;
+            adapted_w = w;
+            up_limit = W_size - text_size / 2 - 5;
+            if (adapted_w > up_limit) {
+              adapted_w = up_limit;
+            }
+            down_limit = text_size / 2 + 5;
+            if (adapted_w < down_limit) {
+              adapted_w = down_limit;
+            }
+            ctx.fillText(max_rating, W_offset + adapted_w, H_offset + h - 8);
+          }
         }
         
         // Contour du canvas

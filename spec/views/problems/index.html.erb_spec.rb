@@ -11,15 +11,15 @@ describe "problems/index.html.erb", type: :view, problem: true do
   let!(:section) { FactoryBot.create(:section) }
   let!(:chapter1) { FactoryBot.create(:chapter, section: section, online: true, name: "Mon chapitre prérequis") }
   let!(:chapter2) { FactoryBot.create(:chapter, section: section, online: true, name: "Mon autre chapitre prérequis") }
-  let!(:online_problem) { FactoryBot.create(:problem, section: section, online: true, level: 1, number: 1123) }
-  let!(:online_problem_with_one_prerequisite) { FactoryBot.create(:problem, section: section, online: true, level: 2, number: 1124) }
-  let!(:online_problem_with_two_prerequisites) { FactoryBot.create(:problem, section: section, online: true, level: 5, number: 1578) }
-  let!(:offline_problem) { FactoryBot.create(:problem, section: section, online: false, level: 1, number: 1134) }
-  let!(:online_virtualtest) { FactoryBot.create(:virtualtest, online: true, number: 42, duration: 10) }
-  let!(:problem_in_online_virtualtest) { FactoryBot.create(:problem, section: section, online: true, level: 2, number: 1256, position: 1, virtualtest: online_virtualtest) }
-  let!(:problem_with_prerequisite_in_online_virtualtest) { FactoryBot.create(:problem, section: section, online: true, level: 4, number: 1456, position: 2, virtualtest: online_virtualtest) }
-  let!(:offline_virtualtest) { FactoryBot.create(:virtualtest, online: false, number: 23, duration: 15) }
-  let!(:problem_in_offline_virtualtest) { FactoryBot.create(:problem, section: section, online: true, level: 3, number: 1341, position: 1, virtualtest: offline_virtualtest) }
+  let!(:online_problem) { FactoryBot.create(:problem, section: section, status: :published, level: 1, number: 1123) }
+  let!(:online_problem_with_one_prerequisite) { FactoryBot.create(:problem, section: section, status: :published, level: 2, number: 1124) }
+  let!(:online_problem_with_two_prerequisites) { FactoryBot.create(:problem, section: section, status: :published, level: 5, number: 1578) }
+  let!(:offline_problem) { FactoryBot.create(:problem, section: section, status: :waiting_publication, level: 1, number: 1134) }
+  let!(:online_virtualtest) { FactoryBot.create(:virtualtest, status: :published, number: 42, duration: 10) }
+  let!(:problem_in_online_virtualtest) { FactoryBot.create(:problem, section: section, status: :published, level: 2, number: 1256, position: 1, virtualtest: online_virtualtest) }
+  let!(:problem_with_prerequisite_in_online_virtualtest) { FactoryBot.create(:problem, section: section, status: :published, level: 4, number: 1456, position: 2, virtualtest: online_virtualtest) }
+  let!(:offline_virtualtest) { FactoryBot.create(:virtualtest, status: :waiting_publication, number: 23, duration: 15) }
+  let!(:problem_in_offline_virtualtest) { FactoryBot.create(:problem, section: section, status: :published, level: 3, number: 1341, position: 1, virtualtest: offline_virtualtest) }
   
   before do
     assign(:section, section)
@@ -314,7 +314,7 @@ describe "problems/index.html.erb", type: :view, problem: true do
         should have_no_selector("table", text: offline_problem.statement)
         should have_selector("table", class: "yellowy", text: problem_in_online_virtualtest.statement)  # Level 2
         should have_no_content(problem_in_online_virtualtest.origin)
-        should have_selector("table", class: "yellowy", text: "(Vous avez un brouillon enregistré pour ce problème.)")
+        should have_selector("table", class: "yellowy", text: "Vous avez un brouillon enregistré pour ce problème.")
         should have_selector("table", class: "greeny", text: problem_with_prerequisite_in_online_virtualtest.statement)  # Level 4
         should have_content(problem_with_prerequisite_in_online_virtualtest.origin)
         should have_no_selector("table", text: problem_in_offline_virtualtest.statement)
@@ -369,7 +369,7 @@ describe "problems/index.html.erb", type: :view, problem: true do
         should have_no_content(online_problem_with_one_prerequisite.origin)
         should have_selector("table", class: "redy", text: online_problem_with_two_prerequisites.statement) # Level 5
         should have_no_content(online_problem_with_two_prerequisites.origin)
-        should have_selector("table", class: "redy", text: "(Vous avez un brouillon enregistré pour ce problème.)")
+        should have_selector("table", class: "redy", text: "Vous avez un brouillon enregistré pour ce problème.")
         should have_no_selector("table", text: offline_problem.statement)
         should have_selector("table", class: "orangey", text: problem_in_online_virtualtest.statement)  # Level 2
         should have_no_content(problem_in_online_virtualtest.origin)

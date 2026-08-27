@@ -135,7 +135,7 @@ describe Submission, submission: true do
     let!(:corrector_wrong) { FactoryBot.create(:corrector) }
     let!(:corrector_correct) { FactoryBot.create(:corrector) }
     let!(:admin) { FactoryBot.create(:admin) }
-    let!(:problem) { FactoryBot.create(:problem, online: true) }
+    let!(:problem) { FactoryBot.create(:problem, status: :published) }
     let!(:sub_user_wrong) { FactoryBot.create(:submission, problem: problem, user: user_wrong, status: :wrong_to_read) }
     let!(:sub_user_draft) { FactoryBot.create(:submission, problem: problem, user: user_wrong, status: :draft) }
     let!(:sub_user_correct) { FactoryBot.create(:submission, problem: problem, user: user_correct, status: :correct) }

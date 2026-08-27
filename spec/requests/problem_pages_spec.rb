@@ -11,12 +11,13 @@ describe "Problem pages", problem: true do
   let(:user_with_rating_200) { FactoryBot.create(:user, rating: 200) }
   let!(:section) { FactoryBot.create(:section) }
   let!(:chapter) { FactoryBot.create(:chapter, online: true, name: "Mon chapitre prérequis") }
-  let!(:online_problem) { FactoryBot.create(:problem, section: section, online: true, level: 1, number: 1123, statement: "Statement1") }
-  let!(:online_problem_with_prerequisite) { FactoryBot.create(:problem, section: section, online: true, level: 1, number: 1124, statement: "Statement2") }
-  let!(:offline_problem) { FactoryBot.create(:problem, section: section, online: false, level: 1, number: 1134, statement: "Statement3") }
-  let!(:online_virtualtest) { FactoryBot.create(:virtualtest, online: true, number: 42, duration: 10) }
-  let!(:problem_in_virtualtest) { FactoryBot.create(:problem, section: section, online: true, level: 2, number: 1256, statement: "Statement4", position: 1, virtualtest: online_virtualtest) }
-  let!(:offline_virtualtest) { FactoryBot.create(:virtualtest, online: false, number: 23, duration: 15) }
+  let!(:online_problem) { FactoryBot.create(:problem, section: section, status: :published, level: 1, number: 1123, statement: "Statement1", origin: "IMO 1876") }
+  let!(:archived_problem) { FactoryBot.create(:problem, section: section, status: :archived, level: 1, number: 1199, statement: "Statement archived", origin: "IMO 1765", archiving_date: Date.today - 1.year) }
+  let!(:online_problem_with_prerequisite) { FactoryBot.create(:problem, section: section, status: :published, level: 1, number: 1124, statement: "Statement2") }
+  let!(:offline_problem) { FactoryBot.create(:problem, section: section, status: :waiting_publication, level: 1, number: 1134, statement: "Statement3") }
+  let!(:online_virtualtest) { FactoryBot.create(:virtualtest, status: :published, number: 42, duration: 10) }
+  let!(:problem_in_virtualtest) { FactoryBot.create(:problem, section: section, status: :published, level: 2, number: 1256, statement: "Statement4", position: 1, virtualtest: online_virtualtest) }
+  let!(:offline_virtualtest) { FactoryBot.create(:virtualtest, status: :waiting_publication, number: 23, duration: 15) }
   
   let(:newstatement) { "Prière de résoudre ce problème de combinatoire." }
   let(:neworigin) { "Origine du problème" }
@@ -58,16 +59,33 @@ describe "Problem pages", problem: true do
       before { visit section_problems_path(section) }
       it do
         should have_selector("h1", text: section.name)
+        should have_link("Archives", href: section_problems_path(section, :archived => 1))
         should have_no_selector("div", text: "Les problèmes ne sont accessibles qu'aux utilisateurs ayant un score d'au moins 200.")
         should have_selector("h3", text: "Niveau 1")
         should have_link("Problème ##{online_problem.number}", href: problem_path(online_problem, :auto => 1))
         should have_selector("div", text: online_problem.statement)
+        should have_no_content(online_problem.origin)
+        should have_no_link("Problème ##{archived_problem.number}*", href: problem_path(archived_problem, :auto => 1))
+        should have_no_selector("div", text: archived_problem.statement)
         should have_no_link("Problème ##{offline_problem.number}", href: problem_path(offline_problem, :auto => 1))
         should have_no_selector("div", text: offline_problem.statement) 
         should have_no_link("Problème ##{problem_in_virtualtest.number}", href: problem_path(problem_in_virtualtest, :auto => 1)) 
         should have_no_selector("div", text: problem_in_virtualtest.statement) 
         should have_no_link("Problème ##{online_problem_with_prerequisite.number}", href: problem_path(online_problem_with_prerequisite, :auto => 1)) 
         should have_no_selector("div", text: online_problem_with_prerequisite.statement)
+      end
+    end
+    
+    describe "visits archived problems of a section" do
+      before { visit section_problems_path(section, :archived => 1) }
+      it do
+        should have_selector("h1", text: section.name)
+        should have_link("Actuels", href: section_problems_path(section))
+        should have_no_link("Problème ##{online_problem.number}", href: problem_path(online_problem, :auto => 1))
+        should have_no_selector("div", text: online_problem.statement)
+        should have_link("Problème ##{archived_problem.number}*", href: problem_path(archived_problem, :auto => 1))
+        should have_selector("div", text: archived_problem.statement)
+        should have_content(archived_problem.origin)
       end
     end
     
@@ -82,6 +100,18 @@ describe "Problem pages", problem: true do
       it do
         should have_selector("h1", text: "Problème ##{online_problem.number}")
         should have_selector("div", text: online_problem.statement)
+        should have_no_content(online_problem.origin)
+      end
+    end
+    
+    describe "visits archived problem" do
+      before { visit problem_path(archived_problem) }
+      it do
+        should have_link(section.name, href: section_problems_path(section, :archived => 1))
+        should have_selector("h1", text: "Problème ##{archived_problem.number}*")
+        should have_content("Ce problème a été archivé le #{write_date_only(archived_problem.archiving_date)}")
+        should have_selector("div", text: archived_problem.statement)
+        should have_content(archived_problem.origin)
       end
     end
     
@@ -204,7 +234,7 @@ describe "Problem pages", problem: true do
         should have_selector("h1", text: "Problème ##{offline_problem.number}")
         should have_selector("div", text: offline_problem.statement)
         should have_link("Supprimer ce problème")
-        should have_link("Mettre en ligne", class: "disabled") # Because no prerequisite
+        should have_no_link("Mettre en ligne", class: "disabled") # Only for root
       end
       
       specify { expect { click_link "Supprimer ce problème" }.to change(Problem, :count).by(-1) }
@@ -218,7 +248,6 @@ describe "Problem pages", problem: true do
           should have_selector("h1", text: "Problème ##{offline_problem.number}")
           should have_link(chapter.name, href: chapter_path(chapter))
           should have_link("Supprimer ce prérequis", href: delete_prerequisite_problem_path(offline_problem, :chapter_id => chapter))
-          should have_link("Mettre en ligne")
         end
         
         describe "and deletes a prerequisite" do
@@ -228,32 +257,24 @@ describe "Problem pages", problem: true do
             should have_no_link(chapter.name, href: chapter_path(chapter))
           end
         end
-        
-        describe "and adds to a virtualtest" do
+      end
+      
+      describe "and adds to a virtualtest" do
+        before do
+          select "Test virtuel ##{offline_virtualtest.number}", :from => "problem_virtualtest_id"
+          click_button "add_to_virtualtest_button"
+        end
+        it { should have_selector("h1", text: "Problème ##{offline_problem.number} - Test ##{offline_virtualtest.number}") }
+          
+        describe "and removes from virtualtest" do
           before do
-            select "Test virtuel ##{offline_virtualtest.number}", :from => "problem_virtualtest_id"
+            select "Aucun test virtuel", :from => "problem_virtualtest_id"
             click_button "add_to_virtualtest_button"
           end
-          it { should have_selector("h1", text: "Problème ##{offline_problem.number} - Test ##{offline_virtualtest.number}") }
-          
-          describe "and removes from virtualtest" do
-            before do
-              select "Aucun test virtuel", :from => "problem_virtualtest_id"
-              click_button "add_to_virtualtest_button"
-            end
-            it do
-              should have_selector("h1", text: "Problème ##{offline_problem.number}")
-              should have_no_selector("h1", text: "Problème ##{offline_problem.number} - Test virtuel ##{offline_virtualtest.number}")
-            end
+          it do
+            should have_selector("h1", text: "Problème ##{offline_problem.number}")
+            should have_no_selector("h1", text: "Problème ##{offline_problem.number} - Test virtuel ##{offline_virtualtest.number}")
           end
-        end
-        
-        describe "and puts online" do
-          before do
-            click_link "Mettre en ligne"
-            offline_problem.reload
-          end
-          specify { expect(offline_problem.online).to eq(true) }
         end
       end
     end
@@ -327,9 +348,8 @@ describe "Problem pages", problem: true do
           expect(Problem.order(:id).last.level).to eq(newlevel)
           expect(Problem.order(:id).last.number).to be >= 1000*section.id + 100*newlevel
           expect(Problem.order(:id).last.number).to be < 1000*section.id + 100*(newlevel+1)
-          expect(Problem.order(:id).last.online).to eq(false)
+          expect(Problem.order(:id).last.waiting_publication?).to eq(true)
           expect(page).to have_selector("div", text: newstatement)
-          expect(page).to have_link("Mettre en ligne", class: "disabled") # Because no prerequisite
         end
       end
       
@@ -389,6 +409,28 @@ describe "Problem pages", problem: true do
   
   describe "root" do
     before { sign_in root }
+    
+    describe "visits offline problem" do
+      before { visit problem_path(offline_problem) }
+      it { should have_link("Mettre en ligne", class: "disabled") } # Because no prerequisite
+    end
+    
+    describe "visits offline problem with prerequisite" do
+      before do
+        offline_problem.chapters << chapter
+        visit problem_path(offline_problem)
+      end
+      
+      it { should have_link("Mettre en ligne") }
+     
+      describe "and puts it online" do
+        before do
+          click_link "Mettre en ligne"
+          offline_problem.reload
+        end
+        specify { expect(offline_problem.published?).to eq(true) }
+      end
+    end
 
     describe "visits online problem" do
       before { visit problem_path(online_problem) }

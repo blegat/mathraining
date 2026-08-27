@@ -44,7 +44,6 @@ class VirtualtestsController < ApplicationController
   def create
     @virtualtest = Virtualtest.new
     @virtualtest.duration = params[:virtualtest][:duration]
-    @virtualtest.online = false
 
     nombre = 0
     loop do
@@ -84,7 +83,7 @@ class VirtualtestsController < ApplicationController
 
   # Put a virtualtest online
   def put_online
-    @virtualtest.update_attribute(:online, true)
+    @virtualtest.published!
     flash[:success] = "Test virtuel mis en ligne."
     redirect_to virtualtests_path
   end
@@ -137,12 +136,16 @@ class VirtualtestsController < ApplicationController
 
   # Check that the virtualtest is online
   def online_virtualtest
-    return if check_offline_object(@virtualtest)
+    if @virtualtest.waiting_publication?
+      render 'errors/access_refused'
+    end
   end
   
   # Check that the vitualtest is offline
   def offline_virtualtest
-    return if check_online_object(@virtualtest)
+    if !@virtualtest.waiting_publication?
+      render 'errors/access_refused'
+    end
   end
 
   # Check that the virtual test can be put online
@@ -150,7 +153,7 @@ class VirtualtestsController < ApplicationController
     nb_prob = 0
     can_online = true
     @virtualtest.problems.each do |p|
-      can_online = false if !p.online?
+      can_online = false if !p.published?
       nb_prob = nb_prob + 1
     end
     redirect_to virtualtests_path if !can_online || nb_prob == 0

@@ -5,7 +5,7 @@
 #  id       :integer          not null, primary key
 #  duration :integer
 #  number   :integer          default(1)
-#  online   :boolean
+#  status   :integer          default("waiting_publication")
 #
 require "spec_helper"
 

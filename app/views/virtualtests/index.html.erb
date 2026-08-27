@@ -41,7 +41,7 @@
       <% niveaumoyen = niveaumoyen / nb_prob.to_f %>
     <% end %>
 
-    <% access = false if !t.online? %>
+    <% access = false if t.waiting_publication? %>
     <% access = true if current_user.admin? %>
 
     <!-- Si on a accès à ce test virtuel -->
@@ -51,11 +51,11 @@
       
       <% classe = "" %>
       <!-- Si (administrateur et en ligne) OU (étudiant et pas encore fait) : jaune -->
-      <% if (current_user.admin? && t.online?) || (!current_user.admin? && status == "not_started") %>
+      <% if (current_user.admin? && !t.waiting_publication?) || (!current_user.admin? && status == "not_started") %>
         <% classe = "yellowy" %>
 
       <!-- Si (administrateur et pas en ligne) OU (étudiant et en cours) : orange -->
-      <% elsif (current_user.admin? && !t.online?) || status == "in_progress" %>
+      <% elsif (current_user.admin? && t.waiting_publication?) || status == "in_progress" %>
         <% classe = "orangey" %>
 
       <!-- Sinon : déjà fait donc vert -->
@@ -65,7 +65,7 @@
       
       <table class="table table-bordered virtualtest <%= classe %>">
       <tr><td class="title">
-      <center><h4>Test #<%= t.number %><%= " (en construction)" if !t.online %></h4></center>
+      <center><h4>Test #<%= t.number %><%= " (en construction)" if t.waiting_publication? %></h4></center>
       </td></tr>
       
       <tr><td class="real-content">
@@ -124,7 +124,7 @@
         <% if current_user.admin? || status != "not_started" %>
           <% h = 0 %>
           <% problems.each do |p| %>
-            <% can_online = false if !p.online? %>
+            <% can_online = false if !p.published? %>
             
             <% sc_show = "" %>
             <% sub_id = -1 %>
@@ -158,7 +158,7 @@
               <% end %>
               </h5></center>
               <!-- Déplacer -->
-              <% if current_user.admin? && !t.online? && nb_prob > 1 %>
+              <% if current_user.admin? && t.waiting_publication? && nb_prob > 1 %>
                 <p class="text-center">Déplacer ce problème vers le
                 <%= link_to "haut", order_problem_path(p, :new_position => problems[h-1].position), :method => :put if h > 0 %>
                 <%= "-" if h > 0 && h < nb_prob-1 %>
@@ -233,7 +233,7 @@
         <% end %>
         
         <!-- Si test en construction -->
-        <% if !t.online? && current_user.admin? %>
+        <% if t.waiting_publication? && current_user.admin? %>
           <div class="g-col-12 g-col-md-24">
             <p class="mb-2 text-center">
             <%= link_to "Modifier ce test", edit_virtualtest_path(t) %> - <%= link_to "Supprimer ce test", t, method: :delete, data: { confirm: "Êtes-vous #{current_user.sure} de vouloir supprimer ce test virtuel ? Cela ne supprimera pas les problèmes associés." } %>
