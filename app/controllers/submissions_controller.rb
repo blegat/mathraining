@@ -20,7 +20,7 @@ class SubmissionsController < ApplicationController
   before_action :user_can_see_problem, only: [:show, :new]
   before_action :user_can_see_submission, only: [:show]
   before_action :user_can_see_problem_or_in_test, only: [:create]
-  before_action :problem_is_not_archived, only: [:create]
+  before_action :problem_is_not_archived, only: [:create, :send_draft]
   before_action :user_did_not_solve_problem, only: [:create]
   before_action :user_can_write_submission_to_problem, only: [:create, :send_draft]
   before_action :author_of_submission_or_root, only: [:update, :destroy]

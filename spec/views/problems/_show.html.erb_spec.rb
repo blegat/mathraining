@@ -5,6 +5,7 @@ describe "problems/_show.html.erb", type: :view, problem: true do
 
   subject { rendered }
 
+  let(:root) { FactoryBot.create(:root) }
   let(:admin) { FactoryBot.create(:admin) }
   let(:bad_user) { FactoryBot.create(:advanced_user) }
   let(:good_user) { FactoryBot.create(:advanced_user) }
@@ -27,30 +28,15 @@ describe "problems/_show.html.erb", type: :view, problem: true do
     good_corrector.chapters << chapter
   end
   
-  context "if the user is an admin" do
-    before { sign_in_view(admin) }
+  context "if the user is a root" do
+      before { sign_in_view(root) }
     
     context "if the problem is offline" do
       before { problem.waiting_publication! }
       
       it "renders the page correctly" do
         render partial: "problems/show"
-        should have_content("Ce problème ne fait partie d'aucun test virtuel")
-        should have_content("Faire appartenir ce problème à")
-        should have_selector("h3", text: "Prérequis")
-        should have_link(chapter.name, href: chapter_path(chapter))
-        should have_link("Supprimer ce prérequis", href: delete_prerequisite_problem_path(problem, :chapter_id => chapter.id))
-        should have_content("Ajouter le prérequis :")
-        should have_content(problem.statement)
-        should have_content(problem.origin)
-        should have_link("Modifier ce problème")
-        should have_link("Modifier la solution")
-        should have_link("Modifier les solutions externes")
-        should have_link("Supprimer ce problème")
         should have_link("Mettre en ligne")
-        expect(response).not_to render_template(:partial => "submissions/_index", :locals => {problem: problem})
-        should have_no_link("Nouvelle soumission")
-        should have_button("Éléments de solution")
       end
       
       context "but its prerequisite is offline" do
@@ -77,6 +63,41 @@ describe "problems/_show.html.erb", type: :view, problem: true do
     context "if the problem is online" do      
       it "renders the page correctly" do
         render partial: "problems/show"
+        should have_no_link("Mettre en ligne")
+      end
+    end
+  end
+  
+  context "if the user is an admin" do
+    before { sign_in_view(admin) }
+    
+    context "if the problem is offline" do
+      before { problem.waiting_publication! }
+      
+      it "renders the page correctly" do
+        render partial: "problems/show"
+        should have_content("Ce problème ne fait partie d'aucun test virtuel")
+        should have_content("Faire appartenir ce problème à")
+        should have_selector("h3", text: "Prérequis")
+        should have_link(chapter.name, href: chapter_path(chapter))
+        should have_link("Supprimer ce prérequis", href: delete_prerequisite_problem_path(problem, :chapter_id => chapter.id))
+        should have_content("Ajouter le prérequis :")
+        should have_content(problem.statement)
+        should have_content(problem.origin)
+        should have_link("Modifier ce problème")
+        should have_link("Modifier la solution")
+        should have_link("Modifier les solutions externes")
+        should have_link("Supprimer ce problème")
+        should have_no_link("Mettre en ligne")
+        expect(response).not_to render_template(:partial => "submissions/_index", :locals => {problem: problem})
+        should have_no_link("Nouvelle soumission")
+        should have_button("Éléments de solution")
+      end
+    end
+    
+    context "if the problem is online" do      
+      it "renders the page correctly" do
+        render partial: "problems/show"
         should have_no_content("Ce problème ne fait partie d'aucun test virtuel")
         should have_no_content("Faire appartenir ce problème à")
         should have_selector("h3", text: "Prérequis")
@@ -89,7 +110,6 @@ describe "problems/_show.html.erb", type: :view, problem: true do
         should have_link("Modifier la solution")
         should have_link("Modifier les solutions externes")
         should have_no_link("Supprimer ce problème")
-        should have_no_link("Mettre en ligne")
         expect(response).to render_template(:partial => "submissions/_index", :locals => {problem: problem})
         should have_no_link("Nouvelle soumission")
         should have_button("Éléments de solution")

@@ -368,6 +368,10 @@ module ApplicationHelper
     return title_3("Problèmes", (link_to section.name, section_problems_path(section)), title)
   end
   
+  def title_archived_problems(section, title)
+    return title_3("Problèmes", (link_to section.name, section_problems_path(section, :archived => 1)), title)
+  end
+  
   def title_problem(problem, title)
     return title_4("Problèmes", (link_to problem.section.name, section_problems_path(problem.section)), (link_to "Problème ##{ problem.full_number }", problem), title)
   end

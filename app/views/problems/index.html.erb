@@ -1,6 +1,14 @@
 <% provide(:title, @section.name) %>
 
+<% show_archived = params.has_key?(:archived) %>
+
 <h1><%= title_2("Problèmes", @section.name) %>
+<% if Problem.where(:status => :archived).count > 0 %>
+<span class="h4"> -
+<%= link_to "Archives", section_problems_path(@section, :archived => 1) unless show_archived %>
+<%= link_to "Actuels", section_problems_path(@section) if show_archived %>
+</span>
+<% end %>
 <button class="information-tag" onclick="return Info.toggle();">?</button>
 </h1>
 
@@ -15,8 +23,16 @@
 
 <% else %>
 
-<% problems = accessible_problems_from_section(current_user, @section, ["id", "number", "level", "status", "statement", "origin", "virtualtest_id", "nb_solves", "first_solve_time", "last_solve_time", "reviewed"]) %>
-<% problems_by_level = problems.group_by{|p| p.level} %>
+<% if show_archived %>
+  <p>Les problèmes ci-dessous pouvaient être résolus par le passé mais sont dorénavant archivés. Les solutions correctes à ces problèmes sont librement accessibles.</p>
+<% end %>
+
+<% problems = accessible_problems_from_section(current_user, @section, ["id", "number", "level", "status", "statement", "origin", "virtualtest_id", "nb_solves", "first_solve_time", "last_solve_time", "reviewed", "publication_date", "archiving_date"]) %>
+<% if show_archived %>
+  <% problems_by_level = problems.where(:status => Problem.statuses[:archived]).group_by{|p| p.level} %>
+<% else %>
+  <% problems_by_level = problems.where.not(:status => Problem.statuses[:archived]).group_by{|p| p.level} %>
+<% end %>
 <% favorite_problems = current_user.favorite_problems.pluck(:id).to_set %>
 
 <% if !current_user.admin? %>
@@ -37,7 +53,7 @@
   <% if problems_by_level[level].nil? %>
     <p>Aucun problème de niveau <%= level %> n'est disponible.</p>
   <% else %>
-    <p>Chaque problème de niveau <%= level %> vaut <b><%= 15*level %></b> points.</p>
+    <p>Chaque problème de niveau <%= level %> <%= show_archived ? "valait" : "vaut" %> <b><%= 15*level %></b> points.</p>
     
     <% problems_by_level[level].each do |p| %>
       <% num_drafts = 0 %>
@@ -98,10 +114,14 @@
       <tr><td class="real-content">
 
       <div class="grid content"> <!-- 12 columns below 'md', 24 columns from 'md' (see module.scss) -->
+        <% if current_user.root? && p.waiting_publication? && !p.publication_date.nil? %>
+          <div class="g-col-12 g-col-md-24 intro fw-bold fst-italic">Ce problème sera publié le <%= write_date_only(p.publication_date) %>.</div>
+        <% end %>
+        <% if current_user.root? && p.published? && !p.archiving_date.nil? %>
+          <div class="g-col-12 g-col-md-24 intro fw-bold fst-italic">Ce problème sera archivé le <%= write_date_only(p.archiving_date) %>.</div>
+        <% end %>
         <% if num_drafts > 0 %>
-          <div class="g-col-12 g-col-md-24 intro">
-            <i>(Vous avez un brouillon enregistré pour ce problème.)</i>
-          </div>
+          <div class="g-col-12 g-col-md-24 intro fst-italic">Vous avez un brouillon enregistré pour ce problème.</div>
         <% end %>
         
         <div class="g-col-12 g-col-md-15 g-col-lg-16 g-col-xl-17 module left-part">
@@ -122,7 +142,7 @@
         </div>
 
         <!-- Origine si administrateur ou si résolu -->
-        <% if (current_user.admin? || num_correct_subs > 0) && !p.origin.nil? && p.origin.size > 0 %>
+        <% if (current_user.admin? || num_correct_subs > 0 || p.archived?) && !p.origin.nil? && p.origin.size > 0 %>
           <div class="g-col-12 g-col-md-24 module bottom-part">
             Origine du problème : <b><%= p.origin %></b>
           </div>
@@ -133,7 +153,6 @@
     <% end %>
   <% end %>
 <% end %>
-
 
 
 <!-- Ajouter un problème -->

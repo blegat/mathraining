@@ -8,10 +8,14 @@
 
 <div class="split-title-lg">
   <div class="part-1">
-    <h1><%= title_problems(@problem.section, "Problème&nbsp;##{ @problem.full_number }#{ (' - Test&nbsp;#' +  @problem.virtualtest.number.to_s ) if @problem.virtualtest_id != 0 } #{ '(en construction)' if @problem.waiting_publication? }".html_safe) %></h1>
+    <h1>
+    <% title = "Problème&nbsp;##{ @problem.full_number }#{ (' - Test&nbsp;#' +  @problem.virtualtest.number.to_s ) if @problem.virtualtest_id != 0 } #{ '(en construction)' if @problem.waiting_publication? }".html_safe %>
+    <%= title_problems(@problem.section, title) unless @problem.archived? %>
+    <%= title_archived_problems(@problem.section, title) if @problem.archived? %>
+    </h1>
   </div>
   <div class="part-2 mb-2">
-    <span class="badge rounded-pill py-2 px-3 fs-5 <%= problem_solved ? 'bg-success' : 'bg-secondary' %>"><%= @problem.value %>&nbsp;points</span>
+    <span class="badge rounded-pill py-2 px-3 fs-5 <%= problem_solved ? 'bg-success' : 'bg-secondary' %> <%= 'text-decoration-line-through' if @problem.archived? %>"><%= @problem.value %>&nbsp;points</span>
     <% if !@problem.waiting_publication? %>
       <span class="badge rounded-pill py-2 px-3 fs-5 bg-primary">Résolu <%= @problem.nb_solves %> fois</span>
     <% end %>
@@ -22,6 +26,12 @@
     <% end %>
   </div>
 </div>
+
+<% if @problem.archived? && !@problem.archiving_date.nil? %>
+<p class="text-center fst-italic pt-1">
+  Ce problème a été archivé le <%= write_date_only(@problem.archiving_date) %>.
+</p>
+<% end %>
 
 <!-- Si administrateur -->
 <% if current_user.admin? %>
@@ -115,7 +125,7 @@
 </div>
 
 <!-- Origine si administrateur ou si résolu -->
-<% if (current_user.admin? || problem_solved) && !@problem.origin.nil? && @problem.origin.size > 0 %>
+<% if (current_user.admin? || problem_solved || @problem.archived?) && !@problem.origin.nil? && @problem.origin.size > 0 %>
   <p class="fst-italic">Origine du problème : <b><%= @problem.origin %></b></p>
 <% end %>
 
@@ -146,7 +156,7 @@
       <% end %>
     </p>
 
-    <% if @problem.waiting_publication? %>
+    <% if current_user.root? && @problem.waiting_publication? %>
       <% if has_pre && online_pre %>
         <p class="text-center">
           <%= link_to "Mettre en ligne", put_online_problem_path(@problem), :method => :put, class: "btn btn-danger", data: { confirm: "Êtes-vous #{current_user.sure} de vouloir rendre ce problème visible par les utilisateurs ? Vous ne pourrez alors plus changer ses prérequis !" } %>

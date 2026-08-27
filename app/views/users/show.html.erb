@@ -358,13 +358,14 @@
         <% else %>
           <% dateday = Time.zone.local(date.year, date.month, date.day, date.hour, date.min, 0) %>
         <% end %>
+        <% is_archived = (a[:type] == "P" && a[:status] == Problem.statuses[:archived]) %>
         <% if a[:pt] > 0 %>
           <% if actperday.key?(dateday) %>
             <% actperday[dateday] += a[:pt] %>
           <% else %>
             <% actperday[dateday] = a[:pt] %>
           <% end %>
-          <% if a[:type] == "P" && a[:status] == Problem.statuses[:archived] && !a[:archiving_date].nil? %>
+          <% if is_archived && !a[:archiving_date].nil? %>
             <% archivedate = a[:archiving_date] %>
             <% archivedateday = Time.zone.local(archivedate.year, archivedate.month, archivedate.day, 0, 0, 0) %>
             <% if actperday.key?(archivedateday) %>
@@ -382,7 +383,7 @@
         <% if numact == act.size %>
           <% remove_border += "border-bottom:0px;" %>
         <% end %>
-        <td class="text-center fw-bold <%= @user.color_class %>" style="width:50px; <%= remove_border %>"><%= "+ #{a[:pt]}" if a[:pt] > 0 %></td>
+        <td class="text-center fw-bold <%= @user.color_class %> <%= 'text-decoration-line-through' if is_archived %>" style="width:50px; <%= remove_border %>"><%= "+ #{a[:pt]}" if a[:pt] > 0 %></td>
         <td class="text-center" style="width:75px; <%= remove_border %>"><%= write_date_only_small(date) %><span class="d-inline d-md-none"><br/><%= write_hour(date) %></span></td>
         <td class="d-none d-md-table-cell text-center" style="width:60px; <%= remove_border %>"><%= write_hour(date) %></td>
         <td style="<%= remove_border %>">
@@ -395,7 +396,7 @@
           <% end %>
           - <%= a[:chapter_name] %>
         <% elsif a[:type] == "P" %>
-          <% full_number = a[:number].to_s + (a[:status] == Problem.statuses[:archived] ? "*" : "") %>
+          <% full_number = a[:number].to_s + (is_archived ? "*" : "") %>
           <% if non_accessible_problems_set != "all" && !non_accessible_problems_set.include?(a[:id])  %>
             <% can_see_submission = (fully_accessible_problems_set == "all" || fully_accessible_problems_set.include?(a[:id])) %>
             <%= link_to "Problème ##{full_number}", problem_submission_path(a[:id], a[:sub]), :class => "#{'text-color-dark-light-blue' if !can_see_submission}" %>

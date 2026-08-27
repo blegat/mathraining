@@ -56,6 +56,7 @@ describe ProblemsController, type: :controller, problem: true do
     before { sign_in_controller(admin) }
     
     it { expect(response).to have_controller_destroy_behavior(online_problem, :access_refused) }
+    it { expect(response).to have_controller_put_path_behavior('put_online', offline_problem, :access_refused) } # Only roots
     it { expect(response).to have_controller_put_path_behavior('put_online', online_problem, :access_refused) }
     it { expect(response).to have_controller_post_path_behavior('add_prerequisite', online_problem, :access_refused) }
     it { expect(response).to have_controller_put_path_behavior('delete_prerequisite', online_problem, :access_refused) }

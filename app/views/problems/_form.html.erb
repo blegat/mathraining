@@ -25,16 +25,18 @@
   </div>
 <% end %>
 
-<% if problem.nil? || problem.waiting_publication? %>
-  <!-- Date de publication automatique -->
-  <div class="mb-2">
-    <%= f.label :publication_date, :class => "form-label" %>
-    <%= f.date_field :publication_date, :class => "form-control", :style => "max-width:150px;" %>
-  </div>
-<% elsif problem.published? && problem.virtualtest_id == 0 %>
-  <!-- Date d'archivage automatique -->
-  <div class="mb-2">
-    <%= f.label :archiving_date, :class => "form-label" %>
-    <%= f.date_field :archiving_date, :class => "form-control", :style => "max-width:150px;" %>
-  </div>
+<% if current_user.root? %>
+  <% if problem.nil? || problem.waiting_publication? %>
+    <!-- Date de publication automatique -->
+    <div class="mb-2">
+      <%= f.label :publication_date, :class => "form-label" %>
+      <%= f.date_field :publication_date, :class => "form-control", :style => "max-width:150px;" %>
+    </div>
+  <% elsif problem.published? && problem.virtualtest_id == 0 %>
+    <!-- Date d'archivage automatique -->
+    <div class="mb-2">
+      <%= f.label :archiving_date, :class => "form-label" %>
+      <%= f.date_field :archiving_date, :class => "form-control", :style => "max-width:150px;" %>
+    </div>
+  <% end %>
 <% end %>
