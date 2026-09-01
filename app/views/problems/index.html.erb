@@ -117,11 +117,15 @@
         <% if current_user.root? && p.waiting_publication? && !p.publication_date.nil? %>
           <div class="g-col-12 g-col-md-24 intro fw-bold fst-italic">Ce problème sera publié le <%= write_date_only(p.publication_date) %>.</div>
         <% end %>
-        <% if current_user.root? && p.published? && !p.archiving_date.nil? %>
-          <div class="g-col-12 g-col-md-24 intro fw-bold fst-italic">Ce problème sera archivé le <%= write_date_only(p.archiving_date) %>.</div>
-        <% end %>
-        <% if num_drafts > 0 %>
-          <div class="g-col-12 g-col-md-24 intro fst-italic">Vous avez un brouillon enregistré pour ce problème.</div>
+        <% if (p.published? && !p.archiving_date.nil?) || num_drafts > 0 %>
+          <div class="g-col-12 g-col-md-24 intro fst-italic">
+          <% if p.published? && !p.archiving_date.nil? %>
+            <div class="fw-bold <%= 'mb-2' if num_drafts > 0 %>">Ce problème sera archivé le <%= write_date_only(p.archiving_date) %>.</div>
+          <% end %>
+          <% if num_drafts > 0 %>
+            <div>Vous avez un brouillon enregistré pour ce problème.</div>
+          <% end %>
+          </div>
         <% end %>
         
         <div class="g-col-12 g-col-md-15 g-col-lg-16 g-col-xl-17 module left-part">

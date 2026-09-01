@@ -31,6 +31,14 @@
 <p class="text-center fst-italic pt-1">
   Ce problème a été archivé le <%= write_date_only(@problem.archiving_date) %>.
 </p>
+<% elsif @problem.published? && !@problem.archiving_date.nil? %>
+<p class="text-center fst-italic pt-1">
+  Ce problème sera archivé le <%= write_date_only(@problem.archiving_date) %>.
+</p>
+<% elsif @problem.waiting_publication? && !@problem.publication_date.nil? %>
+<p class="text-center fst-italic pt-1">
+  Ce problème sera publié le <%= write_date_only(@problem.publication_date) %>.
+</p>
 <% end %>
 
 <!-- Si administrateur -->

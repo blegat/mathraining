@@ -240,6 +240,8 @@
       stroke: <%= arcgrey_dark %>;
     }
   </style>
+  
+  <% everything_solved = true %>
 
   <!-- Exercices -->
   <div class="g-col-6 g-col-md-3 basic_container p-1">
@@ -255,6 +257,7 @@
       </svg>
       <div class="progress_nb"><%= nb_q %></div>
       <div class="progress_pct">/ <%= numberexo %></div>
+      <% everything_solved = false if nb_q != numberexo %>
     </div>
     </td></tr>
     </table>
@@ -274,6 +277,7 @@
       </svg>
       <div class="progress_nb"><%= nb_p %></div>
       <div class="progress_pct">/ <%= numberpb %></div>
+      <% everything_solved = false if nb_p != numberpb %>
     </div>
     </td></tr>
     </table>
@@ -325,6 +329,8 @@
     <div class="resolution_container_table">
     
     <% actperday = Hash.new %>
+    <% first_archiving_date = nil %>
+    <% num_lost_points = 0 %>
 
     <% parquoi = "" %>
 
@@ -403,7 +409,15 @@
           <% else %>
             Problème #<%= full_number %>
           <% end %>
-           - <%= allsec_name[a[:section_id]] %>
+            - <%= allsec_name[a[:section_id]] %>
+          <% if a[:status] == Problem.statuses[:published] && !a[:archiving_date].nil? %>
+            <% if first_archiving_date.nil? || first_archiving_date > a[:archiving_date] %>
+              <% first_archiving_date = a[:archiving_date] %>
+              <% num_lost_points = a[:pt] %>
+            <% else %>
+              <% num_lost_points += a[:pt] %>
+            <% end %>
+          <% end %>
         <% end %>
         </td>
         </tr>
@@ -756,6 +770,36 @@
       respondCanvas();
     </script>
 
+    </div>
+  <% end %>
+  
+  <% if !first_archiving_date.nil? %>
+    <% new_rating = actualrating - num_lost_points %>
+    <% new_level = User.level_from_rating(new_rating) %>
+    <div class="pe-2 pt-3 pb-2" style="padding-left:20px;">
+    <%= everything_solved ? "Son" : "Sans nouvelle résolution de sa part d'ici là, son" %>
+    score de <span class="fw-bold <%= @user.color_class %>"><%= actualrating %></span> chutera
+    <% if num_lost_points < 100 %>
+      anecdotiquement
+    <% elsif num_lost_points < 300 %>
+      légèrement
+    <% elsif num_lost_points < 500 %>
+      modérément
+    <% elsif num_lost_points < 700 %>
+      substantiellement
+    <% elsif num_lost_points < 1000 %>
+      considérablement
+    <% elsif num_lost_points < 1500 %>
+      drastiquement
+    <% elsif num_lost_points < 2000 %>
+      vertigineusement
+    <% else %>
+      catastrophiquement
+    <% end %>
+    à <span class="fw-bold text-color-level-<%= new_level[:id] %>"><%= new_rating %></span> le <%= write_date_only(first_archiving_date) %><%= new_level[:id] == @user.level[:id] ? "." : "," %>
+    <% if new_level[:id] != @user.level[:id] %>
+      ce qui fera <%= @user.sex == 0 ? "de lui" : "d'elle" %> un<%= "e" if @user.sex == 1 %> vulgaire <span class="text-color-level-<%= new_level[:id] %>"><%= @user.sex == 0 ? new_level[:name] : new_level[:femininename] %></span>.
+    <% end %>
     </div>
   <% end %>
   </div>

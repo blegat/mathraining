@@ -274,13 +274,12 @@ class User < ActiveRecord::Base
     end
     return [n, 0]
   end
-
-  # Gives the "level" of the user
-  def level
-    return {} if self.admin? # Should not be used anymore with light/dark theme!
+  
+  # Gives the "level" corresponding to some rating
+  def self.level_from_rating(points)
     actuallevel = nil
     Color.get_all.each do |c|
-      if c.pt <= rating
+      if c.pt <= points
         actuallevel = c
       else
         return actuallevel
@@ -288,6 +287,12 @@ class User < ActiveRecord::Base
     end
     return {id: 0, pt: 0, color: "#FF0000", name: "Undefined", feminine_name: "Undefined"} if actuallevel.nil? # For tests, when no color exists
     return actuallevel
+  end
+
+  # Gives the "level" of the user
+  def level
+    return {} if self.admin? # Should not be used anymore with light/dark theme!
+    return User.level_from_rating(self.rating)
   end
 
   # Gives the number of unseen subjects on the forum
