@@ -64,7 +64,7 @@
     <% if bestqui == "Q" %>
       <% q = questions[q_encours] %>
       <% if q.level > 0 %>
-        <% nb_q = nb_q+1 %>
+        <% nb_q += 1 %>
         <% dernier = q.time.in_time_zone %>
         <% if premier.nil? %>
           <% premier = q.time.in_time_zone %>
@@ -74,7 +74,9 @@
       <% act.push({:time => q.time, :type => "Q", :id => q.id, :pt => 3 * q.level, :number => q.number, :chapter_name => q.chapter_name, :chapter_id => q.chapter_id}) %>
     <% elsif bestqui == "P" %>
       <% p = problems[p_encours] %>
-      <% nb_p = nb_p+1 %>
+      <% if p.status == Problem.statuses[:published] %>
+        <% nb_p += 1 %>
+      <% end %>
       <% dernier = p.time.in_time_zone %>
       <% if premier.nil? %>
         <% premier = p.time.in_time_zone %>
