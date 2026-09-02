@@ -75,6 +75,7 @@ RSpec.configure do |config|
   
   config.after(:each) do
     DatabaseCleaner.clean
+    Rails.cache.clear # To avoid the error about 5 login attempts in 1 minute
   end
   
   # If true, the base class of anonymous controllers will be inferred

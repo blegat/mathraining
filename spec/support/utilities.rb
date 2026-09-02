@@ -4,11 +4,11 @@ def sign_in(user)
   visit fast_sign_in_path(:id => user.id)
 end
 
-def sign_in_with_form(user, start_from_root_path = true)
+def sign_in_with_form(user, start_from_root_path = true, correct_password = true)
   visit root_path if start_from_root_path
   click_link "Connexion"
   fill_in "header_connect_email", with: user.email
-  fill_in "header_connect_password", with: user.password
+  fill_in "header_connect_password", with: user.password + (correct_password ? "" : "_WRONG")
   click_button "header_connect_button"
 end
 

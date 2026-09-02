@@ -16,12 +16,17 @@ describe "Session pages", session: true do
   describe "tries to signin" do
     before { visit root_path }
 
-    describe "with invalid information" do
+    describe "with empty form" do
       before { click_button "Connexion" }
-      it { should have_error_message("invalide") }
+      it { should have_error_message("Email ou mot de passe invalide") }
+    end
+    
+    describe "with invalid password" do
+      before { sign_in_with_form(user, true, false) }
+      it { should have_error_message("Email ou mot de passe invalide") }
     end
 
-    describe "with valid information" do
+    describe "with valid password" do
       before do
         sign_in_with_form(user)
         user.reload
@@ -144,6 +149,30 @@ describe "Session pages", session: true do
       describe "sign in should work for an admin" do
         before { sign_in_with_form(admin, false) }
         it { should have_content(admin.fullname) } # Should be connected
+      end
+    end
+  end
+  
+  describe "tries to signin 5 times" do    
+    before do
+      visit root_path
+      5.times do
+        sign_in_with_form(user, false, false)
+      end
+    end
+    
+    it { should have_error_message("Email ou mot de passe invalide") }
+    
+    describe "and then a 6th time" do
+      before { sign_in_with_form(user, false, false) }
+      it { should have_error_message("trop de tentatives de connexion") }
+      
+      describe "and then a 7th time after one minute" do
+        before do
+          travel_to 65.seconds.from_now
+          sign_in_with_form(user, false, false)
+        end
+        it { should have_error_message("Email ou mot de passe invalide") }
       end
     end
   end

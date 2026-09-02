@@ -4,6 +4,8 @@ class SessionsController < ApplicationController
 
   before_action :signed_in_user_danger, only: [:destroy]
   before_action :signed_out_user, only: [:create]
+  
+  rate_limit to: 5, within: 1.minute, only: :create, by: -> { request.remote_ip }, with: :handle_rate_limited
 
   # Create a session, i.e. sign in (send the form)
   def create
@@ -48,5 +50,14 @@ class SessionsController < ApplicationController
   def destroy
     sign_out
     redirect_to root_path
+  end
+  
+  private
+  
+  ########## HELPER METHODS ##########
+  
+  def handle_rate_limited
+    flash[:danger] = "Vous avez fait trop de tentatives de connexion. Merci de patienter une minute."
+    redirect_back(fallback_location: root_path)
   end
 end
