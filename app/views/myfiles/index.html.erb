@@ -72,8 +72,12 @@
 
   <!-- Télécharger -->
   <td class="d-none d-md-table-cell">
-  <% truncated = name.size > 30 ? [name[0,20],name[-7,7]].join("...") : name %>
-  <%= link_to truncated, rails_blob_path(f.file, disposition: 'attachment') %>
+  <% if type != "Tchatmessage" %>
+    <% truncated = name.size > 30 ? [name[0,20],name[-7,7]].join("...") : name %>
+    <%= link_to truncated, rails_blob_path(f.file, disposition: 'attachment') %>
+  <% else %>
+    -
+  <% end %>
   </td>
 
   <!-- Taille -->
