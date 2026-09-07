@@ -742,13 +742,13 @@ Votre navigateur ne supporte pas les canvas.
     xxx = <%= ruby_to_javascript_string(xx) %>;
     yyy = <%= ruby_to_javascript(yy) %>;
 
-    graphique[1] = [xxx_int, xxx, yyy, 'myCanvas2', 'blue'];
+    graphique[1] = [xxx_int, xxx, yyy, 'myCanvas2', '#38ACEC'];
       
     yyy = <%= ruby_to_javascript(yy2) %>;
-    graphique[2] = [xxx_int, xxx, yyy, 'myCanvas3', 'red'];
+    graphique[2] = [xxx_int, xxx, yyy, 'myCanvas3', '#FF0000'];
       
     yyy = <%= ruby_to_javascript(yy3) %>;
-    graphique[3] = [xxx_int, xxx, yyy, 'myCanvas4', 'green'];
+    graphique[3] = [xxx_int, xxx, yyy, 'myCanvas4', '#1AA36D'];
   <% end %>
   
   function respondCanvas(){
