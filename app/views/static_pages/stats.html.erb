@@ -387,7 +387,7 @@ Votre navigateur ne supporte pas les canvas.
     }
     
     <% if Puzzle.started_or_root(current_user) %>
-    if (couleur[0] == "o" && start_index <= 2867 && end_index >= 2868) {
+    if (namec == "myCanvas1" && start_index <= 2867 && end_index >= 2868) {
       ww = W_internal_offset + W_internal_size * (2867 - start_index)/N;
       hh = H_size - H_size * (424 / maxi);
       ww2 = W_internal_offset + W_internal_size * (2868 - start_index)/N;
@@ -457,7 +457,7 @@ Votre navigateur ne supporte pas les canvas.
     }
     <% end %>
     
-    if (couleur[0] == "o" && start_index <= 3725 && end_index >= 3726) {
+    if (namec == "myCanvas1" && start_index <= 3725 && end_index >= 3726) {
       ww = W_internal_offset + W_internal_size * (3725 - start_index)/N;
       hh = H_size - H_size * (883 / maxi);
       ww2 = W_internal_offset + W_internal_size * (3726 - start_index)/N;
