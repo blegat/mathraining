@@ -19,7 +19,7 @@ describe "corrections/_index.html.erb", type: :view, correction: true do
       
       it "renders no correction" do
         render partial: "corrections/index"
-        should have_content("Aucun commentaire")
+        should have_no_selector("h4", text: "Commentaires")
         expect(response).not_to render_template(:partial => "shared/_post")
         should have_no_content("Votre solution est erronée")
       end
@@ -33,7 +33,7 @@ describe "corrections/_index.html.erb", type: :view, correction: true do
       
       it "renders the corrections correctly" do
         render partial: "corrections/index"
-        should have_no_content("Aucun commentaire")
+        should have_selector("h4", text: "Commentaires")
         expect(response).to render_template(:partial => "shared/_post", :locals => {ms: correction1})
         expect(response).to render_template(:partial => "shared/_post", :locals => {ms: correction2})
         should have_content("Votre solution est erronée")
