@@ -63,6 +63,9 @@
       <% if p.waiting_publication? %>
         <!-- Si pas en ligne : orange -->
         <% classe = "orangey" %>
+      <% elsif current_user.admin? && (p.published? && !p.archiving_date.nil?) %>
+        <!-- Si admin et problème prochainement archivé : gris -->
+        <% classe = "greyy" %> 
       <% elsif current_user.admin? %>
         <!-- Si admin : jaune -->
         <% classe = "yellowy" %> 
