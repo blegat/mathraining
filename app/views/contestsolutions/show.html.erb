@@ -11,7 +11,7 @@
     (en attente de correction)
   <% end %>
 <% else %>
-  Solution de <%= raw @contestsolution.user.linked_name %>
+  Solution de <%= @contestsolution.user.linked_name %>
 <% end %>
 
 <% if @contest.is_organized_by_or_root(current_user) %>
