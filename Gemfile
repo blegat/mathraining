@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '3.2.8'                           # Ruby
+ruby '3.4.12'                          # Ruby
 
 gem 'rails', '8.1.4'                   # Ruby on Rails
 
