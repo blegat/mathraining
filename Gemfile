@@ -4,6 +4,8 @@ ruby '3.2.8'                           # Ruby
 
 gem 'rails', '8.1.4'                   # Ruby on Rails
 
+gem 'json', '< 3'                      # Temporary fix for issue with json >= 3
+
 gem 'bootstrap', '5.3.8'               # Responsive design
 
 gem 'bcrypt', '3.1.22'                 # Password encryption
