@@ -207,10 +207,6 @@ GEM
       racc (~> 1.4)
     nokogiri (1.19.4-x86_64-linux-gnu)
       racc (~> 1.4)
-    passenger (6.0.27)
-      rack (>= 1.6.13)
-      rackup (>= 1.0.1)
-      rake (>= 12.3.3)
     pg (1.5.3)
     popper_js (2.11.8)
     pp (0.6.4)
@@ -404,7 +400,6 @@ DEPENDENCIES
   jquery-rails
   json (< 3)
   lograge
-  passenger (= 6.0.27)
   pg (~> 1.1)
   puma
   rack-canonical-host
