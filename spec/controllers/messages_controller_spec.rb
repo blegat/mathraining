@@ -28,6 +28,24 @@ describe MessagesController, type: :controller, message: true do
       
       it { expect(response).to have_controller_create_behavior('message', :access_refused, {:subject_id => subject.id}) }
     end
+    
+    context "and the subject is a marathon" do
+      let!(:cat_marathon) { FactoryBot.create(:category, name: "Marathons") }
+      before do
+        Globalvariable.create(:key => :no_marathon_for_newbies, :value => 1)
+        subject.update_attribute(:category, cat_marathon)
+        (1..9).each do |i|
+          FactoryBot.create(:solvedproblem, user: user)
+        end 
+      end
+      
+      it { expect(response).to have_controller_create_behavior('message', :access_refused, {:subject_id => subject.id}) }
+      
+      context "and the user has solved 10 problems" do
+        before { FactoryBot.create(:solvedproblem, user: user) }
+        it { expect(response).to have_controller_create_behavior('message', :ok, {:subject_id => subject.id}) }
+      end
+    end
   end
   
   context "if the user is an admin" do

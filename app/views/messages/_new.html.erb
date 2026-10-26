@@ -1,30 +1,36 @@
-<% postfix = "NewMessage" %>
+<% if @subject.is_marathon? && !current_user.can_participate_to_marathons(@no_marathon_for_newbies) %>
+  <p class="text-center fst-italic">Vous ne pouvez pas poster de message sur un Marathon avant d'avoir résolu 10 problèmes sur le site.</p>
+<% else %>
 
-<div id="the<%= postfix %>" class="content-part text-center">
-  <button onclick='return Rolling.develop("<%= postfix %>")' class='btn btn-lg btn-ld-light-dark mb-3'>Répondre</button>
-</div>
+  <% postfix = "NewMessage" %>
 
-<div id="form<%= postfix %>" class="form-part px-1" style="height:0px;">
+  <div id="the<%= postfix %>" class="content-part text-center">
+    <button onclick='return Rolling.develop("<%= postfix %>")' class='btn btn-lg btn-ld-light-dark mb-3'>Répondre</button>
+  </div>
 
-<% error = !@message.nil? && @message.new_record? %>
-<% message = (error ? @message : Message.new) %>
-<%= form_for [subject, message], :url => subject_messages_path(subject, message, :action => :create, :q => @q), :html => { :multipart => true, :class => "mb-3" } do |f| %>
-  <%= render 'messages/form', f: f, message: message, postfix: postfix, show_mail_checkboxes: true %>
-  <%= render 'shared/edit_files', postfix: postfix %>
-  
-  <% last_id = -1 %>
-  <% last_message = subject.messages.order("id DESC").first %>
-  <% if !last_message.nil? %>
-    <% last_id = last_message.id %>
+  <div id="form<%= postfix %>" class="form-part px-1" style="height:0px;">
+
+  <% error = !@message.nil? && @message.new_record? %>
+  <% message = (error ? @message : Message.new) %>
+  <%= form_for [subject, message], :url => subject_messages_path(subject, message, :action => :create, :q => @q), :html => { :multipart => true, :class => "mb-3" } do |f| %>
+    <%= render 'messages/form', f: f, message: message, postfix: postfix, show_mail_checkboxes: true %>
+    <%= render 'shared/edit_files', postfix: postfix %>
+
+    <% last_id = -1 %>
+    <% last_message = subject.messages.order("id DESC").first %>
+    <% if !last_message.nil? %>
+      <% last_id = last_message.id %>
+    <% end %>
+    <%= hidden_field_tag "last_id", last_id %>
+
+    <%= f.submit "Poster", class: "btn btn-lg btn-primary", :disabled => in_skin? %>
+    <button class="btn btn-lg btn-ld-light-dark" onclick="return Rolling.hideActual();">Annuler</button>
   <% end %>
-  <%= hidden_field_tag "last_id", last_id %>
 
-  <%= f.submit "Poster", class: "btn btn-lg btn-primary", :disabled => in_skin? %>
-  <button class="btn btn-lg btn-ld-light-dark" onclick="return Rolling.hideActual();">Annuler</button>
-<% end %>
+  </div>
 
-</div>
+  <% if error %>
+    <script>rollingDevelopQuickWhenPossible("<%= postfix %>")</script>
+  <% end %>
 
-<% if error %>
-  <script>rollingDevelopQuickWhenPossible("<%= postfix %>")</script>
 <% end %>

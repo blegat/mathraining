@@ -228,6 +228,13 @@ class User < ActiveRecord::Base
     return self.chapters.include?(chapter)
   end
   
+  # Tells if the user can participate to Marathon subjects
+  def can_participate_to_marathons(no_marathon_for_newbies)
+    return true unless no_marathon_for_newbies
+    return true if self.admin?
+    return self.solvedproblems.count >= 10
+  end
+  
   # Tells if the user completed all chapters which are prerequisite to write a submission
   def can_write_submission?
     return (self.chapters.where(:online => true, :submission_prerequisite => true).count == Chapter.where(:online => true, :submission_prerequisite => true).count)

@@ -106,7 +106,7 @@ class SubjectsController < ApplicationController
       else
         @page = @page.to_i
       end
-    end
+    end    
     # @messages is computed in the view to be able to render subjects/show in case of error
   end
 

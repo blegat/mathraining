@@ -14,6 +14,7 @@ class MessagesController < ApplicationController
   
   before_action :user_can_see_subject, only: [:create]
   before_action :user_can_update_message, only: [:update, :destroy, :soft_destroy]
+  before_action :user_can_send_message, only: [:create]
   before_action :user_not_in_skin, only: [:create, :update]
   
 
@@ -139,6 +140,13 @@ class MessagesController < ApplicationController
   # Check that current user can update the message
   def user_can_update_message
     unless @message.can_be_updated_by(current_user)
+      render 'errors/access_refused'
+    end
+  end
+  
+  # Chech that current user can send a message on this subject
+  def user_can_send_message
+    if @subject.is_marathon? && !current_user.can_participate_to_marathons(@no_marathon_for_newbies)
       render 'errors/access_refused'
     end
   end

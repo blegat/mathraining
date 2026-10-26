@@ -79,6 +79,12 @@ class Subject < ActiveRecord::Base
     end
   end
   
+  # Tells if the subject is a marathon subject
+  def is_marathon?
+    return false if self.category.nil?
+    return self.category.name == "Marathons"
+  end
+  
   # Gives the last page number
   def last_page
     return Subject.page_with_message_num(self.messages.count)

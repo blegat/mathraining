@@ -142,7 +142,7 @@ describe Subject, subject: true do
   
   describe "last_page is correct for 20 messages" do
     let!(:sub2) { FactoryBot.create(:subject) }
-     before do
+    before do
       (1..20).each do |i|
         FactoryBot.create(:message, subject: sub2)
       end 
@@ -159,6 +159,21 @@ describe Subject, subject: true do
       expect(Subject.page_with_message_num(20)).to eq(2)
       expect(Subject.page_with_message_num(31)).to eq(4)
       expect(Subject.page_with_message_num(1672)).to eq(168)
+    end
+  end
+  
+  # is_marathon?
+  describe "is_marathon? gives correct result" do
+    let!(:cat_other) { FactoryBot.create(:category, name: "Wépion") }
+    let!(:cat_marathon) { FactoryBot.create(:category, name: "Marathons") }
+    let!(:sub_no_cat) { FactoryBot.create(:subject) }
+    let!(:sub_cat_other) { FactoryBot.create(:subject, category: cat_other) }
+    let!(:sub_cat_marathon) { FactoryBot.create(:subject, category: cat_marathon) }
+    
+    specify do
+      expect(sub_no_cat.is_marathon?).to eq(false)
+      expect(sub_cat_other.is_marathon?).to eq(false)
+      expect(sub_cat_marathon.is_marathon?).to eq(true)
     end
   end
 end
