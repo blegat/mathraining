@@ -15,6 +15,7 @@ class UsersController < ApplicationController
   
   before_action :current_user_is_target_user_or_root, only: [:edit, :update]
   before_action :target_user_is_not_root, only: [:destroy, :destroydata]
+  before_action :user_creation_is_allowed, only: [:create]
 
   # Show all users with their scores
   def index
@@ -160,7 +161,6 @@ class UsersController < ApplicationController
 
   # Create a user, i.e. register on the website (send the form)
   def create
-    redirect_to root_path and return if @temporary_closure
     @user = User.new(params.require(:user).permit(:first_name, :last_name, :see_name, :email, :email_confirmation, :sex, :year, :country_id, :password, :password_confirmation, :accept_analytics))
     @user.key = SecureRandom.urlsafe_base64
     @user.email_confirm = false
@@ -610,6 +610,12 @@ class UsersController < ApplicationController
   # Some scrapers require 'index' every second with random parameters 'page', 'from' and 'rank' (???)
   def avoid_strange_scraping
     if params.has_key?(:from) || params.has_key?(:rank)
+      render 'errors/access_refused'
+    end
+  end
+  
+  def user_creation_is_allowed
+    if @temporary_closure || @no_new_user
       render 'errors/access_refused'
     end
   end

@@ -44,6 +44,12 @@ describe UsersController, type: :controller, user: true do
       it { expect(response).to have_controller_get_path_behavior('recup_password', user1, :ok, {:key => user1.key.to_s}) }
       it { expect(response).to have_controller_patch_path_behavior('change_password', user1, :ok, {:key => user1.key.to_s, :user => {:password => "Nouveau7", :password_confirmation => "Nouveau7"}}) }
     end
+    
+    context "and new users are not allowed" do
+      before { Globalvariable.create(:key => :no_new_user, :value => 1, :message => "Plus d'inscription") }
+      
+      it { expect(response).to have_controller_create_behavior('user', :access_refused, {:consent1 => true, :consent2 => true}) }
+    end
   end
   
   context "if the user is a simple user" do

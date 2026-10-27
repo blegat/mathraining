@@ -29,6 +29,9 @@
 <% if @temporary_closure %>
   <h1><%= title_1("Inscription") %></h1>
   <p>Il n'est plus possible de s'inscrire sur Mathraining pour le moment.</p>
+<% elsif @no_new_user %>
+  <h1><%= title_1("Inscription") %></h1>
+  <p><%= @no_new_user_message %></p>
 <% else %>
   <div id="code-of-conduct" style="display:<%= @show_code_of_conduct ? "block" : "none" %>">
     <h1><%= title_1("Code de conduite") %></h1>
