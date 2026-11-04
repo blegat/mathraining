@@ -150,6 +150,16 @@ class Submission < ActiveRecord::Base
     end
   end
   
+  # Automatically reserve this submission by a root if it's the first submission of the user
+  def auto_reserve_by_root
+    if self.user.solvedproblems.count == 0
+      last_root = User.where(:role => :root).order(:id).last
+      unless last_root.nil?
+        Following.create(:submission => self, :user => last_root, :kind => :reservation, :read => true)
+      end
+    end
+  end
+  
   # Mark the submission as correct
   def mark_correct
     u = self.user

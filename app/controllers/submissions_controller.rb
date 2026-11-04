@@ -150,6 +150,7 @@ class SubmissionsController < ApplicationController
   def send_draft
     update_draft_dates
     @submission.set_waiting_status
+    @submission.auto_reserve_by_root if @first_submission_check
     flash[:success] = "Votre solution a bien été soumise pour être corrigée."
     redirect_to problem_submission_path(@problem, @submission)
   end

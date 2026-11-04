@@ -64,6 +64,7 @@ class ApplicationController < ActionController::Base
     @limited_emails = false
     @no_marathon_for_newbies = false
     @no_new_user = false
+    @first_submission_check = false
     Globalvariable.all.each do |g|
       if g.key == "under_maintenance"
         @under_maintenance = g.value
@@ -83,6 +84,8 @@ class ApplicationController < ActionController::Base
       elsif g.key == "no_new_user"
         @no_new_user = g.value
         @no_new_user_message = g.message
+      elsif g.key == "first_submission_check"
+        @first_submission_check = g.value
       end
     end
   end
@@ -352,6 +355,7 @@ class ApplicationController < ActionController::Base
       virtualtest.problems.order(:number).each do |p|
         p.submissions.where(user_id: user.id, intest: true).each do |s|
           s.set_waiting_status
+          s.auto_reserve_by_root if @first_submission_check
           new_created_at = end_of_test + (0.01 * shift).seconds
           s.update(:created_at => new_created_at, :last_comment_time => new_created_at)
           shift += 1 # Avoid having several submissions at the exact same time

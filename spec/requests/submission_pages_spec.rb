@@ -81,6 +81,20 @@ describe "Submission pages", submission: true do
         end
       end
       
+      describe "and sends first submission when they are checked by a root" do
+        let!(:last_root) { FactoryBot.create(:root) }
+        before do
+          Globalvariable.create(:key => :first_submission_check, :value => 1)
+          fill_in "MathInput", with: newsubmission
+          click_button "Enregistrer cette solution"
+          click_button "Soumettre cette solution"
+        end
+        specify do
+          expect(page).to have_success_message("Votre solution a bien été soumise pour être corrigée.")
+          expect(problem.submissions.order(:id).last.followings.first.user).to eq(last_root)
+        end
+      end
+      
       describe "and writes new draft with expired session (or invalid CSRF token)" do
         before do
           ActionController::Base.allow_forgery_protection = true # Don't know why but this is enough to have an invalid CSRF in testing
