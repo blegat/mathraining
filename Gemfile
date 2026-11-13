@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby '3.4.12'                          # Ruby
 
-gem 'rails', '8.1.4'                   # Ruby on Rails
+gem 'rails', '8.1.4.1'                 # Ruby on Rails
 
 gem 'json', '< 3'                      # Temporary fix for issue with json >= 3
 
